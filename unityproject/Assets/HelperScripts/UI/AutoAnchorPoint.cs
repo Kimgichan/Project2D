@@ -7,8 +7,6 @@ using UnityEngine.UI;
 public class AutoAnchorPoint : MonoBehaviour
 {
     [SerializeField] bool fix;
-    [SerializeField] bool runGameChangeAnchor;
-    [SerializeField] Rect changeAnchor;
 
     RectTransform rect;
     // Start is called before the first frame update
@@ -24,13 +22,6 @@ public class AutoAnchorPoint : MonoBehaviour
     {
         fix = false;
         rect = transform as RectTransform;
-
-        if(Application.isPlaying && runGameChangeAnchor)
-        {
-            rect.anchorMin = changeAnchor.min;
-            rect.anchorMax = changeAnchor.max;
-            Destroy(this);
-        }
     }
 
     // Update is called once per frame
