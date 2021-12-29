@@ -52,10 +52,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_f4ccab1f9f7148e5bcf9308f51d84f0e: 0.354
     - _EnableExternalAlpha: 0
     m_Colors:
+    - Color_975fc7d47c744a1082438873ecb454bd: {r: 0.31137696, g: 0.15908687, b: 0.5188679, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _color: {r: 0.6556604, g: 1, b: 0.9784691, a: 0}
+    - _color: {r: 0.8962264, g: 0.49291113, b: 0.40161088, a: 1}
   m_BuildTextureStacks: []
