@@ -475,6 +475,7 @@ GameObject:
   - component: {fileID: 657295657}
   - component: {fileID: 657295659}
   - component: {fileID: 657295658}
+  - component: {fileID: 657295660}
   m_Layer: 5
   m_Name: Joystick
   m_TagString: Untagged
@@ -524,6 +525,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 657295656}
   m_CullTransparentMesh: 1
+--- !u!114 &657295660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 657295656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9d7e630a094b6342877a5def41408d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &895040465
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,7 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 80a4d74e276cbb346bf2c7024df9db1d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -763,7 +776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 77617de7e7cc7ec4caeae806299b3ca5, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
