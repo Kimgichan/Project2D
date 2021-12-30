@@ -56,7 +56,7 @@ Material:
     - Vector1_f4ccab1f9f7148e5bcf9308f51d84f0e: -0.0026
     - _EnableExternalAlpha: 0
     - _cellSize: 17.99
-    - _dissolvePercent: 0.436
+    - _dissolvePercent: -0.1
     - _internalThickness: 0
     - _outlineThickness: 0
     m_Colors:

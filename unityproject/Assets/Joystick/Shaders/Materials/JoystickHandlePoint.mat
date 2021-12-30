@@ -54,7 +54,7 @@ Material:
     m_Floats:
     - _EnableExternalAlpha: 0
     - _cellSize: 17.99
-    - _dissolvePercent: 0.394
+    - _dissolvePercent: -0.1
     - _outlineThickness: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
