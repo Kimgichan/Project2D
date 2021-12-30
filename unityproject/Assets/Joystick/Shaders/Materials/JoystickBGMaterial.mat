@@ -55,7 +55,7 @@ Material:
     - Vector1_f4ccab1f9f7148e5bcf9308f51d84f0e: 0.0095
     - _EnableExternalAlpha: 0
     - _cellSize: 45.66
-    - _dissolvePercent: -0.1
+    - _dissolvePercent: 0.315
     - _outlineThickness: 0.01248
     m_Colors:
     - Color_975fc7d47c744a1082438873ecb454bd: {r: 0.4339623, g: 0.30554575, b: 0.25996798, a: 1}
@@ -64,6 +64,6 @@ Material:
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _color: {r: 0.764151, g: 0.610638, b: 0.49381453, a: 1}
-    - _dissolveColor: {r: 0.1318975, g: 0.7169812, b: 0.16007322, a: 1}
+    - _dissolveColor: {r: 0.3764706, g: 0.14901961, b: 0.19215687, a: 1}
     - _outlineColor: {r: 0.3773585, g: 0.14773941, b: 0.19280477, a: 1}
   m_BuildTextureStacks: []
