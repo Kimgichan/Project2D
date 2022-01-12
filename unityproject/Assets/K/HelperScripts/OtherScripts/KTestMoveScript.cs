@@ -7,13 +7,13 @@ using UnityEngine.Events;
 
 public class KTestMoveScript : MonoBehaviour, IController
 {
-    private static Dictionary<string, UnityAction<List<string>>> actionDic = new Dictionary<string, UnityAction<List<string>>>()
+    private static Dictionary<string, UnityAction<KTestMoveScript, List<string>>> actionDic = new Dictionary<string, UnityAction<KTestMoveScript, List<string>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (valList) => { } },
+        { "Idle", (o, valList) => { } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (valList) => { } }
+        { "Move", (o, valList) => { } }
 
 
         //이 앞으론 예시
@@ -51,9 +51,9 @@ public class KTestMoveScript : MonoBehaviour, IController
         foreach(var action in actionList)
         {
             var valList = new List<string>(action.Split('/'));
-            if(actionDic.TryGetValue(valList[0], out UnityAction<List<string>> actionFunc))
+            if(actionDic.TryGetValue(valList[0], out UnityAction<KTestMoveScript, List<string>> actionFunc))
             {
-                actionFunc(valList);
+                actionFunc(this, valList);
             }
         }
     }
