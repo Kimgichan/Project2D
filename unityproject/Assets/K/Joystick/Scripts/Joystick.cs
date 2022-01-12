@@ -7,8 +7,11 @@ using UnityEngine.EventSystems;
 
 public class Joystick : MonoBehaviour
 {
+    [SerializeField] Canvas canvas;
     //기준 스크린 너비 값
     float referenceScreenWidth = 2960f;
+    float cameraflaneDistance = 1225f;
+
 
     [SerializeField] float handleRange;
     [SerializeField] float dissolveTimer;
@@ -29,7 +32,10 @@ public class Joystick : MonoBehaviour
     void Start()
     {
         handleRange *= Screen.width / referenceScreenWidth;
-
+        if(canvas.renderMode == RenderMode.ScreenSpaceCamera)
+        {
+            handleRange *= canvas.planeDistance / cameraflaneDistance;
+        }
 
         ////////////////////////////////////////////////////////////////>
         // Input 이벤트 셋팅
@@ -48,8 +54,9 @@ public class Joystick : MonoBehaviour
         entry_PointerDown.callback.AddListener(e => 
         {
             var eventData = e as PointerEventData;
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.renderMode == RenderMode.ScreenSpaceCamera ? Camera.main : null, out Vector3 worldPoint);
 
-            bg.transform.position = eventData.position;
+            bg.transform.position = worldPoint;
             bg.SetActive(true);
 
             //도중에 끊을 수 없고, 끊으려면 따로 변수를 갖고 있어야 해서. 코루틴으로 변경
@@ -80,9 +87,10 @@ public class Joystick : MonoBehaviour
         entry_Drag.callback.AddListener(e =>
         {
             var eventData = e as PointerEventData;
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.renderMode == RenderMode.ScreenSpaceCamera ? Camera.main : null, out Vector3 worldPoint);
 
-            var bgP = (Vector2)bg.transform.position;
-            var dirV = (eventData.position - bgP);
+            var bgP = bg.transform.position;
+            var dirV = (worldPoint - bgP);
 
             if (dirV.sqrMagnitude > handleRange * handleRange)
                 handle.transform.position = bgP + dirV.normalized * handleRange;
