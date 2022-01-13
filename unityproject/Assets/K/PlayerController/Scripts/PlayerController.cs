@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] Joystick moveJoystick;
+    [SerializeField] Joystick aimJoystick;
+    private IController controller;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        controller = GetComponent<IController>();
     }
 }

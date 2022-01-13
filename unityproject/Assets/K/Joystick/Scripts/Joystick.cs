@@ -7,11 +7,13 @@ using UnityEngine.EventSystems;
 
 public class Joystick : MonoBehaviour
 {
+    //[SerializeField] [ColorUsage(true, true)] Color hdrColor;
     [SerializeField] Canvas canvas;
     //기준 스크린 너비 값
     float referenceScreenWidth = 2960f;
     float cameraflaneDistance = 1225f;
 
+    public Vector2 input;
 
     [SerializeField] float handleRange;
     [SerializeField] float dissolveTimer;
@@ -78,6 +80,7 @@ public class Joystick : MonoBehaviour
             //OnComplete(() => bg.SetActive(false));
             StopAllCoroutines();
             StartCoroutine(DissolveCor(0.85f, -0.1f, () => bg.SetActive(false)));
+            input = Vector2.zero;
         });
         eventTrigger.triggers.Add(entry_PointerUp);
 
@@ -92,9 +95,11 @@ public class Joystick : MonoBehaviour
             var bgP = bg.transform.position;
             var dirV = (worldPoint - bgP);
 
-            if (dirV.sqrMagnitude > handleRange * handleRange)
-                handle.transform.position = bgP + dirV.normalized * handleRange;
-            else handle.transform.position = bgP + dirV;
+            if (dirV.sqrMagnitude > handleRange * handleRange) 
+                dirV = dirV.normalized * handleRange;
+            handle.transform.position = bgP + dirV;
+
+            input = dirV / handleRange;
         });
         eventTrigger.triggers.Add(entry_Drag);
         ////////////////////////////////////////////////////////////////>

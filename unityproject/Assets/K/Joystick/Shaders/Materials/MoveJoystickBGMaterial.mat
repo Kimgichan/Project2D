@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: JoystickBGMaterial
+  m_Name: MoveJoystickBGMaterial
   m_Shader: {fileID: -6465566751694194690, guid: a1d7dc76f7df4b34c93157c1914c48be, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -64,6 +64,6 @@ Material:
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _color: {r: 0.764151, g: 0.610638, b: 0.49381453, a: 1}
-    - _dissolveColor: {r: 0.3764706, g: 0, b: 11.984314, a: 1}
+    - _dissolveColor: {r: 1.6603775, g: 0, b: 0.09845555, a: 1}
     - _outlineColor: {r: 0.3764706, g: 0.14901961, b: 0.19215687, a: 1}
   m_BuildTextureStacks: []
