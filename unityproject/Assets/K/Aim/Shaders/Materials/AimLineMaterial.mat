@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MoveJoystickHandleMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: a1d7dc76f7df4b34c93157c1914c48be, type: 3}
+  m_Name: AimLineMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: 317a7608a59d7344880be7bf4de15196, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 57958eef68c71954dae729556a16f7a3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -33,10 +33,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _mainTex:
-        m_Texture: {fileID: 2800000, guid: b7a4562f06abb6144be05a4245c80fb0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -52,22 +48,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_3581e444f8df49ecadf4ce18808fc698: -0.02
-    - Vector1_f4ccab1f9f7148e5bcf9308f51d84f0e: -0.0026
     - _EnableExternalAlpha: 0
-    - _cellSize: 17.99
-    - _dissolvePercent: -0.1
-    - _internalThickness: 0
-    - _outlineThickness: 0
     m_Colors:
-    - Color_975fc7d47c744a1082438873ecb454bd: {r: 0.43529412, g: 0.30588236, b: 0.25882354, a: 0}
-    - Color_bf91d3d943014035b61b22ef3102fa99: {r: 1, g: 0, b: 0, a: 1}
-    - Color_d9b506e23ad64eadabfadbf97c4ad6d6: {r: 1, g: 0, b: 0, a: 0}
-    - Color_e2ee975b456c4131928eb89e7e4bd9e2: {r: 0.3764706, g: 0.14901961, b: 0.19215687, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _color: {r: 0.3764706, g: 0.14901961, b: 0.19215687, a: 1}
-    - _dissolveColor: {r: 0, g: 3.2627451, b: 4.8313727, a: 1}
-    - _outlineColor: {r: 0.3764706, g: 0.14901961, b: 0.19215687, a: 1}
+    - _color: {r: 1.3464948, g: 4.85909, b: 11.181761, a: 1}
   m_BuildTextureStacks: []

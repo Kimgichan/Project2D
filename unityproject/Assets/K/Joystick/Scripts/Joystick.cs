@@ -31,6 +31,22 @@ public class Joystick : MonoBehaviour
     //-0.1~0.85
     float percent;
 
+    private EventTrigger.Entry entry_pointerDown;
+    public EventTrigger.TriggerEvent pointerDownCallBack => entry_pointerDown.callback;
+
+    private EventTrigger.Entry entry_pointerUp;
+    public EventTrigger.TriggerEvent pointerUpCallBack => entry_pointerUp.callback;
+
+    private EventTrigger.Entry entry_drag;
+    public EventTrigger.TriggerEvent dragCallBack => entry_drag.callback;
+
+    public bool checkStart { private set; get; }
+
+    private void Awake()
+    {
+        checkStart = false;
+    }
+
     void Start()
     {
         handleRange *= Screen.width / referenceScreenWidth;
@@ -51,9 +67,37 @@ public class Joystick : MonoBehaviour
         eventTrigger = inputField.AddComponent<EventTrigger>();
 
 
-        var entry_PointerDown = new EventTrigger.Entry();
-        entry_PointerDown.eventID = EventTriggerType.PointerDown;
-        entry_PointerDown.callback.AddListener(e => 
+        entry_pointerDown = new EventTrigger.Entry();
+        entry_pointerDown.eventID = EventTriggerType.PointerDown;
+        eventTrigger.triggers.Add(entry_pointerDown);
+
+
+        entry_pointerUp = new EventTrigger.Entry();
+        entry_pointerUp.eventID = EventTriggerType.PointerUp;
+        eventTrigger.triggers.Add(entry_pointerUp);
+
+
+        entry_drag = new EventTrigger.Entry();
+        entry_drag.eventID = EventTriggerType.Drag;
+        eventTrigger.triggers.Add(entry_drag);
+
+        CallBackReset();
+        ////////////////////////////////////////////////////////////////>
+
+
+        percent = -0.1f;
+
+        bgMaterial = bg.GetComponent<RawImage>().material;
+        handleMaterial = handle.GetComponent<RawImage>().material;
+        pointMaterial = handle.transform.GetChild(0).GetComponent<RawImage>().material;
+        SetDisolvePercent();
+
+        checkStart = true;
+    }
+
+    public void CallBackReset()
+    {
+        entry_pointerDown.callback.AddListener(e =>
         {
             var eventData = e as PointerEventData;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.renderMode == RenderMode.ScreenSpaceCamera ? Camera.main : null, out Vector3 worldPoint);
@@ -67,12 +111,8 @@ public class Joystick : MonoBehaviour
             StopAllCoroutines();
             StartCoroutine(DissolveCor(-0.1f, 0.85f));
         });
-        eventTrigger.triggers.Add(entry_PointerDown);
 
-
-        var entry_PointerUp = new EventTrigger.Entry();
-        entry_PointerUp.eventID = EventTriggerType.PointerUp;
-        entry_PointerUp.callback.AddListener(e =>
+        entry_pointerUp.callback.AddListener(e =>
         {
             //위와 마찬가지
             //DOTween.To(() => percent = 0.85f, v => percent = v, -0.1f, dissolveTimer).
@@ -80,14 +120,11 @@ public class Joystick : MonoBehaviour
             //OnComplete(() => bg.SetActive(false));
             StopAllCoroutines();
             StartCoroutine(DissolveCor(0.85f, -0.1f, () => bg.SetActive(false)));
+            handle.transform.position = bg.transform.position;
             input = Vector2.zero;
         });
-        eventTrigger.triggers.Add(entry_PointerUp);
 
-
-        var entry_Drag = new EventTrigger.Entry();
-        entry_Drag.eventID = EventTriggerType.Drag;
-        entry_Drag.callback.AddListener(e =>
+        entry_drag.callback.AddListener(e =>
         {
             var eventData = e as PointerEventData;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.renderMode == RenderMode.ScreenSpaceCamera ? Camera.main : null, out Vector3 worldPoint);
@@ -95,22 +132,12 @@ public class Joystick : MonoBehaviour
             var bgP = bg.transform.position;
             var dirV = (worldPoint - bgP);
 
-            if (dirV.sqrMagnitude > handleRange * handleRange) 
+            if (dirV.sqrMagnitude > handleRange * handleRange)
                 dirV = dirV.normalized * handleRange;
             handle.transform.position = bgP + dirV;
 
             input = dirV / handleRange;
         });
-        eventTrigger.triggers.Add(entry_Drag);
-        ////////////////////////////////////////////////////////////////>
-
-
-        percent = -0.1f;
-
-        bgMaterial = bg.GetComponent<RawImage>().material;
-        handleMaterial = handle.GetComponent<RawImage>().material;
-        pointMaterial = handle.transform.GetChild(0).GetComponent<RawImage>().material;
-        SetDisolvePercent();
     }
 
     IEnumerator DissolveCor(float start, float end, UnityAction callback = null)

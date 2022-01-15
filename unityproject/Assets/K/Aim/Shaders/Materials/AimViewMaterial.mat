@@ -52,18 +52,22 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_75749e68daee42578b997db30503d1e3: -0.459
-    - Vector1_8cde224f07e048979cf2c01724198e35: 0.614
-    - Vector1_93b8444a76fa4ba582efc5339e09be13: 6.48
-    - Vector1_cf1186e09c764286aa408cdf49471231: 0.488
-    - Vector1_e14d2db2edcb4df6b7b1396484908ba2: 37.7
+    - Vector1_75749e68daee42578b997db30503d1e3: -0.041
+    - Vector1_8cde224f07e048979cf2c01724198e35: 0.064
+    - Vector1_93b8444a76fa4ba582efc5339e09be13: -71.59
+    - Vector1_b2ef0d0aa4c54830946eba466631812e: 0.723
+    - Vector1_cf1186e09c764286aa408cdf49471231: 0.5
+    - Vector1_e14d2db2edcb4df6b7b1396484908ba2: 17.5
     - _EnableExternalAlpha: 0
-    - _sinAlpha: 39.22
+    - _degree: 50
+    - _length: 0.5
+    - _sinAlpha: 18
+    - _sineMove: -2.57
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _bgColor: {r: 0.7490196, g: 0.17610438, b: 0, a: 1}
-    - _lineColor: {r: 0, g: 0.88816977, b: 1, a: 1}
+    - _bgColor: {r: 0.17647058, g: 0.7327216, b: 1, a: 0.5372549}
+    - _lineColor: {r: 542.34814, g: 542.34814, b: 542.34814, a: 1}
     - _sinLerp: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
