@@ -17,32 +17,27 @@ public class SaveLoadManager
         }
     }
 
-    public void Save(in string tab, in string key, in string content, Risks risk)
+    public void Save(in string path, in string key, in string content, Risks risk)
     {
         try
         {
-            var dirPath = $"{Application.persistentDataPath}/{tab}";
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-
-            var filePath = $"{dirPath}/{key}.json";
-            File.WriteAllText(filePath, Encrypt(content, $"{tab}->{key}"));
+            File.WriteAllText(path, Encrypt(content, key));
         }
         catch
         {
-            SendMessage(tab, key, risk, true); ;
+            SendMessage(path, key, risk, true); ;
         }
     }
 
-    public string Load(in string tab, in string key, Risks risk)
+    public string Load(in string path, in string key, Risks risk)
     {
         try
         {
-            return Decrypt(File.ReadAllText($"{Application.persistentDataPath}/{tab}/{key}.json"), $"{tab}->{key}");
+            return Decrypt(File.ReadAllText(path), key);
         }
         catch
         {
-            SendMessage(tab, key, risk, false);
+            SendMessage(path, key, risk, false);
             return "";
         }
     }
@@ -53,13 +48,13 @@ public class SaveLoadManager
         switch (risk)
         {
             case Risks.None:
-                Debug.Log($"{tab} 폴더의 {key} 파일을 {stateStr} 못했습니다.");
+                Debug.Log($"{tab} 파일을 {stateStr} 못했습니다.");
                 break;
             case Risks.Warning:
-                Debug.LogWarning($"{tab} 폴더의 {key} 파일을 {stateStr} 못했습니다.");
+                Debug.LogWarning($"{tab} 파일을 {stateStr} 못했습니다.");
                 break;
             case Risks.Error:
-                Debug.LogError($"{tab} 폴더의 {key} 파일을 {stateStr} 못했습니다.");
+                Debug.LogError($"{tab} 파일을 {stateStr} 못했습니다.");
                 break;
         }
     }
