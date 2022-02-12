@@ -30,12 +30,12 @@ public class testMoveScript : MonoBehaviour, IController
     }
 
     // 매개변수로 들어올 값은 예("Move/0.5f/0.5f)" 3개의 문자열이 들어온다.
-    public void OrderAction(List<string> actionList)
+    public void OrderAction(params object[] orders)
     {
         // List크기 만큼 반복한다.
-        for(int actionNum = 0; actionNum<actionList.Count; actionNum++)
+        for(int actionNum = 0; actionNum<orders.Length; actionNum++)
         {
-            string str              = actionList[actionNum];
+            string str              = orders[actionNum] as string;
             string[] splitString    = str.Split(new char[] { '/' });
             
             // 3개의 문자열로 나누어졌는 가?

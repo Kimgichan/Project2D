@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 public class UPlayer : UCharacter, IController
 {
-    private static Dictionary<string, UnityAction<UPlayer, List<string>>> actionDic = new Dictionary<string, UnityAction<UPlayer, List<string>>>()
+    private static Dictionary<string, UnityAction<UPlayer, List<object>>> actionDic = new Dictionary<string, UnityAction<UPlayer, List<object>>>()
     {
         //IdleÀÇ valList °ª State 
         { "Idle", (o, valList) => {o.ChangeState(new IdleState());  } },
@@ -44,14 +44,13 @@ public class UPlayer : UCharacter, IController
         return action;
     }
 
-    public void OrderAction(List<string> actionList)
+    public void OrderAction(params object[] orders)
     {
-        foreach (var action in actionList)
+        foreach (var order in orders as IController.Order[])
         {
-            var valList = new List<string>(action.Split('/'));
-            if (actionDic.TryGetValue(valList[0], out UnityAction<UPlayer, List<string>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
             {
-                actionFunc(this, valList);
+                actionFunc(this, order.parameters);
             }
         }
     }

@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 public class UEnemy : UCharacter, IController
 {
-    private static Dictionary<string, UnityAction<UEnemy, List<string>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<string>>>()
+    private static Dictionary<string, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<object>>>()
     {
         //IdleÀÇ valList °ª State 
         { "Idle", (o, valList) => {o.ChangeState(new IdleState());  } },
@@ -41,14 +41,13 @@ public class UEnemy : UCharacter, IController
         return action;
     }
 
-    public void OrderAction(List<string> actionList)
+    public void OrderAction(params object[] orders)
     {
-        foreach (var action in actionList)
+        foreach (var order in orders as IController.Order[])
         {
-            var valList = new List<string>(action.Split('/'));
-            if (actionDic.TryGetValue(valList[0], out UnityAction<UEnemy, List<string>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
             {
-                actionFunc(this, valList);
+                actionFunc(this, order.parameters);
             }
         }
     }
