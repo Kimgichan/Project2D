@@ -98,7 +98,21 @@ public class Board : MonoBehaviour
             value.OutColor -= new Color(btnClickDark, btnClickDark, btnClickDark, 0f);
         }
     }
+ 
     private float btnClickDark = 0.3f;
+
+    private int CurrentSP
+    {
+        get
+        {
+            return game_db.PlayerSP;
+        }
+        set
+        {
+            game_db.PlayerSP = value;
+            sp_text.text = $"{game_db.PlayerSP}SP";
+        }
+    }
     private void Start()
     {
 
@@ -110,7 +124,35 @@ public class Board : MonoBehaviour
             CurrentSkillNode = skill;
             skillNameTxt.text = skill.Skill.name;
             // 유저 정보가 있으면 => level
+            var level = game_db.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, skill.Skill);
+            skillLevelTxt.text = $"LV. {level}";
             // 유저 정보가 있으면 => content
+            if(level <= 1)
+            {
+                if (level < 1)
+                {
+                    skillSettingBtn.gameObject.SetActive(false);
+                }
+                else skillSettingBtn.gameObject.SetActive(true);
+
+                skillContentTxt.text = skill.Skill.Content(0);
+            }
+            else
+            {
+                skillSettingBtn.gameObject.SetActive(true);
+
+                //값이 0부터 시작하는 인덱스라서 - 1 해줌
+                skillContentTxt.text = skill.Skill.Content(level - 1);
+            }
+
+            if (level < skill.Skill.MaxLevel)
+            {
+                skillUpBtn.gameObject.SetActive(true);
+                receiptSP_txt.text = $"{CurrentSP}/{skill.Skill.NeedSP(level)}"; // level은 인덱스기 때문에 - 1을 해주지 않으면 nextLevel임
+            }
+            else
+                skillUpBtn.gameObject.SetActive(false);
+
         };
         UnityAction<ClassTab> skillTabBtnClickEvent = (classTab) =>
         {
@@ -191,7 +233,7 @@ public class Board : MonoBehaviour
             menuBoard.gameObject.SetActive(false);
             skillBoard.gameObject.SetActive(true);
             backEvent = skillBoard_To_menuBoard;
-
+            CurrentSP = game_db.PlayerSP;
 
             // 스킬트리 셋팅 처음
 
@@ -228,6 +270,23 @@ public class Board : MonoBehaviour
         classTabs[0].clickEvent = skillTabBtnClickEvent;
         skillNodeList[0].clickEvent = skillBtnClickEvent;
 
+
+        // 스킬 업 되면 저장됨.
+        skillUpBtn.onClick.AddListener(() =>
+        {
+            try
+            {
+                var needSP = CurrentSkillNode.Skill.NeedSP(game_db.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill));
+                if (CurrentSP > needSP)
+                {
+                    CurrentSP -= needSP;
+                    game_db.AddPlayerSkill(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill);
+                    skillBtnClickEvent(CurrentSkillNode);
+                }
+            }
+            catch
+            {}
+        });
 
         skillBoard.SetActive(false);
 

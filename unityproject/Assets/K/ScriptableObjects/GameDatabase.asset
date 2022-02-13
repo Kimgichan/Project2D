@@ -23,7 +23,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 39aca4d6e74edc34caec3f90c171b70e, type: 2}
     - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
     - {fileID: 11400000, guid: e7a64bb8a480777419c25526e09bfd0a, type: 2}
-    - {fileID: 11400000, guid: c55727ad807d1a84dac28381158dbcc9, type: 2}
   - className: "\uAD81\uC218"
     color: {r: 0.6156863, g: 0.9137255, b: 0.9026248, a: 1}
     skills:
@@ -33,13 +32,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
   - className: "\uB9C8\uBC95\uC0AC"
     color: {r: 0.6156863, g: 0.6746542, b: 0.9137255, a: 1}
-    skills:
-    - {fileID: 11400000, guid: c55727ad807d1a84dac28381158dbcc9, type: 2}
-    - {fileID: 11400000, guid: 64e938248a6410540b6f1ffc49fb6268, type: 2}
-    - {fileID: 11400000, guid: 05611233d215086449c45332a99087d4, type: 2}
-    - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
-  - className: "\uB9C8\uBC95\uC0ACC"
-    color: {r: 0.69508725, g: 0.7169812, b: 0.5783197, a: 1}
     skills:
     - {fileID: 11400000, guid: c55727ad807d1a84dac28381158dbcc9, type: 2}
     - {fileID: 11400000, guid: 64e938248a6410540b6f1ffc49fb6268, type: 2}
