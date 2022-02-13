@@ -124,6 +124,7 @@ public class GameDatabase : ScriptableObject
         try
         {
             var strData = File.ReadAllText($"{Application.persistentDataPath}/PlayerSkills.json");
+            strData = SecurityString.Decrypt(strData, "skillTree");
             var jsonData = JsonUtility.FromJson<PlayerSkillsJson>(strData);
             playerInfo.SetPlayerSkillsJson(jsonData, this);
         }
@@ -138,6 +139,7 @@ public class GameDatabase : ScriptableObject
     public void SavePlayerInfo_Skills()
     {
         var strData = JsonUtility.ToJson(playerInfo.GetPlayerSkillsJson());
+        strData = SecurityString.Encrypt(strData, "skillTree");
         File.WriteAllText($"{Application.persistentDataPath}/PlayerSkills.json", strData);
     }
 

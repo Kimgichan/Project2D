@@ -9,7 +9,7 @@ public class SecurityString
     ///////////////////////////////////////////////////////////////////////////////////
     // 복사붙이기한 코드. 자료 주소 => https://intro0517.tistory.com/37
     // 복호화
-    public string Decrypt(string textToDecrypt, string key)
+    public static string Decrypt(string textToDecrypt, string key)
 
     {
 
@@ -54,7 +54,7 @@ public class SecurityString
     }
 
     // 암호화
-    public string Encrypt(string textToEncrypt, string key)
+    public static string Encrypt(string textToEncrypt, string key)
     {
 
         RijndaelManaged rijndaelCipher = new RijndaelManaged();
