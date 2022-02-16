@@ -6,10 +6,14 @@ public class AttackState: IState
 {
     private UCharacter myCharacter;
 
+    public string getStringState()
+    {
+        return "Attack";
+    }
+
     public void SetParent(UCharacter _character)
     {
         myCharacter = _character;
-
 
     }
 

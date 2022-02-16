@@ -7,13 +7,21 @@ using UnityEngine.Events;
 
 public class UPlayer : UCharacter, IController
 {
+    public GameObject gunAim;
+    static UPlayer me;
+
+    void gunAimPlayerFollow()
+    {
+        gunAim.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+    }
+
     private static Dictionary<string, UnityAction<UPlayer, List<string>>> actionDic = new Dictionary<string, UnityAction<UPlayer, List<string>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.ChangeState(new IdleState());  } },
+        { "Idle", (o, valList) => {o.ChangeState(new IdleState(me)); } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (o, valList) => {o.ChangeState(new MoveState()); } }
+        { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } }
 
 
         //이 앞으론 예시
@@ -60,10 +68,12 @@ public class UPlayer : UCharacter, IController
     {
         base.Start();
 
+        me = this;
+
         boxCollider2D   = GetComponent<BoxCollider2D>();
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
 
-        ChangeState(new IdleState());
+        //ChangeState(new IdleState());
     }
 
     protected override void Update()
@@ -71,7 +81,7 @@ public class UPlayer : UCharacter, IController
         moveVector.x = Input.GetAxis("Horizontal");
         moveVector.y = Input.GetAxis("Vertical");
 
-        if(DoMove())
+        if (DoMove())
         {
             // 방향에 따라 캐릭터 모델 보는 방향 변경
             if (moveVector.x > 0f)      spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
@@ -85,6 +95,9 @@ public class UPlayer : UCharacter, IController
             //ChangeState(new UIdleState());
             OrderAction(ReturnTheStateList("Idle"));
         }
+
+        //GunAim가 캐릭터 위치에서 나오게 업데이트.
+        gunAimPlayerFollow();
 
         base.Update();
     }

@@ -6,24 +6,29 @@ using UnityEngine;
 
 public class AStar : MonoBehaviour
 {
+
+    //￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣//
+    //                                         변수                                           
     // C++에 MAP과 같은 기능을 한다. 현재 노드가 어디 노드에서 왔는 지 저장하는 용도로 사용 
     public Dictionary<Vector2Int, Vector2Int> parentVector = new Dictionary<Vector2Int, Vector2Int>();
 
     // 감지할 범위의 대한 값 X,Y
-    public int                  mapSizeX = 8;
-    public int                  mapSizeY = 8;
-    private const int           DIRECTION_SIZE = 8;
-    
-    // player와 monster의 Transfrom정보를 가져온다.
-    public Transform            player;
-    public Transform            monster;
-    // startPos는 몬스터 위치, exitPos는 플레이어가 될 위치가 된다.
-    private Vector2Int          startPos;
-    private Vector2Int          exitPos;
+    public int              mapSizeX = 8;
+    public int              mapSizeY = 8;
+    private const int       DIRECTION_SIZE = 8;
 
-    public List<Vector2>        wallVectorList;
-    public List<Vector2Int>     lastList;
-    Collider2D[] col;
+    // player와 monster의 Transfrom정보를 가져온다.
+    public Transform        player;
+    public Transform        monster;
+    // startPos는 몬스터 위치, exitPos는 플레이어가 될 위치가 된다.
+    private Vector2Int      startPos;
+    private Vector2Int      exitPos;
+
+    public List<Vector2>    wallVectorList;
+    public List<Vector2Int> lastList;
+            Collider2D[]    col;
+    //_______________________________________________________________________________________//
+
 
     struct Node
     {
@@ -44,19 +49,6 @@ public class AStar : MonoBehaviour
         // 현재 노드에 대한 x,y값을 가진다.
         public Vector2Int Pos;
     }
-
-    private enum EnumDirection
-    {
-        DIR_UP,
-        DIR_RIGHT,
-        DIR_DOWN,
-        DIR_LEFT,
-
-        DIR_UP_RIGHT,
-        DIR_DOWN_RIGHT,
-        DIR_DOWN_LEFT,
-        DIR_UP_LEFT
-    };
 
     private int[] cost =
     {
@@ -94,7 +86,6 @@ public class AStar : MonoBehaviour
         startAndExitPos();
 
         AstarAlgorithm();
-     
     }
 
 

@@ -8,30 +8,42 @@ public abstract class UCharacter : MonoBehaviour
     protected Vector2       moveVector;
     protected SPUM_Prefabs  spumPrefabs;
     protected BoxCollider2D boxCollider2D;
-    protected Vector3       boxColliderVector;
+    protected Vector3       otherColliderVector;
+
+    public    Rigidbody2D   myRigidbody;
 
     public float        hp      = 10f;
     protected float     speed   = 3.0f;
 
     public Vector2          GetMoveVector           { get { return moveVector; } }
     public SPUM_Prefabs     GetSpumPrefabs          { get { return spumPrefabs; } }
-    public Vector3          GetboxColliderVector    { get { return boxColliderVector; } }
+    public Vector3          GetotherColliderVector  { get { return otherColliderVector; } }
     public float            GetSpeed                { get { return speed; } }
 
     protected virtual void Start()
     {
-        Debug.Log("hello");
+        myState = new IdleState(this);
+        myState.SetParent(this);
     }
 
     protected void ChangeState(IState _changeState)
     {
-        myState = _changeState;
+        if(myState.getStringState() == _changeState.getStringState())
+        {
+            
+        }
+        else
+        {
+            myState = _changeState;
+        }
+      
+
     }
 
     protected virtual void Update()
     {
         // *SetParent를 계속 Update를 할필요가 있을 까? 필요할 때 꺼내 쓸 수 없나?
-        myState.SetParent(this);
+        //myState.SetParent(this);
         myState.Update();
     }
 }

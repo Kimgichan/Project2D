@@ -6,17 +6,27 @@ public class FollowState : IState
 {
     private UCharacter myCharacter;
 
+    public string getStringState()
+    {
+        return "Follow";
+    }
+
     public void SetParent(UCharacter _character)
     {
         myCharacter = _character;
 
-       
+        foreach (Collider2D col in Physics2D.OverlapCircleAll(new Vector2(1,1),0.4f))
+        {
+
+        }
+
+
     }
 
     // Update is called once per frame
     public void Update()
     {
-        myCharacter.transform.position = Vector3.MoveTowards(myCharacter.transform.position,myCharacter.GetboxColliderVector, 1.0f * Time.deltaTime);
+        myCharacter.transform.position = Vector3.MoveTowards(myCharacter.transform.position,myCharacter.GetotherColliderVector, 1.0f * Time.deltaTime);
         myCharacter.GetSpumPrefabs.PlayAnimation(1);
     }
 }

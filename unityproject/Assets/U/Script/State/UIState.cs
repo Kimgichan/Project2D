@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IState
 {
+    string getStringState();
     void SetParent(UCharacter _character);
     void Update();
 }

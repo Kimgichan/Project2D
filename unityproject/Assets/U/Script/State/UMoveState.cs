@@ -6,6 +6,16 @@ public class MoveState : IState
 {
     private UCharacter myCharacter;
 
+    public MoveState(UCharacter _character)
+    {
+        SetParent(_character);
+    }
+
+    public string getStringState()
+    {
+        return "Move";
+    }
+
     public void SetParent(UCharacter _character)
     {
         myCharacter = _character;
