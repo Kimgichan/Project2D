@@ -11,7 +11,8 @@ public class UEnemy : UCharacter, IController
     // '벽' 장애물에 좌표(x,y)에 대한 정보를 가져온다.
     public TileWallScan TileWall;
 
-    private static Dictionary<string, UnityAction<UEnemy, List<string>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<string>>>()
+
+    private static Dictionary<string, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<object>>>()
     {
         //Idle의 valList 값 State 
         { "Idle", (o, valList) => {o.ChangeState(new IdleState(me));  } },
@@ -19,9 +20,9 @@ public class UEnemy : UCharacter, IController
         //Move의 valList 값 State/InputX/InputY 
         { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } },
 
-        { "Follow", (o, valList) => {o.ChangeState(new FollowState()); } },
+        { "Follow", (o, valList) => {o.ChangeState(new FollowState(me)); } },
 
-        { "Attack", (o, valList) => {o.ChangeState(new AttackState()); } },
+        { "Attack", (o, valList) => {o.ChangeState(new AttackState(me)); } },
 
         { "Avoiding", (o, valList) => {o.ChangeState(new AvoidingState(me)); } }
 
@@ -47,14 +48,13 @@ public class UEnemy : UCharacter, IController
         return action;
     }
 
-    public void OrderAction(List<string> actionList)
+    public void OrderAction(params object[] orders)
     {
-        foreach (var action in actionList)
+        foreach (var order in orders as IController.Order[])
         {
-            var valList = new List<string>(action.Split('/'));
-            if (actionDic.TryGetValue(valList[0], out UnityAction<UEnemy, List<string>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
             {
-                actionFunc(this, valList);
+                actionFunc(this, order.parameters);
             }
         }
     }
