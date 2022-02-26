@@ -5,26 +5,26 @@ using UnityEngine;
 //UnityAction이 정의됨
 using UnityEngine.Events;
 
-public class UEnemy : UCharacter, IController
+
+public class UEnemyRanged : UCharacter, IController
 {
-    static UEnemy me;
+    static UEnemyRanged me;
     // '벽' 장애물에 좌표(x,y)에 대한 정보를 가져온다.
     public TileWallScan TileWall;
 
-
-    private static Dictionary<string, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<object>>>()
+    private static Dictionary<string, UnityAction<UEnemyRanged, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemyRanged, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.ChangeState(new IdleState(me));  } },
+        { "Idle", (o, valList) => {o.ChangeState(new IdleState(o));  } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } },
+        { "Move", (o, valList) => {o.ChangeState(new MoveState(o)); } },
 
-        { "Follow", (o, valList) => {o.ChangeState(new FollowState(me)); } },
+        { "Follow", (o, valList) => {o.ChangeState(new FollowState(o)); } },
 
-        { "Attack", (o, valList) => {o.ChangeState(new AttackState(me)); } },
+        { "Attack", (o, valList) => {o.ChangeState(new AttackState(o)); } },
 
-        { "Avoiding", (o, valList) => {o.ChangeState(new AvoidingState(me)); } }
+        { "Avoiding", (o, valList) => {o.ChangeState(new AvoidingState(o)); } }
 
         //이 앞으론 예시
 
@@ -53,7 +53,7 @@ public class UEnemy : UCharacter, IController
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
             {
                 actionFunc(this, order.parameters);
             }
@@ -65,7 +65,7 @@ public class UEnemy : UCharacter, IController
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
             {
                 actionFunc(this, order.parameters);
             }
@@ -77,39 +77,47 @@ public class UEnemy : UCharacter, IController
         base.Start();
 
         // State스크립트에 '자신'정보를 주기 위한 변수
-        me              = this;
+        me = this;
 
-        boxCollider2D   = GetComponent<BoxCollider2D>();
-        spumPrefabs     = GetComponent<SPUM_Prefabs>();
-        myRigidbody     = GetComponent<Rigidbody2D>();
+        boxCollider2D = GetComponent<BoxCollider2D>();
+        spumPrefabs = GetComponent<SPUM_Prefabs>();
+        myRigidbody = GetComponent<Rigidbody2D>();
 
         ChangeState(new IdleState(this));
-        
-        
+
+
     }
 
     // 충돌 범위 안에 들어온 상태
     public void OnTriggerStay2D(Collider2D _other)
     {
-        
+
         // 범위 안에 들어온 오브젝트에 태그가 Player인가?
         if (_other.gameObject.tag == "Player")
         {
             // otherColliderVector = 들어온 상대의 position 값
             otherColliderVector = _other.transform.position;
-            float dis           = Vector3.Distance(otherColliderVector, transform.position);
+            float dis = Vector3.Distance(otherColliderVector, transform.position);
 
-            // 대상과의 거리
-            if (dis < 1.0f)
+            if (dis > 2.0f)
+            {
+
+                //OrderAction(ReturnTheStateList("Follow"));
+                OrderAction(new Order() { orderTitle = "Follow" });
+            }
+            else if (dis > 1.0f)
+            {
+
+                //OrderAction(ReturnTheStateList("Attack"));
+                OrderAction(new Order() { orderTitle = "Attack" });
+
+            }
+            else if (dis < 1.0f)
             {
                 //OrderAction(ReturnTheStateList("Avoiding"));
                 OrderAction(new Order() { orderTitle = "Avoiding" });
             }
-            else
-            {
-                //OrderAction(ReturnTheStateList("Idle"));
-                OrderAction(new Order() { orderTitle = "Idle" });
-            }
+
         }
     }
     // 충돌 범위에서 나간 상태
@@ -117,6 +125,7 @@ public class UEnemy : UCharacter, IController
     {
         //OrderAction(ReturnTheStateList("Idle"));
         OrderAction(new Order() { orderTitle = "Idle" });
+
     }
 
     float timer = 0;
@@ -127,7 +136,7 @@ public class UEnemy : UCharacter, IController
         base.Update();
 
         timer += Time.deltaTime;
-        if(timer > waitingTime)
+        if (timer > waitingTime)
         {
             timer = 0;
         }

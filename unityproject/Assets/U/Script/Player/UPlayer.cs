@@ -23,7 +23,6 @@ public class UPlayer : UCharacter, IController
         //Move의 valList 값 State/InputX/InputY 
         { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } }
 
-
         //이 앞으론 예시
 
 
@@ -52,9 +51,22 @@ public class UPlayer : UCharacter, IController
         return action;
     }
 
-    public void OrderAction(params object[] orders)
+    public void OrderAction(params Order[] orders)
     {
-        foreach (var order in orders as IController.Order[])
+    
+        foreach (var order in orders)
+        {
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+            {
+                actionFunc(this, order.parameters);
+            }
+        }
+    }
+
+    public void OrderAction(List<Order> orders)
+    {
+
+        foreach (var order in orders)
         {
             if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
             {
@@ -87,12 +99,14 @@ public class UPlayer : UCharacter, IController
             else if(moveVector.x < 0f)  spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
 
             //ChangeState(new UMoveState());
-            OrderAction(ReturnTheStateList("Move"));
+            //OrderAction(ReturnTheStateList("Move"));
+            OrderAction(new Order() { orderTitle = "Move" });
+            //OrderAction(new Order() { orderTitle = "move", parameters = new List<object>() { 1.0f, 1.0f } });
         }
         else
         {
             //ChangeState(new UIdleState());
-            OrderAction(ReturnTheStateList("Idle"));
+            //OrderAction(ReturnTheStateList("Idle"));
         }
 
         //GunAim가 캐릭터 위치에서 나오게 업데이트.
