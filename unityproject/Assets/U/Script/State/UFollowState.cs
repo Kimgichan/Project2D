@@ -6,9 +6,21 @@ public class FollowState : IState
 {
     private UCharacter myCharacter;
 
+    bool isStateaChange = true;
+
+    public bool getStateChange()
+    {
+        return isStateaChange;
+    }
+
     public string getStringState()
     {
         return "Follow";
+    }
+
+    public FollowState(UCharacter _character)
+    {
+        SetParent(_character);
     }
 
     public void SetParent(UCharacter _character)
