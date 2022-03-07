@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class ColliderCheckTest : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision collision)
-    {
-        Debug.Log(collision.gameObject.tag + "¿« OnCollisionEnter »£√‚µ ");
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log(collision.gameObject.tag + "¿« OnTriggerEnter »£√‚µ ");
@@ -15,6 +11,8 @@ public class ColliderCheckTest : MonoBehaviour
     }
     private void TestWarp(GameObject go)
     {
-        go.GetComponent<WarpZone>().WarpPlayer(this.gameObject);
+        //go.GetComponent<WarpZone>().WarpPlayerToExist(this.gameObject);
+        //go.GetComponent<WarpZone>().WarpPlayerToNew(this.gameObject);
+        MapManager.Instance.WarpToNext(this.gameObject);
     }
 }
