@@ -8,7 +8,6 @@ using UnityEngine.Events;
 public class UPlayer : UCharacter, IController
 {
     public GameObject gunAim;
-    static UPlayer me;
 
     void gunAimPlayerFollow()
     {
@@ -18,11 +17,20 @@ public class UPlayer : UCharacter, IController
     private static Dictionary<string, UnityAction<UPlayer, List<object>>> actionDic = new Dictionary<string, UnityAction<UPlayer, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.ChangeState(new IdleState(me)); } },
+        { "Idle", (o, valList) =>       {o.GetSpumPrefabs.PlayAnimation(0); } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } }
+        { "Move", (o, valList) =>       
+            {
+             /* o.ChangeState(new MoveState(me));*/
+             // 캐릭터 이동
+             o.transform.Translate(o.GetMoveVector * o.GetSpeed * Time.deltaTime);
+             // 애니메이션 재생
+             o.GetSpumPrefabs.PlayAnimation(1);
+            }
+        },
 
+        { "PlayerMove",(o, valList) =>  { o.ChangeState(new UPlayerMoveState(o)); }}
         //이 앞으론 예시
 
 
@@ -79,40 +87,31 @@ public class UPlayer : UCharacter, IController
     {
         base.Start();
 
-        me = this;
-
         boxCollider2D   = GetComponent<BoxCollider2D>();
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
-
-        //ChangeState(new IdleState());
     }
 
     protected override void Update()
     {
         moveVector.x = Input.GetAxis("Horizontal");
         moveVector.y = Input.GetAxis("Vertical");
-
+        
         if (DoMove())
         {
             // 방향에 따라 캐릭터 모델 보는 방향 변경
             if (moveVector.x > 0f)      spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
             else if(moveVector.x < 0f)  spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
 
-            //ChangeState(new UMoveState());
-            //OrderAction(ReturnTheStateList("Move"));
             OrderAction(new Order() { orderTitle = "Move" });
             //OrderAction(new Order() { orderTitle = "move", parameters = new List<object>() { 1.0f, 1.0f } });
         }
         else
         {
-            //ChangeState(new UIdleState());
-            //OrderAction(ReturnTheStateList("Idle"));
             OrderAction(new Order() { orderTitle = "Idle" });
         }
 
         //GunAim가 캐릭터 위치에서 나오게 업데이트.
         gunAimPlayerFollow();
 
-        base.Update();
     }
 }

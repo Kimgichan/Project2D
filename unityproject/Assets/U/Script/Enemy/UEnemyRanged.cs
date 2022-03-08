@@ -8,23 +8,79 @@ using UnityEngine.Events;
 
 public class UEnemyRanged : UCharacter, IController
 {
-    static UEnemyRanged me;
+    //￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣//
+    //                                         변수                       
+
     // '벽' 장애물에 좌표(x,y)에 대한 정보를 가져온다.
     public TileWallScan TileWall;
+
+    private float avoidTimer = 0.0f;
+    private bool avoidingStop = false;
+    private float avoidingSpeed = 3.0f;
+    private bool isStateaChange = true;
+    //_______________________________________________________________________________________//
 
     private static Dictionary<string, UnityAction<UEnemyRanged, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemyRanged, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.ChangeState(new IdleState(o));  } },
+        { "Idle", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
 
         //Move의 valList 값 State/InputX/InputY 
         { "Move", (o, valList) => {o.ChangeState(new MoveState(o)); } },
 
-        { "Follow", (o, valList) => {o.ChangeState(new FollowState(o)); } },
+        { "Follow", (o, valList) =>
+            {
+                o.transform.position = Vector3.MoveTowards(o.transform.position, o.GetotherColliderVector, 1.0f * Time.deltaTime);
+                o.GetSpumPrefabs.PlayAnimation(1);
+            }
+        },
 
-        { "Attack", (o, valList) => {o.ChangeState(new AttackState(o)); } },
+        { "Attack", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(4); } },
 
-        { "Avoiding", (o, valList) => {o.ChangeState(new AvoidingState(o)); } }
+        { "Avoiding", (o, valList) =>
+            {
+                o.avoidTimer += Time.deltaTime;
+
+                if (!o.avoidingStop)
+                {
+                    Vector3     nextVector = new Vector3();
+                    o.avoidingStop    = true;
+                    // 다른 상태로 변경하는 걸 막는 다.
+                    o.isStateaChange  = false;
+            
+                    // 내 위치 - 상대 위치 = 상대가 날 보는 방향
+                    Vector3 dir = o.transform.position - o.GetotherColliderVector;
+
+                    if (dir.x >= 0.0f) nextVector.x = 1;
+                    else nextVector.x = -1;
+
+                    if (dir.y > 0.0f) nextVector.y = 1;
+                    else nextVector.y = -1;
+
+          
+                    // 이동
+                    o.myRigidbody.AddForce(nextVector * o.avoidingSpeed, ForceMode2D.Impulse);
+
+                }
+
+                // 1초 이상일 경우 다른 상태변경을 허용
+                if (o.avoidTimer >= 1.5f)
+                {
+                    o.isStateaChange = true;
+                }
+
+                // 타이머가 ?초 이상일 경우
+                if(o.avoidTimer >= 3.0f)
+                {
+                    o.avoidingStop = false;
+                    o.avoidTimer = 0.0f;
+                }
+
+        
+                // 애니메이션
+                o.GetSpumPrefabs.PlayAnimation(3);
+            }
+        }
 
         //이 앞으론 예시
 
@@ -76,14 +132,11 @@ public class UEnemyRanged : UCharacter, IController
     {
         base.Start();
 
-        // State스크립트에 '자신'정보를 주기 위한 변수
-        me = this;
+        boxCollider2D   = GetComponent<BoxCollider2D>();
+        spumPrefabs     = GetComponent<SPUM_Prefabs>();
+        myRigidbody     = GetComponent<Rigidbody2D>();
 
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        spumPrefabs = GetComponent<SPUM_Prefabs>();
-        myRigidbody = GetComponent<Rigidbody2D>();
-
-        ChangeState(new IdleState(this));
+        //ChangeState(new IdleState(this));
 
 
     }

@@ -15,12 +15,18 @@ public class UEnemy : UCharacter, IController
     private static Dictionary<string, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.ChangeState(new IdleState(me));  } },
+        { "Idle", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
 
         //Move의 valList 값 State/InputX/InputY 
         { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } },
 
-        { "Follow", (o, valList) => {o.ChangeState(new FollowState(me)); } },
+        { "Follow", (o, valList) => 
+            {
+                o.transform.position = Vector3.MoveTowards(o.transform.position, o.GetotherColliderVector, 1.0f * Time.deltaTime);
+                o.GetSpumPrefabs.PlayAnimation(1);
+            }
+
+        },
 
         { "Attack", (o, valList) => {o.ChangeState(new AttackState(me)); } },
 
@@ -28,7 +34,7 @@ public class UEnemy : UCharacter, IController
 
         //이 앞으론 예시
 
-
+        //
         //Attack의 valList 값 State/InputX/InputY/데미지/경직시간/부가효과
 
         //피격을 받았을 때 valList 값 피격_State/데미지/경직시간/부가_디버프

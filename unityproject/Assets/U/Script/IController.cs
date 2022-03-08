@@ -7,7 +7,7 @@ public interface IController
     void OrderAction(List<Order> orders);
 }
 
-public class Order
+public struct Order
 {
     public string orderTitle;
     public List<object> parameters;

@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class UCharacter : MonoBehaviour
 {
     protected IState        myState;
+    protected string        state;
     protected Vector2       moveVector;
     protected SPUM_Prefabs  spumPrefabs;
     protected BoxCollider2D boxCollider2D;
@@ -22,21 +23,21 @@ public abstract class UCharacter : MonoBehaviour
 
     protected virtual void Start()
     {
-        myState = new IdleState(this);
-        myState.SetParent(this);
+        //myState = new IdleState(this);
+        //myState.SetParent(this);
     }
 
     protected void ChangeState(IState _changeState)
     {
         // 현재 상태와 변경할 상태가 같은 가?
-        if (myState.getStringState() == _changeState.getStringState())
-        {
+        //if (myState.getStringState() == _changeState.getStringState())
+        //{
            
-        }
-        else if (myState.getStateChange() == true)
-        {
-            myState = _changeState;
-        }
+        //}
+        //else if (myState.getStateChange() == true)
+        //{
+        //    myState = _changeState;
+        //}
         
 
     }
@@ -45,6 +46,6 @@ public abstract class UCharacter : MonoBehaviour
     {
         // *SetParent를 계속 Update를 할필요가 있을 까? 필요할 때 꺼내 쓸 수 없나?
         //myState.SetParent(this);
-        myState.Update();
+        //myState.Update();
     }
 }

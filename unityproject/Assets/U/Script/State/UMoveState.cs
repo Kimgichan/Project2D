@@ -26,8 +26,7 @@ public class MoveState : IState
     public void SetParent(UCharacter _character)
     {
         myCharacter = _character;
-        
-        
+
     }
 
     // Update is called once per frame

@@ -38,7 +38,7 @@ public class FollowState : IState
     // Update is called once per frame
     public void Update()
     {
-        myCharacter.transform.position = Vector3.MoveTowards(myCharacter.transform.position,myCharacter.GetotherColliderVector, 1.0f * Time.deltaTime);
+        myCharacter.transform.position = Vector3.MoveTowards(myCharacter.transform.position, myCharacter.GetotherColliderVector, 1.0f * Time.deltaTime);
         myCharacter.GetSpumPrefabs.PlayAnimation(1);
     }
 }
