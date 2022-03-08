@@ -28,15 +28,16 @@ public abstract class UCharacter : MonoBehaviour
 
     protected void ChangeState(IState _changeState)
     {
-        if(myState.getStringState() == _changeState.getStringState())
+        // 현재 상태와 변경할 상태가 같은 가?
+        if (myState.getStringState() == _changeState.getStringState())
         {
-            
+           
         }
-        else
+        else if (myState.getStateChange() == true)
         {
             myState = _changeState;
         }
-      
+        
 
     }
 

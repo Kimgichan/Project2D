@@ -123,6 +123,7 @@ public class UEnemyRanged : UCharacter, IController
     // 충돌 범위에서 나간 상태
     public void OnTriggerExit2D(Collider2D other)
     {
+        Debug.Log("충돌 범위 나감");
         //OrderAction(ReturnTheStateList("Idle"));
         OrderAction(new Order() { orderTitle = "Idle" });
 
@@ -141,4 +142,6 @@ public class UEnemyRanged : UCharacter, IController
             timer = 0;
         }
     }
+
+
 }

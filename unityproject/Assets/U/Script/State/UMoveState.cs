@@ -6,6 +6,13 @@ public class MoveState : IState
 {
     private UCharacter myCharacter;
 
+    bool isStateaChange = true;
+
+    public bool getStateChange()
+    {
+        return isStateaChange;
+    }
+
     public MoveState(UCharacter _character)
     {
         SetParent(_character);

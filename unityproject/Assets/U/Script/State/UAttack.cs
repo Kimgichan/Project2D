@@ -32,6 +32,7 @@ public class AttackState: IState
     // Update is called once per frame
     public void Update()
     {
-        myCharacter.GetSpumPrefabs.PlayAnimation(5);
+
+        myCharacter.GetSpumPrefabs.PlayAnimation(4);
     }
 }

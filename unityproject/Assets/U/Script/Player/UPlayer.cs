@@ -107,6 +107,7 @@ public class UPlayer : UCharacter, IController
         {
             //ChangeState(new UIdleState());
             //OrderAction(ReturnTheStateList("Idle"));
+            OrderAction(new Order() { orderTitle = "Idle" });
         }
 
         //GunAim가 캐릭터 위치에서 나오게 업데이트.

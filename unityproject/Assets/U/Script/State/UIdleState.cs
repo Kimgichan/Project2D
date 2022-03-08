@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class IdleState : IState
 {
+    bool isStateaChange = true;
+
+    public bool getStateChange()
+    {
+        return isStateaChange;
+    }
+
     public IdleState(UCharacter _character)
     {
         SetParent(_character);
