@@ -15,6 +15,11 @@ public class GameDatabase : ScriptableObject
     {
         playerInfo.sp = 100;
 
+        for(int i = 0; i<3; i++)
+        {
+            playerInfo.slotEnterSkills.Add(null);
+        }
+
         if(classKind != null)
         {
             classDic = new Dictionary<string, ClassFeature>();
@@ -117,7 +122,19 @@ public class GameDatabase : ScriptableObject
             playerInfo.sp = value;
         }
     }
+    public SlotEnterSkill SkillSlot(int indx) => playerInfo.slotEnterSkills[indx];
+    public int SkillSlotCount => playerInfo.slotEnterSkills.Count;
 
+    public void EmptySkillSlot(int indx)
+    {
+        playerInfo.slotEnterSkills[indx] = null;
+        SavePlayerInfo_Skills();
+    }
+    public void SetSkillSlot(int indx, SlotEnterSkill slotEnterSkill)
+    {
+        playerInfo.slotEnterSkills[indx] = slotEnterSkill;
+        SavePlayerInfo_Skills();
+    }
 
     public void LoadPlayerInfo()
     {
@@ -162,6 +179,7 @@ public class GameDatabase : ScriptableObject
     {
         public int sp;
         public Dictionary<string, Dictionary<string, PlayerSkillInfo>> skills = new Dictionary<string, Dictionary<string, PlayerSkillInfo>>();
+        public List<SlotEnterSkill> slotEnterSkills = new List<SlotEnterSkill>();
 
 
         public void SetPlayerSkillsJson(PlayerSkillsJson data, GameDatabase db)
@@ -180,11 +198,33 @@ public class GameDatabase : ScriptableObject
                 }
                 skills.Add(playerSkillsJsonNode.className, playerSkillInfos);
             }
+
+            sp = data.sp;
+
+            int i = 0;
+            foreach(var slot in data.slotEnterSkills)
+            {
+                if (!slot.className.Equals(""))
+                {
+                    var newSlotEnterSkill = new SlotEnterSkill();
+                    newSlotEnterSkill.className = slot.className;
+                    newSlotEnterSkill.skillInfo = skills[slot.className][slot.skillName];
+                    slotEnterSkills[i] = newSlotEnterSkill;
+                }
+                ++i;
+            } 
         }
         public PlayerSkillsJson GetPlayerSkillsJson()
         {
             var returnValue = new PlayerSkillsJson();
-            foreach(var skill in skills)
+            returnValue.sp = sp;
+            foreach(var slot in slotEnterSkills)
+            {
+                if (slot != null)
+                    returnValue.slotEnterSkills.Add(new PlayerSkillsJson.SlotEnterSkillJson() { className = slot.className, skillName = slot.skillInfo.skill.name });
+                else returnValue.slotEnterSkills.Add(new PlayerSkillsJson.SlotEnterSkillJson() { className = "", skillName = "" });
+            }
+            foreach (var skill in skills)
             {
                 var playerSkillsJsonNode = new PlayerSkillsJson.PlayerSkillsJsonNode();
                 foreach(var skillInfo in skill.Value)
@@ -198,6 +238,7 @@ public class GameDatabase : ScriptableObject
                 playerSkillsJsonNode.className = skill.Key;
                 returnValue.skillTree.Add(playerSkillsJsonNode);
             }
+
             return returnValue;
         }
     }
@@ -217,7 +258,15 @@ public class GameDatabase : ScriptableObject
             public string className = "";
             public List<PlayerSkillJsonNode> skills = new List<PlayerSkillJsonNode>();
         }
+        [System.Serializable]
+        public class SlotEnterSkillJson
+        {
+            public string className;
+            public string skillName;
+        }
 
+        public int sp;
+        public List<SlotEnterSkillJson> slotEnterSkills = new List<SlotEnterSkillJson>();
         public List<PlayerSkillsJsonNode> skillTree = new List<PlayerSkillsJsonNode>();
     }
 
@@ -226,5 +275,9 @@ public class GameDatabase : ScriptableObject
         public SkillData skill;
         public int level;
     }
-
+    public class SlotEnterSkill
+    {
+        public string className;
+        public PlayerSkillInfo skillInfo;
+    }
 }

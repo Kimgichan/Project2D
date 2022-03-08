@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using System;
 
 public class Board : MonoBehaviour
 {
     [SerializeField] private GameDatabase game_db;
     [SerializeField] private Button menuOpenBtn;
+    [SerializeField] private GraphicRaycaster ray;
 
     [Header("메뉴 보드")]
     [SerializeField] private GameObject menuBoard;
@@ -28,6 +31,24 @@ public class Board : MonoBehaviour
     [SerializeField] private Button skillSettingBtn;
     [SerializeField] private Text receiptSP_txt;
     [SerializeField] private Button backBtn;
+
+    [Header("스킬 슬롯 등록 팜업창")]
+    [SerializeField] private GameObject skillEnterPomup;
+    [SerializeField] private List<Button> skillEnterSlotBtn;
+    [SerializeField] private List<Image> skillEnterSlotIcon;
+
+    [Header("조이스틱 패드")]
+    [SerializeField] private GameObject inputBoard;
+    [SerializeField] private VirtualJoystick moveBtn;
+    [SerializeField] private List<EventTrigger> portionSlotList;
+    [SerializeField] private VirtualJoystick attackBtn;
+    [SerializeField] private List<VirtualJoystick> skillSlotList;
+    [SerializeField] private List<Image> skillSlotList_image;
+    [SerializeField] private List<CooltimeSlot> skillSlotList_coolTime;
+    [SerializeField] private EventTrigger cancelBtn;
+    [SerializeField] private Image rightJoystick;
+    [SerializeField] private Image rightJoystickHandle;
+    
 
     private UnityAction backEvent;
 
@@ -101,6 +122,8 @@ public class Board : MonoBehaviour
  
     private float btnClickDark = 0.3f;
 
+    private bool normalAttack = false;
+
     private int CurrentSP
     {
         get
@@ -129,7 +152,7 @@ public class Board : MonoBehaviour
             // 유저 정보가 있으면 => content
             if(level <= 1)
             {
-                if (level < 1)
+                if (level < 1 || skill.Skill.Passive)
                 {
                     skillSettingBtn.gameObject.SetActive(false);
                 }
@@ -139,7 +162,10 @@ public class Board : MonoBehaviour
             }
             else
             {
-                skillSettingBtn.gameObject.SetActive(true);
+                if (skill.Skill.Passive)
+                    skillSettingBtn.gameObject.SetActive(false);
+                else
+                    skillSettingBtn.gameObject.SetActive(true);
 
                 //값이 0부터 시작하는 인덱스라서 - 1 해줌
                 skillContentTxt.text = skill.Skill.Content(level - 1);
@@ -156,6 +182,7 @@ public class Board : MonoBehaviour
         };
         UnityAction<ClassTab> skillTabBtnClickEvent = (classTab) =>
         {
+            CurrentClassTabBtn = classTab;
             CurrentSkillNode = null;
             var skills = game_db.GetClassSkills(classTab.ClassName);
             var currentCount = skillNodeList.Count;
@@ -192,8 +219,7 @@ public class Board : MonoBehaviour
             skillSettingBtn.image.color = color;
             skillNodeList[0].clickEvent(skillNodeList[0]);
 
-            CurrentClassTabBtn = classTab;
-            if(destCount == 0)
+            if (destCount == 0)
             {
                 skillNameTxt.text = "Empty";
                 skillLevelTxt.text = "Empty";
@@ -206,13 +232,16 @@ public class Board : MonoBehaviour
         {
             menuBoard.SetActive(false);
             menuOpenBtn.gameObject.SetActive(true);
+            inputBoard.gameObject.SetActive(true);
             backBtn.gameObject.SetActive(false);
         };
 
+        inputBoard.gameObject.SetActive(true);
         menuOpenBtn.gameObject.SetActive(true);
         menuOpenBtn.onClick.AddListener(() =>
         {
             menuOpenBtn.gameObject.SetActive(false);
+            inputBoard.gameObject.SetActive(false);
             menuBoard.SetActive(true);
             backBtn.gameObject.SetActive(true);
             backEvent = menuBoard_To_menuOpenBtn;
@@ -292,5 +321,245 @@ public class Board : MonoBehaviour
 
         backBtn.gameObject.SetActive(false);
         backBtn.onClick.AddListener(() => backEvent());
+
+        {
+            // AttackBtn
+            {
+                UnityAction baseJoystickColorSet = () =>
+                {
+                    ColorUtility.TryParseHtmlString("#00F8FF", out Color col);
+                    rightJoystick.color = col;
+                    rightJoystickHandle.color = col;
+                };
+                UnityAction burnJoystickColorSet = () =>
+                {
+                    ColorUtility.TryParseHtmlString("#FF5F69", out Color col);
+                    rightJoystick.color = col;
+                    rightJoystickHandle.color = col;
+                };
+                UnityAction<int> coolTimeAction = (n) =>
+                {
+                    var skillInfo = game_db.SkillSlot(n);
+                    if (skillInfo != null && (!skillSlotList_coolTime[n].gameObject.activeSelf))
+                    {
+                        skillSlotList_coolTime[n].cooltime = (float)skillInfo.skillInfo.skill.NumValue(skillInfo.skillInfo.level - 1,
+                                skillInfo.skillInfo.skill.NumCount(skillInfo.skillInfo.level - 1) - 1);
+                        skillSlotList_coolTime[n].gameObject.SetActive(true);
+                    }
+                };
+
+                var entryPointerEnter = new EventTrigger.Entry();
+                entryPointerEnter.eventID = EventTriggerType.PointerEnter;
+                entryPointerEnter.callback.AddListener((e) =>
+                {
+                    burnJoystickColorSet();
+                });
+                cancelBtn.triggers.Add(entryPointerEnter);
+
+                var entryPointerExit = new EventTrigger.Entry();
+                entryPointerExit.eventID = EventTriggerType.PointerExit;
+                entryPointerExit.callback.AddListener((e) =>
+                {
+                    baseJoystickColorSet();
+                });
+                cancelBtn.triggers.Add(entryPointerExit);
+
+                cancelBtn.gameObject.SetActive(false);
+
+                Func<PointerEventData, bool> cancelCheck = (e) =>
+                {
+                    List<RaycastResult> results = new List<RaycastResult>();
+                    ray.Raycast(e, results);
+
+                    foreach (var result in results)
+                    {
+                        if (result.gameObject == cancelBtn.gameObject)
+                        {
+                            Debug.Log("캔슬");
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+                attackBtn.PointerDown = (e) =>
+                {
+                    baseJoystickColorSet();
+
+                    foreach (var skill in skillSlotList)
+                        skill.enabled = false;
+                    normalAttack = false;
+                };
+
+                attackBtn.Drag = (v) =>
+                {
+                    if (v.sqrMagnitude >= 0.98f)
+                    {
+                        if (!normalAttack)
+                        {
+                            normalAttack = true;
+                            burnJoystickColorSet();
+                        }
+                    }
+                    else
+                    {
+                        if (normalAttack)
+                        {
+                            normalAttack = false;
+                            baseJoystickColorSet();
+                        }
+                    }
+                };
+
+                attackBtn.PointerUp = (e) =>
+                {
+                    foreach (var skill in skillSlotList)
+                        skill.enabled = true;
+                };
+
+                for(int i =0, icount = game_db.SkillSlotCount; i<icount; i++)
+                {
+                    if(game_db.SkillSlot(i) != null)
+                    {
+                        skillSlotList_image[i].sprite = game_db.SkillSlot(i).skillInfo.skill.Icon;
+                        skillSlotList_image[i].gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        skillSlotList_image[i].gameObject.SetActive(false);
+                    }
+                    skillSlotList_coolTime[i].gameObject.SetActive(false);
+                }
+
+                //e가 null이면 강제로 PointerUp이 됐다는 뜻
+                skillSlotList[0].PointerDown = (e) =>
+                {
+                    baseJoystickColorSet();
+
+                    attackBtn.enabled = false;
+                    skillSlotList[1].enabled = false;
+                    skillSlotList[2].enabled = false;
+
+                    cancelBtn.gameObject.SetActive(true);
+                };
+                skillSlotList[0].PointerUp = (e) =>
+                {
+                    attackBtn.enabled = true;
+                    skillSlotList[1].enabled = true;
+                    skillSlotList[2].enabled = true;
+
+                    if (!cancelCheck(e as PointerEventData))
+                    {
+                        // 캔슬된게 아니면 실행이 되야함.
+                        coolTimeAction(0);
+                    }
+
+                    cancelBtn.gameObject.SetActive(false);
+                };
+
+                skillSlotList[1].PointerDown = (e) =>
+                {
+                    baseJoystickColorSet();
+
+                    attackBtn.enabled = false;
+                    skillSlotList[0].enabled = false;
+                    skillSlotList[2].enabled = false;
+
+                    cancelBtn.gameObject.SetActive(true);
+                };
+                skillSlotList[1].PointerUp = (e) =>
+                {
+                    attackBtn.enabled = true;
+                    skillSlotList[0].enabled = true;
+                    skillSlotList[2].enabled = true;
+
+                    if (!cancelCheck(e as PointerEventData))
+                    {
+                        // 캔슬된게 아니면 실행이 되야함.
+                        coolTimeAction(1);
+                    }
+
+                    cancelBtn.gameObject.SetActive(false);
+                };
+
+                skillSlotList[2].PointerDown = (e) =>
+                {
+                    baseJoystickColorSet();
+
+                    attackBtn.enabled = false;
+                    skillSlotList[0].enabled = false;
+                    skillSlotList[1].enabled = false;
+
+                    cancelBtn.gameObject.SetActive(true);
+                };
+                skillSlotList[2].PointerUp = (e) =>
+                {
+                    attackBtn.enabled = true;
+                    skillSlotList[0].enabled = true;
+                    skillSlotList[1].enabled = true;
+
+                    if (!cancelCheck(e as PointerEventData))
+                    {
+                        // 캔슬된게 아니면 실행이 되야함.
+                        coolTimeAction(2);
+                    }
+
+                    cancelBtn.gameObject.SetActive(false);
+                };
+            }
+        }
+
+        {
+            // 스킬 슬롯 등록 팜업창 셋팅
+            skillEnterPomup.SetActive(false);
+            skillSettingBtn.onClick.AddListener(() =>
+            {
+                skillEnterPomup.SetActive(true);
+
+                for(int i =0, icount = game_db.SkillSlotCount; i<icount; i++)
+                {
+                    if (game_db.SkillSlot(i) != null)
+                    {
+                        skillEnterSlotIcon[i].sprite = game_db.SkillSlot(i).skillInfo.skill.Icon;
+                        skillEnterSlotIcon[i].gameObject.SetActive(true);
+                    }
+                    else skillEnterSlotIcon[i].gameObject.SetActive(false);
+                }
+
+                // 백 이벤트 등록
+                backEvent = () =>
+                {
+                    skillEnterPomup.SetActive(false);
+                    backEvent = skillBoard_To_menuBoard;
+                };
+            });
+
+            for(int i = 0, icount = game_db.SkillSlotCount; i<icount; i++)
+            {
+                var c = i;
+                skillEnterSlotBtn[i].onClick.AddListener(() =>
+                {
+                    for(int n = 0, ncount = icount; n < ncount; n++)
+                    {
+                        if(game_db.SkillSlot(n) != null && game_db.SkillSlot(n).skillInfo.skill == currentSkillNode.Skill)
+                        {
+                            game_db.EmptySkillSlot(n);
+                            skillEnterSlotIcon[n].gameObject.SetActive(false);
+                            skillSlotList_image[n].gameObject.SetActive(false);
+                            break;
+                        }
+                    }
+
+                    var newEnter = new GameDatabase.SlotEnterSkill();
+                    newEnter.className = CurrentClassTabBtn.ClassName;
+                    newEnter.skillInfo = new GameDatabase.PlayerSkillInfo() { level = game_db.GetPlayerSkillLevel(newEnter.className, CurrentSkillNode.Skill), skill = CurrentSkillNode.Skill };
+                    game_db.SetSkillSlot(c, newEnter);
+                    skillEnterSlotIcon[c].sprite = newEnter.skillInfo.skill.Icon;
+                    skillEnterSlotIcon[c].gameObject.SetActive(true);
+                    skillSlotList_image[c].sprite = newEnter.skillInfo.skill.Icon;
+                    skillSlotList_image[c].gameObject.SetActive(true);
+                });
+            }
+        }
     }
 }
