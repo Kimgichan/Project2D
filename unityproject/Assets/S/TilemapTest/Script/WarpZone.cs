@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class WarpZone : MonoBehaviour
 {    
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("WarpZone의 OnTriggerEnter 작동 : " + other.name);
-        //WarpPlayer(other.gameObject);
+        this.WarpPlayerToNew(other.gameObject);
     }
+
     ////////////////////
     //존재하는 맵으로 워프 구현
     //[Header("Warp to Exist")]
@@ -29,8 +30,6 @@ public class WarpZone : MonoBehaviour
     public MapInfo destinationMap;
     public void WarpPlayerToNew(GameObject go)
     {
-        MapInfo temp = Instantiate(destinationMap);
-        go.gameObject.transform.position = temp.enterance.transform.position;
-        Destroy(currentMap.gameObject);
+        GameObject.FindWithTag("ZoneInfo").GetComponent<ZoneInfo>().WarpToNextMap(go);
     }
 }
