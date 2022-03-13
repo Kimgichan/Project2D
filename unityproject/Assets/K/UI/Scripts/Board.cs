@@ -8,6 +8,7 @@ using System;
 
 public class Board : MonoBehaviour
 {
+    public IController controller;
     [SerializeField] private GameDatabase game_db;
     [SerializeField] private Button menuOpenBtn;
     [SerializeField] private GraphicRaycaster ray;
