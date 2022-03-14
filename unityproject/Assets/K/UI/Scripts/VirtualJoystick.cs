@@ -17,6 +17,8 @@ public class VirtualJoystick : MonoBehaviour
     public UnityAction<BaseEventData> PointerUp;
 
     public UnityAction<Vector2> Drag;
+    private Vector2 currentDragForce;
+    private IEnumerator dragUpdateCor;
     private void Start()
     {
         joystick.gameObject.SetActive(false);
@@ -33,6 +35,11 @@ public class VirtualJoystick : MonoBehaviour
 
             if (PointerDown != null)
                 PointerDown(e);
+
+            if(dragUpdateCor == null)
+                dragUpdateCor = DragUpdateCor();
+
+            StartCoroutine(dragUpdateCor);
         });
         eventTrigger.triggers.Add(entry_pointerDown);
 
@@ -45,6 +52,8 @@ public class VirtualJoystick : MonoBehaviour
             joystick.gameObject.SetActive(false);
             if (PointerUp != null)
                 PointerUp(e);
+
+            DragUpdateClear();
         });
         eventTrigger.triggers.Add(entry_pointerUp);
 
@@ -64,9 +73,34 @@ public class VirtualJoystick : MonoBehaviour
 
             handle.position = dir + (Vector2)joystick.position;
 
-            if (Drag != null)
-                Drag(dir / maxRange);
+            currentDragForce = dir / maxRange;
         });
         eventTrigger.triggers.Add(entry_drag);
+    }
+
+    private void OnDisable()
+    {
+        DragUpdateClear();
+    }
+
+    private void DragUpdateClear()
+    {
+        if (dragUpdateCor != null)
+        {
+            StopCoroutine(dragUpdateCor);
+            dragUpdateCor = null;
+        }
+    }
+
+    private IEnumerator DragUpdateCor()
+    {
+        while (true)
+        {
+            yield return null;
+            if (Drag != null)
+            {
+                Drag(currentDragForce);
+            }
+        }
     }
 }

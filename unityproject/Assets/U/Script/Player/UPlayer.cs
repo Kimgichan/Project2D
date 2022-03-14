@@ -29,9 +29,16 @@ public class UPlayer : UCharacter, IController
             {
              /* o.ChangeState(new MoveState(me));*/
              // 캐릭터 이동
-             o.transform.Translate(o.GetMoveVector * o.GetSpeed * Time.deltaTime);
-             // 애니메이션 재생
-             o.GetSpumPrefabs.PlayAnimation(1);
+
+                if((Vector2)valList[0] == Vector2.zero)
+                {
+                    actionDic[OrderTitle.Idle](o, valList);
+                    return;
+                }
+
+                o.transform.Translate((Vector2)valList[0] * o.GetSpeed * Time.deltaTime);
+                // 애니메이션 재생
+                o.GetSpumPrefabs.PlayAnimation(1);
             }
         },
 
@@ -52,6 +59,7 @@ public class UPlayer : UCharacter, IController
 
     //기타등등
     };
+
     public bool DoMove()
     {
         if (moveVector.x == 0f && moveVector.y == 0f) return false;
@@ -95,7 +103,7 @@ public class UPlayer : UCharacter, IController
     protected override void Start()
     {
         base.Start();
-
+        GameDatabase.Instance.player = this;
         boxCollider2D = GetComponent<BoxCollider2D>();
         spumPrefabs = GetComponent<SPUM_Prefabs>();
     }

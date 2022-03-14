@@ -6,6 +6,11 @@ using System.IO;
 [CreateAssetMenu(fileName = "GameDatabase", menuName = "Scriptable Object/GameDatabase", order = int.MaxValue)]
 public class GameDatabase : ScriptableObject
 {
+    private static GameDatabase instance;
+    public static GameDatabase Instance => instance;
+
+    public Board board;
+    public IController player;
 
     [SerializeField] private List<ClassNode> classKind;
     private Dictionary<string, ClassFeature> classDic;
@@ -13,6 +18,8 @@ public class GameDatabase : ScriptableObject
     
     private void OnEnable()
     {
+        instance = this;
+
         playerInfo.sp = 100;
 
         for(int i = 0; i<3; i++)

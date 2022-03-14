@@ -6,10 +6,12 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
 
+using Order = IController.Order;
+using OrderTitle = IController.OrderTitle;
+
 public class Board : MonoBehaviour
 {
-    public IController controller;
-    [SerializeField] private GameDatabase game_db;
+    //[SerializeField] private GameDatabase GameDatabase.Instance;
     [SerializeField] private Button menuOpenBtn;
     [SerializeField] private GraphicRaycaster ray;
 
@@ -129,16 +131,17 @@ public class Board : MonoBehaviour
     {
         get
         {
-            return game_db.PlayerSP;
+            return GameDatabase.Instance.PlayerSP;
         }
         set
         {
-            game_db.PlayerSP = value;
-            sp_text.text = $"{game_db.PlayerSP}SP";
+            GameDatabase.Instance.PlayerSP = value;
+            sp_text.text = $"{GameDatabase.Instance.PlayerSP}SP";
         }
     }
     private void Start()
     {
+        GameDatabase.Instance.board = this;
 
         //백 이벤트
         UnityAction menuBoard_To_menuOpenBtn;
@@ -148,7 +151,7 @@ public class Board : MonoBehaviour
             CurrentSkillNode = skill;
             skillNameTxt.text = skill.Skill.name;
             // 유저 정보가 있으면 => level
-            var level = game_db.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, skill.Skill);
+            var level = GameDatabase.Instance.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, skill.Skill);
             skillLevelTxt.text = $"LV. {level}";
             // 유저 정보가 있으면 => content
             if(level <= 1)
@@ -185,10 +188,10 @@ public class Board : MonoBehaviour
         {
             CurrentClassTabBtn = classTab;
             CurrentSkillNode = null;
-            var skills = game_db.GetClassSkills(classTab.ClassName);
+            var skills = GameDatabase.Instance.GetClassSkills(classTab.ClassName);
             var currentCount = skillNodeList.Count;
             var destCount = skills.Count;
-            var color = game_db.GetClassColor(classTab.ClassName);
+            var color = GameDatabase.Instance.GetClassColor(classTab.ClassName);
 
             //destCount > currentCount => 추가 생성
             for (int i = 0, icount = destCount - currentCount; i < icount; i++)
@@ -263,12 +266,12 @@ public class Board : MonoBehaviour
             menuBoard.gameObject.SetActive(false);
             skillBoard.gameObject.SetActive(true);
             backEvent = skillBoard_To_menuBoard;
-            CurrentSP = game_db.PlayerSP;
+            CurrentSP = GameDatabase.Instance.PlayerSP;
 
             // 스킬트리 셋팅 처음
 
             var currentCount = classTabs.Count;
-            var destCount = game_db.GetClassCount();
+            var destCount = GameDatabase.Instance.GetClassCount();
 
             // destCount > currentCount => 추가 클래스 탭 생성
             for (int i = 0, icount = destCount - currentCount; i < icount; i++)
@@ -285,8 +288,8 @@ public class Board : MonoBehaviour
 
             for (int i = 0; i < destCount; i++)
             {
-                classTabs[i].ClassName = game_db.GetClassName(i);
-                classTabs[i].OutColor = game_db.GetClassColor(classTabs[i].ClassName);
+                classTabs[i].ClassName = GameDatabase.Instance.GetClassName(i);
+                classTabs[i].OutColor = GameDatabase.Instance.GetClassColor(classTabs[i].ClassName);
             }
 
             if (destCount > 0)
@@ -306,11 +309,11 @@ public class Board : MonoBehaviour
         {
             try
             {
-                var needSP = CurrentSkillNode.Skill.NeedSP(game_db.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill));
+                var needSP = CurrentSkillNode.Skill.NeedSP(GameDatabase.Instance.GetPlayerSkillLevel(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill));
                 if (CurrentSP > needSP)
                 {
                     CurrentSP -= needSP;
-                    game_db.AddPlayerSkill(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill);
+                    GameDatabase.Instance.AddPlayerSkill(CurrentClassTabBtn.ClassName, CurrentSkillNode.Skill);
                     skillBtnClickEvent(CurrentSkillNode);
                 }
             }
@@ -340,7 +343,7 @@ public class Board : MonoBehaviour
                 };
                 UnityAction<int> coolTimeAction = (n) =>
                 {
-                    var skillInfo = game_db.SkillSlot(n);
+                    var skillInfo = GameDatabase.Instance.SkillSlot(n);
                     if (skillInfo != null && (!skillSlotList_coolTime[n].gameObject.activeSelf))
                     {
                         skillSlotList_coolTime[n].cooltime = (float)skillInfo.skillInfo.skill.NumValue(skillInfo.skillInfo.level - 1,
@@ -418,11 +421,11 @@ public class Board : MonoBehaviour
                         skill.enabled = true;
                 };
 
-                for(int i =0, icount = game_db.SkillSlotCount; i<icount; i++)
+                for(int i =0, icount = GameDatabase.Instance.SkillSlotCount; i<icount; i++)
                 {
-                    if(game_db.SkillSlot(i) != null)
+                    if(GameDatabase.Instance.SkillSlot(i) != null)
                     {
-                        skillSlotList_image[i].sprite = game_db.SkillSlot(i).skillInfo.skill.Icon;
+                        skillSlotList_image[i].sprite = GameDatabase.Instance.SkillSlot(i).skillInfo.skill.Icon;
                         skillSlotList_image[i].gameObject.SetActive(true);
                     }
                     else
@@ -517,11 +520,11 @@ public class Board : MonoBehaviour
             {
                 skillEnterPomup.SetActive(true);
 
-                for(int i =0, icount = game_db.SkillSlotCount; i<icount; i++)
+                for(int i =0, icount = GameDatabase.Instance.SkillSlotCount; i<icount; i++)
                 {
-                    if (game_db.SkillSlot(i) != null)
+                    if (GameDatabase.Instance.SkillSlot(i) != null)
                     {
-                        skillEnterSlotIcon[i].sprite = game_db.SkillSlot(i).skillInfo.skill.Icon;
+                        skillEnterSlotIcon[i].sprite = GameDatabase.Instance.SkillSlot(i).skillInfo.skill.Icon;
                         skillEnterSlotIcon[i].gameObject.SetActive(true);
                     }
                     else skillEnterSlotIcon[i].gameObject.SetActive(false);
@@ -535,16 +538,16 @@ public class Board : MonoBehaviour
                 };
             });
 
-            for(int i = 0, icount = game_db.SkillSlotCount; i<icount; i++)
+            for(int i = 0, icount = GameDatabase.Instance.SkillSlotCount; i<icount; i++)
             {
                 var c = i;
                 skillEnterSlotBtn[i].onClick.AddListener(() =>
                 {
                     for(int n = 0, ncount = icount; n < ncount; n++)
                     {
-                        if(game_db.SkillSlot(n) != null && game_db.SkillSlot(n).skillInfo.skill == currentSkillNode.Skill)
+                        if(GameDatabase.Instance.SkillSlot(n) != null && GameDatabase.Instance.SkillSlot(n).skillInfo.skill == currentSkillNode.Skill)
                         {
-                            game_db.EmptySkillSlot(n);
+                            GameDatabase.Instance.EmptySkillSlot(n);
                             skillEnterSlotIcon[n].gameObject.SetActive(false);
                             skillSlotList_image[n].gameObject.SetActive(false);
                             break;
@@ -553,8 +556,8 @@ public class Board : MonoBehaviour
 
                     var newEnter = new GameDatabase.SlotEnterSkill();
                     newEnter.className = CurrentClassTabBtn.ClassName;
-                    newEnter.skillInfo = new GameDatabase.PlayerSkillInfo() { level = game_db.GetPlayerSkillLevel(newEnter.className, CurrentSkillNode.Skill), skill = CurrentSkillNode.Skill };
-                    game_db.SetSkillSlot(c, newEnter);
+                    newEnter.skillInfo = new GameDatabase.PlayerSkillInfo() { level = GameDatabase.Instance.GetPlayerSkillLevel(newEnter.className, CurrentSkillNode.Skill), skill = CurrentSkillNode.Skill };
+                    GameDatabase.Instance.SetSkillSlot(c, newEnter);
                     skillEnterSlotIcon[c].sprite = newEnter.skillInfo.skill.Icon;
                     skillEnterSlotIcon[c].gameObject.SetActive(true);
                     skillSlotList_image[c].sprite = newEnter.skillInfo.skill.Icon;
@@ -562,5 +565,15 @@ public class Board : MonoBehaviour
                 });
             }
         }
+
+
+        //조이스틱 패드 쪽
+        moveBtn.Drag += (v2) =>
+        {
+            if(GameDatabase.Instance != null && GameDatabase.Instance.player != null)
+            {
+                GameDatabase.Instance.player.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameters = new List<object>() { v2 } });
+            }
+        };
     }
 }

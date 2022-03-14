@@ -9,13 +9,14 @@ using DG.Tweening.Plugins.Options;
 public class GunAim : MonoBehaviour
 {
     [Header("에임 조이스틱")]
-    [SerializeField] private Joystick aimJoystick;
+    //[SerializeField] private Joystick aimJoystick;
+    [SerializeField] private VirtualJoystick aimJoystick;
 
-    [Header("에임선")]
-    [SerializeField] private GameObject aimPoint;
-    private Material aimPointMat;
-    [SerializeField] private float aimRotMaxSpeed;
-    private float aimRotSpeed;
+    //[Header("에임선")]
+    //[SerializeField] private GameObject aimPoint;
+    //private Material aimPointMat;
+    //[SerializeField] private float aimRotMaxSpeed;
+    //private float aimRotSpeed;
 
     [Header("시야 범위")]
     [SerializeField] private GameObject targetRange;
@@ -26,87 +27,142 @@ public class GunAim : MonoBehaviour
 
 
     private TweenerCore<float, float, FloatOptions> rangeTweenCore;
-    private IEnumerator aimRotCor;
+    //private IEnumerator aimRotCor;
 
-    private IEnumerator Start()
+    //private IEnumerator Start()
+    //{
+    //    //aimPointMat = aimPoint.GetComponent<SpriteRenderer>().material;
+    //    targetRangeMat = targetRange.GetComponent<SpriteRenderer>().material;
+
+    //    if(aimJoystick != null)
+    //    {
+    //        while (!aimJoystick.checkStart)
+    //        {
+    //            yield return null;
+    //        }
+
+    //        targetRangeMat.SetFloat("_length", 0f);
+    //        targetRangeMat.SetFloat("_degree", 0f);
+
+    //        //처음에는 이 함수를 호출할 필요가 없지만 재사용할 때는 반드시 필요한 함수. 그런 의미에서 형식적인 실행
+    //        //즉 지금 이 함수를 호출하지 않아도 정상적으로 작동함.
+    //        aimJoystick.CallBackReset();
+
+    //        //조이스틱이 눌렸을 때
+    //        aimJoystick.pointerDownCallBack.AddListener((e) =>
+    //        {
+    //            gameObject.SetActive(true);
+
+    //            if (rangeTweenCore != null)
+    //            {
+    //                rangeTweenCore.Kill();
+    //            }
+
+    //            var startValue = targetRangeMat.GetFloat("_length");
+    //            rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0.5f, recovoryTimer).OnUpdate(() => 
+    //            {
+    //                targetRangeMat.SetFloat("_length", startValue);
+    //                //aimRotSpeed = aimRotMaxSpeed * startValue * 2f;
+    //                targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
+    //            });
+
+    //            //if(aimRotCor == null)
+    //            //{
+    //            //    aimRotCor = AimRotCor();
+    //            //    StartCoroutine(aimRotCor);
+    //            //}
+    //        });
+
+    //        //조이스틱을 땠을 때
+    //        aimJoystick.pointerUpCallBack.AddListener((e) =>
+    //        {
+    //            if(rangeTweenCore != null)
+    //            {
+    //                rangeTweenCore.Kill();
+    //            }
+
+    //            var startValue = targetRangeMat.GetFloat("_length");
+    //            rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0f, recovoryTimer).OnUpdate(() =>
+    //            {
+    //                targetRangeMat.SetFloat("_length", startValue);
+    //                //aimRotSpeed = aimRotMaxSpeed * startValue * 2f;
+    //                targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
+    //            }).OnComplete(() =>
+    //            {
+    //                gameObject.SetActive(false);
+    //                rangeTweenCore = null;
+    //            });
+    //        });
+
+    //        //조이스틱을 드래그 할 때
+    //        aimJoystick.dragCallBack.AddListener((e) =>
+    //        {
+    //            if (aimJoystick.input == Vector2.zero) return;
+
+    //            var rot = transform.eulerAngles;
+    //            var aimDir = aimJoystick.input.normalized;
+    //            var aimDir3 = new Vector3(aimDir.x, aimDir.y, 0f);
+    //            rot.z = Quaternion.FromToRotation(Vector3.up, aimDir3).eulerAngles.z;
+    //            transform.eulerAngles = rot;
+    //        });
+
+    //        gameObject.SetActive(false);
+    //    }
+    //}
+
+    private void Start()
     {
-        aimPointMat = aimPoint.GetComponent<SpriteRenderer>().material;
         targetRangeMat = targetRange.GetComponent<SpriteRenderer>().material;
+        targetRangeMat.SetFloat("_length", 0f);
+        targetRangeMat.SetFloat("_degree", 0f);
 
-        if(aimJoystick != null)
+        aimJoystick.PointerDown += (e) =>
         {
-            while (!aimJoystick.checkStart)
+            gameObject.SetActive(true);
+
+            if (rangeTweenCore != null)
             {
-                yield return null;
+                rangeTweenCore.Kill();
             }
 
-            targetRangeMat.SetFloat("_length", 0f);
-            targetRangeMat.SetFloat("_degree", 0f);
-
-            //처음에는 이 함수를 호출할 필요가 없지만 재사용할 때는 반드시 필요한 함수. 그런 의미에서 형식적인 실행
-            //즉 지금 이 함수를 호출하지 않아도 정상적으로 작동함.
-            aimJoystick.CallBackReset();
-
-            //조이스틱이 눌렸을 때
-            aimJoystick.pointerDownCallBack.AddListener((e) =>
+            var startValue = targetRangeMat.GetFloat("_length");
+            rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0.5f, recovoryTimer).OnUpdate(() =>
             {
-                gameObject.SetActive(true);
-
-                if (rangeTweenCore != null)
-                {
-                    rangeTweenCore.Kill();
-                }
-
-                var startValue = targetRangeMat.GetFloat("_length");
-                rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0.5f, recovoryTimer).OnUpdate(() => 
-                {
-                    targetRangeMat.SetFloat("_length", startValue);
-                    aimRotSpeed = aimRotMaxSpeed * startValue * 2f;
-                    targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
-                });
-
-                if(aimRotCor == null)
-                {
-                    aimRotCor = AimRotCor();
-                    StartCoroutine(aimRotCor);
-                }
+                targetRangeMat.SetFloat("_length", startValue);
+                targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
             });
+        };
 
-            //조이스틱을 땠을 때
-            aimJoystick.pointerUpCallBack.AddListener((e) =>
+        aimJoystick.Drag += (v2) =>
+        {
+            if (v2 == Vector2.zero) return;
+
+            var rot = transform.eulerAngles;
+            var aimDir3 = new Vector3(v2.x, v2.y, 0f);
+            rot.z = Quaternion.FromToRotation(Vector3.up, aimDir3).eulerAngles.z;
+            transform.eulerAngles = rot;
+        };
+
+        aimJoystick.PointerUp += (e) => 
+        { 
+            if (rangeTweenCore != null)
             {
-                if(rangeTweenCore != null)
-                {
-                    rangeTweenCore.Kill();
-                }
+                rangeTweenCore.Kill();
+            }
 
-                var startValue = targetRangeMat.GetFloat("_length");
-                rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0f, recovoryTimer).OnUpdate(() =>
-                {
-                    targetRangeMat.SetFloat("_length", startValue);
-                    aimRotSpeed = aimRotMaxSpeed * startValue * 2f;
-                    targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
-                }).OnComplete(() =>
-                {
-                    gameObject.SetActive(false);
-                    rangeTweenCore = null;
-                });
-            });
-
-            //조이스틱을 드래그 할 때
-            aimJoystick.dragCallBack.AddListener((e) =>
+            var startValue = targetRangeMat.GetFloat("_length");
+            rangeTweenCore = DOTween.To(() => startValue, x => startValue = x, 0f, recovoryTimer).OnUpdate(() =>
             {
-                if (aimJoystick.input == Vector2.zero) return;
-
-                var rot = transform.eulerAngles;
-                var aimDir = aimJoystick.input.normalized;
-                var aimDir3 = new Vector3(aimDir.x, aimDir.y, 0f);
-                rot.z = Quaternion.FromToRotation(Vector3.up, aimDir3).eulerAngles.z;
-                transform.eulerAngles = rot;
+                targetRangeMat.SetFloat("_length", startValue);
+                targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
+            }).OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+                rangeTweenCore = null;
             });
+        };
 
-            gameObject.SetActive(false);
-        }
+        gameObject.SetActive(false);
     }
 
     private void Update()
@@ -114,19 +170,19 @@ public class GunAim : MonoBehaviour
         targetRangeMat?.SetFloat("_sineMove", targetRangeMat.GetFloat("_sineMove") + (-lineSpeed) * Time.deltaTime);
     }
 
-    private IEnumerator AimRotCor()
-    {
-        while (true)
-        {
-            var angle = aimPoint.transform.eulerAngles;
-            angle.z -= aimRotSpeed * Time.deltaTime;
-            aimPoint.transform.eulerAngles = angle;
-            yield return null;
-        }
-    }
+    //private IEnumerator AimRotCor()
+    //{
+    //    while (true)
+    //    {
+    //        var angle = aimPoint.transform.eulerAngles;
+    //        angle.z -= aimRotSpeed * Time.deltaTime;
+    //        aimPoint.transform.eulerAngles = angle;
+    //        yield return null;
+    //    }
+    //}
 
-    private void OnDisable()
-    {
-        aimRotCor = null;
-    }
+    //private void OnDisable()
+    //{
+    //    aimRotCor = null;
+    //}
 }
