@@ -36,9 +36,12 @@ public class UPlayer : UCharacter, IController
                     return;
                 }
 
-                o.transform.Translate((Vector2)valList[0] * o.GetSpeed * Time.deltaTime);
+                o.moveVector = (Vector2)valList[0];
+                o.transform.Translate(o.moveVector * o.GetSpeed * Time.deltaTime);
                 // 애니메이션 재생
                 o.GetSpumPrefabs.PlayAnimation(1);
+                if (o.moveVector.x > 0f) o.spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
+                else if (o.moveVector.x < 0f) o.spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
             }
         },
 
@@ -103,32 +106,32 @@ public class UPlayer : UCharacter, IController
     protected override void Start()
     {
         base.Start();
-        GameDatabase.Instance.player = this;
+        GameManager.Instance.playerController = this;
         boxCollider2D = GetComponent<BoxCollider2D>();
         spumPrefabs = GetComponent<SPUM_Prefabs>();
     }
 
     protected override void Update()
     {
-        moveVector.x = Input.GetAxis("Horizontal");
-        moveVector.y = Input.GetAxis("Vertical");
+        //moveVector.x = Input.GetAxis("Horizontal");
+        //moveVector.y = Input.GetAxis("Vertical");
 
-        if (DoMove())
-        {
-            // 방향에 따라 캐릭터 모델 보는 방향 변경
-            if (moveVector.x > 0f) spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
-            else if (moveVector.x < 0f) spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
+        //if (DoMove())
+        //{
+        //    // 방향에 따라 캐릭터 모델 보는 방향 변경
+        //    if (moveVector.x > 0f) spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
+        //    else if (moveVector.x < 0f) spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
 
-            OrderAction(new Order() { orderTitle = OrderTitle.Move });
-            //OrderAction(new Order() { orderTitle = "move", parameters = new List<object>() { 1.0f, 1.0f } });
-        }
-        else
-        {
-            OrderAction(new Order() { orderTitle = OrderTitle.Idle });
-        }
+        //    OrderAction(new Order() { orderTitle = OrderTitle.Move });
+        //    //OrderAction(new Order() { orderTitle = "move", parameters = new List<object>() { 1.0f, 1.0f } });
+        //}
+        //else
+        //{
+        //    OrderAction(new Order() { orderTitle = OrderTitle.Idle });
+        //}
 
-        //GunAim가 캐릭터 위치에서 나오게 업데이트.
-        gunAimPlayerFollow();
+        ////GunAim가 캐릭터 위치에서 나오게 업데이트.
+        //gunAimPlayerFollow();
 
     }
 }
