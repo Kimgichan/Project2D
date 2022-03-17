@@ -5,10 +5,19 @@ public interface IController
 {
     void OrderAction(params Order[] orders);
     void OrderAction(List<Order> orders);
-}
 
-public struct Order
-{
-    public string orderTitle;
-    public List<object> parameters;
+    public struct Order
+    {
+        public OrderTitle orderTitle;
+        public List<object> parameters;
+    }
+
+    public enum OrderTitle
+    {
+        Idle,
+        Move,
+        Attack,
+        Follow,
+        Avoiding
+    }
 }

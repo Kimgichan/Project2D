@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3293577318614729130}
   - component: {fileID: 3293577319308106523}
   m_Layer: 0
-  m_Name: SampleMapGrid_2_ByManager
+  m_Name: SampleMapGrid_2-2_ByManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3685,7 +3685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMap: {fileID: 3293577319308106523}
-  destinationMap: {fileID: 4687643150240180256, guid: 28c45cf35de6198429bec26f9497a0da, type: 3}
+  destinationMap: {fileID: 2202932191438341768, guid: 0c8d7e437bc3ded46873ca56d89f99b3, type: 3}
 --- !u!58 &3293577320621756983
 CircleCollider2D:
   m_ObjectHideFlags: 0

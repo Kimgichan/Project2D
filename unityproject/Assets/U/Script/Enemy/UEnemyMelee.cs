@@ -4,7 +4,8 @@ using UnityEngine;
 
 //UnityAction이 정의됨
 using UnityEngine.Events;
-
+using Order = IController.Order;
+using OrderTitle = IController.OrderTitle;
 
 public class UEnemyMelee : UCharacter, IController
 {
@@ -20,24 +21,24 @@ public class UEnemyMelee : UCharacter, IController
     private bool isStateaChange = true;
     //_______________________________________________________________________________________//
 
-    private static Dictionary<string, UnityAction<UEnemyMelee, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemyMelee, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
+        { OrderTitle.Idle, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (o, valList) => {o.ChangeState(new MoveState(o)); } },
+        { OrderTitle.Move, (o, valList) => {o.ChangeState(new MoveState(o)); } },
 
-        { "Follow", (o, valList) => 
+        { OrderTitle.Follow, (o, valList) => 
             {
                 o.transform.position = Vector3.MoveTowards(o.transform.position, o.GetotherColliderVector, 1.0f * Time.deltaTime);
                 o.GetSpumPrefabs.PlayAnimation(1);
             }
         },
 
-        { "Attack", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(4); } },
+        { OrderTitle.Attack, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(4); } },
 
-        { "Avoiding", (o, valList) => 
+        { OrderTitle.Avoiding, (o, valList) => 
             {
                 o.avoidTimer += Time.deltaTime;
 
@@ -157,13 +158,13 @@ public class UEnemyMelee : UCharacter, IController
             {
 
                 //OrderAction(ReturnTheStateList("Follow"));
-                OrderAction(new Order() { orderTitle = "Follow" });
+                OrderAction(new Order() { orderTitle = OrderTitle.Follow });
             }
             else if (dis < 0.8f)
             {
 
                 //OrderAction(ReturnTheStateList("Attack"));
-                OrderAction(new Order() { orderTitle = "Attack" });
+                OrderAction(new Order() { orderTitle = OrderTitle.Attack });
 
             }
         }
@@ -175,7 +176,7 @@ public class UEnemyMelee : UCharacter, IController
         {
             Debug.Log("충돌 범위 나감");
             //OrderAction(ReturnTheStateList("Idle"));
-            OrderAction(new Order() { orderTitle = "Idle" });
+            OrderAction(new Order() { orderTitle = OrderTitle.Idle });
         }
     }
 

@@ -4,23 +4,24 @@ using UnityEngine;
 
 //UnityAction이 정의됨
 using UnityEngine.Events;
+using Order = IController.Order;
+using OrderTitle = IController.OrderTitle;
 
 public class UEnemy : UCharacter, IController
 {
-    static UEnemy me;
     // '벽' 장애물에 좌표(x,y)에 대한 정보를 가져온다.
     public TileWallScan TileWall;
 
 
-    private static Dictionary<string, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<string, UnityAction<UEnemy, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemy, List<object>>>()
     {
         //Idle의 valList 값 State 
-        { "Idle", (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
+        { OrderTitle.Idle, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
 
         //Move의 valList 값 State/InputX/InputY 
-        { "Move", (o, valList) => {o.ChangeState(new MoveState(me)); } },
+        { OrderTitle.Move, (o, valList) => {o.ChangeState(new MoveState(o)); } },
 
-        { "Follow", (o, valList) => 
+        { OrderTitle.Follow, (o, valList) => 
             {
                 o.transform.position = Vector3.MoveTowards(o.transform.position, o.GetotherColliderVector, 1.0f * Time.deltaTime);
                 o.GetSpumPrefabs.PlayAnimation(1);
@@ -28,9 +29,9 @@ public class UEnemy : UCharacter, IController
 
         },
 
-        { "Attack", (o, valList) => {o.ChangeState(new AttackState(me)); } },
+        { OrderTitle.Attack, (o, valList) => {o.ChangeState(new AttackState(o)); } },
 
-        { "Avoiding", (o, valList) => {o.ChangeState(new AvoidingState(me)); } }
+        { OrderTitle.Avoiding, (o, valList) => {o.ChangeState(new AvoidingState(o)); } }
 
         //이 앞으론 예시
 
@@ -82,9 +83,6 @@ public class UEnemy : UCharacter, IController
     {
         base.Start();
 
-        // State스크립트에 '자신'정보를 주기 위한 변수
-        me              = this;
-
         boxCollider2D   = GetComponent<BoxCollider2D>();
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
         myRigidbody     = GetComponent<Rigidbody2D>();
@@ -109,12 +107,12 @@ public class UEnemy : UCharacter, IController
             if (dis < 1.0f)
             {
                 //OrderAction(ReturnTheStateList("Avoiding"));
-                OrderAction(new Order() { orderTitle = "Avoiding" });
+                OrderAction(new Order() { orderTitle = OrderTitle.Avoiding });
             }
             else
             {
                 //OrderAction(ReturnTheStateList("Idle"));
-                OrderAction(new Order() { orderTitle = "Idle" });
+                OrderAction(new Order() { orderTitle = OrderTitle.Idle });
             }
         }
     }
@@ -122,7 +120,7 @@ public class UEnemy : UCharacter, IController
     public void OnTriggerExit2D(Collider2D other)
     {
         //OrderAction(ReturnTheStateList("Idle"));
-        OrderAction(new Order() { orderTitle = "Idle" });
+        OrderAction(new Order() { orderTitle = OrderTitle.Idle });
     }
 
     float timer = 0;

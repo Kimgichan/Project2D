@@ -6,7 +6,6 @@ using System.IO;
 [CreateAssetMenu(fileName = "GameDatabase", menuName = "Scriptable Object/GameDatabase", order = int.MaxValue)]
 public class GameDatabase : ScriptableObject
 {
-
     [SerializeField] private List<ClassNode> classKind;
     private Dictionary<string, ClassFeature> classDic;
     private PlayerInfo playerInfo = new PlayerInfo();

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1133acf08301dcb4384c0b66315b3303, type: 3}
   m_Name: GameDatabase
   m_EditorClassIdentifier: 
+  board: {fileID: 0}
   classKind:
   - className: "\uC804\uC0AC"
     color: {r: 0.9150943, g: 0.617257, b: 0.617257, a: 1}

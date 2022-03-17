@@ -13,6 +13,6 @@ public class ColliderCheckTest : MonoBehaviour
     {
         //go.GetComponent<WarpZone>().WarpPlayerToExist(this.gameObject);
         //go.GetComponent<WarpZone>().WarpPlayerToNew(this.gameObject);
-        MapManager.Instance.WarpToNext(this.gameObject);
+        //MapManager.Instance.WarpToNext(this.gameObject);
     }
 }
