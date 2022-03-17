@@ -272,7 +272,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.3}
@@ -1133,7 +1133,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1429931178}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.64, y: 6.54, z: 0}
+  m_LocalPosition: {x: 4.79, y: 3.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 742922243086753686}
@@ -1768,7 +1768,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6987801308082639579, guid: 964de4617b824654db5e083b64e6340b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.15
       objectReference: {fileID: 0}
     - target: {fileID: 6987801308082639579, guid: 964de4617b824654db5e083b64e6340b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1788,11 +1788,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6987801308082639579, guid: 964de4617b824654db5e083b64e6340b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 8.78
       objectReference: {fileID: 0}
     - target: {fileID: 6987801308082639579, guid: 964de4617b824654db5e083b64e6340b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 1.28
       objectReference: {fileID: 0}
     - target: {fileID: 6987801308082639579, guid: 964de4617b824654db5e083b64e6340b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
