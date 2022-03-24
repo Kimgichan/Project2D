@@ -46,6 +46,5 @@ MonoBehaviour:
   mapList:
   - {fileID: 8054342568440999611, guid: cd42bda48975dd54b93d0c42589f4fe7, type: 3}
   - {fileID: 4247037982859497565, guid: 6d59a9dd89fd1344892548b3fbf06019, type: 3}
-  - {fileID: 8525746615163617709, guid: d54c07f148f53694786c01a10d00f02f, type: 3}
   - {fileID: 5070925323722469646, guid: ac8224bf746594d4898433aa18ec17e0, type: 3}
   currentMap: {fileID: 0}
