@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c66bc07962a7f846bde000917016569, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoneSelectMap: {fileID: 8625197888190408805, guid: f6024df5cb93db349a0b5ab3d5596c12, type: 3}
+  zoneSelectMap: {fileID: 0}
   currentZoneInfo: {fileID: 0}
   zoneInfoList:
-  - {fileID: 1036900600172221643, guid: edca275bb5e35ee4d8302338002c1184, type: 3}
+  - {fileID: 8812597983025642896, guid: 493684ad298075543be90251a53fc840, type: 3}
