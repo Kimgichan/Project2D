@@ -21,6 +21,13 @@ public abstract class UCharacter : MonoBehaviour
     public Vector3          GetotherColliderVector  { get { return otherColliderVector; } }
     public float            GetSpeed                { get { return speed; } }
 
+    public void hitHP(float _damage)
+    {
+       
+        this.hp -= _damage;
+        Debug.Log("½ÇÇàµÊ HP:"+hp);
+    }
+
     protected virtual void Start()
     {
         //myState = new IdleState(this);

@@ -13,6 +13,13 @@ public class UPlayer : UCharacter, IController
     private HashSet<OrderTitle> buffStates;
 
     public GameObject gunAim;
+    public GameObject weaPon;
+
+    public void messgeAttack(Vector2 _vector)
+    {
+        //Attack의 valList 값 State/InputX/InputY/데미지/경직시간/부가효과
+        OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameters = new List<object>() { _vector.x, _vector.y} });
+    }
 
     void gunAimPlayerFollow()
     {
@@ -48,6 +55,19 @@ public class UPlayer : UCharacter, IController
         { OrderTitle.Attack,(o, valList) =>
             {
 
+                
+                Vector3 attackVector = new Vector3((float)valList[0],(float)valList[1], 0f);
+                attackVector.x = attackVector.x + o.transform.position.x;
+                attackVector.y = attackVector.y + o.transform.position.y;
+
+                Quaternion attackQuaternion = Quaternion.Euler(0,0,o.gunAim.transform.rotation.z*100);
+                
+                // 회전.w 값이 -인 경우 
+                if(o.gunAim.transform.rotation.w <0)
+                    attackQuaternion.w = attackQuaternion.w * -1;
+
+                //생성(오브젝트, 방향, 회전)
+                Instantiate(o.weaPon, attackVector, attackQuaternion);
             }
         }
 
@@ -113,6 +133,10 @@ public class UPlayer : UCharacter, IController
 
     protected override void Update()
     {
+        if(Input.GetKey(KeyCode.D))
+        {
+            OrderAction(new Order() { orderTitle = OrderTitle.Attack });
+        }
         //moveVector.x = Input.GetAxis("Horizontal");
         //moveVector.y = Input.GetAxis("Vertical");
 

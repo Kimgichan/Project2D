@@ -81,6 +81,17 @@ public class UEnemyRanged : UCharacter, IController
                 // 애니메이션
                 o.GetSpumPrefabs.PlayAnimation(3);
             }
+        },
+
+        // 죽은 상태에 대한 처리
+        { OrderTitle.Dead, (o, valList) => 
+        
+            {  
+                o.GetSpumPrefabs.PlayAnimation(2);
+
+                //3초 뒤에 Destory
+                Destroy(o, 3f);
+            }
         }
 
         //이 앞으론 예시
@@ -137,9 +148,6 @@ public class UEnemyRanged : UCharacter, IController
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
         myRigidbody     = GetComponent<Rigidbody2D>();
 
-        //ChangeState(new IdleState(this));
-
-
     }
 
     // 충돌 범위 안에 들어온 상태
@@ -190,7 +198,7 @@ public class UEnemyRanged : UCharacter, IController
 
     protected override void Update()
     {
-        base.Update();
+        //base.Update();
 
         timer += Time.deltaTime;
         if (timer > waitingTime)

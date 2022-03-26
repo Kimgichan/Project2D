@@ -18,6 +18,7 @@ public interface IController
         Move,
         Attack,
         Follow,
-        Avoiding
+        Avoiding,
+        Dead
     }
 }
