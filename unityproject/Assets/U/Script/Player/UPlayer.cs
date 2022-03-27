@@ -166,6 +166,9 @@ public class UPlayer : UCharacter, IController
 
         ////GunAim가 캐릭터 위치에서 나오게 업데이트.
         //gunAimPlayerFollow();
-
+        if(gunAim != null)
+        {
+            gunAim.transform.position = transform.position;
+        }
     }
 }

@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1133acf08301dcb4384c0b66315b3303, type: 3}
   m_Name: GameDatabase
   m_EditorClassIdentifier: 
-  board: {fileID: 0}
   classKind:
   - className: "\uC804\uC0AC"
     color: {r: 0.9150943, g: 0.617257, b: 0.617257, a: 1}
@@ -38,3 +37,13 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 64e938248a6410540b6f1ffc49fb6268, type: 2}
     - {fileID: 11400000, guid: 05611233d215086449c45332a99087d4, type: 2}
     - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
+  weaponList:
+  - {fileID: 11400000, guid: 18b2d6d4a3f029448bc03820d26c6b4b, type: 2}
+  - {fileID: 11400000, guid: 5bd8d39a009e0fd4197c82774134839e, type: 2}
+  - {fileID: 11400000, guid: a235936564eea2444bdca9aba8e9ca1d, type: 2}
+  - {fileID: 11400000, guid: 574654e2411adff4683b3382be138085, type: 2}
+  equipAttributePresetList:
+  - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
+  - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
+  - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
+  - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}
