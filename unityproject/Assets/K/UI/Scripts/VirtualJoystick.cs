@@ -17,12 +17,12 @@ public class VirtualJoystick : MonoBehaviour
     public UnityAction<BaseEventData> PointerUp;
 
     public UnityAction<Vector2> Drag;
-    public GameObject player;
+    //public GameObject player;
     private Vector2 currentDragForce;
     private IEnumerator dragUpdateCor;
     private void Start()
     {
-        player = GameObject.Find("Unit0");
+        //player = GameObject.Find("Unit0");
         joystick.gameObject.SetActive(false);
 
         var entry_pointerDown = new EventTrigger.Entry();
@@ -71,7 +71,7 @@ public class VirtualJoystick : MonoBehaviour
             if (length > maxRange)
             {
                 // 조이스틱 끝까지 갈 경우 UPlayer에 함수 실행
-                player.GetComponent<UPlayer>().messgeAttack(currentDragForce);
+                //player.GetComponent<UPlayer>().messgeAttack(currentDragForce);
                 
                 dir = (dir / length) * maxRange;
             }

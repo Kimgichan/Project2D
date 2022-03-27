@@ -14,6 +14,7 @@ public class UPlayer : UCharacter, IController
 
     public GameObject gunAim;
     public GameObject weaPon;
+    public VirtualJoystick attackJoystick;
 
     public void messgeAttack(Vector2 _vector)
     {
@@ -129,6 +130,14 @@ public class UPlayer : UCharacter, IController
         GameManager.Instance.playerController = this;
         boxCollider2D = GetComponent<BoxCollider2D>();
         spumPrefabs = GetComponent<SPUM_Prefabs>();
+
+        attackJoystick.Drag += (Vector2 v2) =>
+        {
+            if (v2.sqrMagnitude >= 0.98)
+            {
+                OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameters = new List<object>() { v2.x, v2.y } });
+            }
+        };
     }
 
     protected override void Update()
@@ -137,6 +146,7 @@ public class UPlayer : UCharacter, IController
         {
             OrderAction(new Order() { orderTitle = OrderTitle.Attack });
         }
+
         //moveVector.x = Input.GetAxis("Horizontal");
         //moveVector.y = Input.GetAxis("Vertical");
 
