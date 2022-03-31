@@ -169,7 +169,7 @@ MonoBehaviour:
   myRigidbody: {fileID: 185228446}
   hp: 10
   gunAim: {fileID: 742922243086753684}
-  weaPon: {fileID: 6229006362740203775, guid: f81831a468e7d834f96b005ee9c7f592, type: 3}
+  weaPon: {fileID: 7245560072182383138, guid: 67278ec5d745c974d826bea3366ec1a1, type: 3}
   attackJoystick: {fileID: 1192689204}
 --- !u!50 &185228446
 Rigidbody2D:
