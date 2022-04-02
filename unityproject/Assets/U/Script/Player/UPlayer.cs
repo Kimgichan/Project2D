@@ -15,6 +15,8 @@ public class UPlayer : UCharacter, IController
     public GameObject gunAim;
     public GameObject weaPon;
     public VirtualJoystick attackJoystick;
+    private bool isActionStop;
+    private bool isArrowDelay;
 
     public void messgeAttack(Vector2 _vector)
     {
@@ -55,20 +57,26 @@ public class UPlayer : UCharacter, IController
 
         { OrderTitle.Attack,(o, valList) =>
             {
+                if(!o.isArrowDelay)
+                {
+                    o.isArrowDelay =true;
+                    o.StartCoroutine(o.ArrowAttackDelay());
 
+                    Vector3 attackVector = new Vector3((float)valList[0],(float)valList[1], 0f);
+                    attackVector.x = attackVector.x + o.transform.position.x;
+                    attackVector.y = attackVector.y + o.transform.position.y;
+
+                    Quaternion attackQuaternion = Quaternion.Euler(0,0,o.gunAim.transform.rotation.z*100);
                 
-                Vector3 attackVector = new Vector3((float)valList[0],(float)valList[1], 0f);
-                attackVector.x = attackVector.x + o.transform.position.x;
-                attackVector.y = attackVector.y + o.transform.position.y;
+                    // 회전.w 값이 -인 경우 
+                    if(o.gunAim.transform.rotation.w <0)
+                        attackQuaternion.w = attackQuaternion.w * -1;
 
-                Quaternion attackQuaternion = Quaternion.Euler(0,0,o.gunAim.transform.rotation.z*100);
-                
-                // 회전.w 값이 -인 경우 
-                if(o.gunAim.transform.rotation.w <0)
-                    attackQuaternion.w = attackQuaternion.w * -1;
+                    //생성(오브젝트, 방향, 회전)
+                    Instantiate(o.weaPon, attackVector, attackQuaternion);
 
-                //생성(오브젝트, 방향, 회전)
-                Instantiate(o.weaPon, attackVector, attackQuaternion);
+                    o.myRigidbody.AddForce(o.moveVector * 2.0f, ForceMode2D.Impulse);
+                }                
             }
         }
 
@@ -102,24 +110,36 @@ public class UPlayer : UCharacter, IController
 
     public void OrderAction(params Order[] orders)
     {
-
-        foreach (var order in orders)
+        if (isActionStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
 
     public void OrderAction(List<Order> orders)
     {
-
-        foreach (var order in orders)
+        if (isActionStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
@@ -128,14 +148,20 @@ public class UPlayer : UCharacter, IController
     {
         base.Start();
         GameManager.Instance.playerController = this;
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        spumPrefabs = GetComponent<SPUM_Prefabs>();
+        boxCollider2D   = GetComponent<BoxCollider2D>();
+        spumPrefabs     = GetComponent<SPUM_Prefabs>();
+        isActionStop = false;
 
         attackJoystick.Drag += (Vector2 v2) =>
         {
             if (v2.sqrMagnitude >= 0.98)
             {
+                isActionStop = false;
                 OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameters = new List<object>() { v2.x, v2.y } });
+            }
+            else
+            {
+                isActionStop = true;
             }
         };
     }
@@ -166,9 +192,16 @@ public class UPlayer : UCharacter, IController
 
         ////GunAim가 캐릭터 위치에서 나오게 업데이트.
         //gunAimPlayerFollow();
+
         if(gunAim != null)
         {
             gunAim.transform.position = transform.position;
         }
+    }
+
+    IEnumerator ArrowAttackDelay()
+    {
+        yield return new WaitForSeconds(2);
+        isArrowDelay = false;
     }
 }

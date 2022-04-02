@@ -25,7 +25,7 @@ public abstract class UCharacter : MonoBehaviour
     {
        
         this.hp -= _damage;
-        Debug.Log("½ÇÇàµÊ HP:"+hp);
+        
     }
 
     protected virtual void Start()
