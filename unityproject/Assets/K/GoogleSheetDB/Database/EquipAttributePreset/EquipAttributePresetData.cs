@@ -62,4 +62,11 @@ public class EquipAttributePresetData : ScriptableObject
         public EquipAttribute kind;
         public float percent;
     }    
+
+    [System.Serializable]
+    public struct AttributeNode
+    {
+        public EquipAttribute kind;
+        public int count;
+    }
 }

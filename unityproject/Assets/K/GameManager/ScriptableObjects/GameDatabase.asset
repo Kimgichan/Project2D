@@ -38,10 +38,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 05611233d215086449c45332a99087d4, type: 2}
     - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
   weaponList:
-  - {fileID: 11400000, guid: 18b2d6d4a3f029448bc03820d26c6b4b, type: 2}
-  - {fileID: 11400000, guid: 5bd8d39a009e0fd4197c82774134839e, type: 2}
-  - {fileID: 11400000, guid: a235936564eea2444bdca9aba8e9ca1d, type: 2}
-  - {fileID: 11400000, guid: 574654e2411adff4683b3382be138085, type: 2}
+  - {fileID: 11400000, guid: ecd2ccbb26c4df740b9d99b3b11c5dc2, type: 2}
+  - {fileID: 11400000, guid: 174c4e5fb089e284183276348cfaf2dc, type: 2}
+  - {fileID: 11400000, guid: 7a10fc6a5a06e9840ba3f2947970cd17, type: 2}
+  - {fileID: 11400000, guid: 9637667601fab2e448919d51ba4ee8ab, type: 2}
   equipAttributePresetList:
   - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
   - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
