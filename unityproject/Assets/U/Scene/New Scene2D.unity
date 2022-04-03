@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &145150018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5854938527856246556, guid: b973d52259e3fc4478f935ff79afeb09, type: 3}
+  m_PrefabInstance: {fileID: 1669001640}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b66da59784f198438ecc645f7b5f72a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &185228442 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6987801308082639578, guid: 914b45983fd739a4dac2ea42fbc4d7fa, type: 3}
@@ -171,6 +182,7 @@ MonoBehaviour:
   gunAim: {fileID: 742922243086753684}
   weaPon: {fileID: 7245560072182383138, guid: 67278ec5d745c974d826bea3366ec1a1, type: 3}
   attackJoystick: {fileID: 1192689204}
+  moveJoystick: {fileID: 145150018}
 --- !u!50 &185228446
 Rigidbody2D:
   serializedVersion: 4

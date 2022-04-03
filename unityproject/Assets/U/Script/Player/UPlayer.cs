@@ -15,6 +15,9 @@ public class UPlayer : UCharacter, IController
     public GameObject gunAim;
     public GameObject weaPon;
     public VirtualJoystick attackJoystick;
+    public VirtualJoystick moveJoystick;
+    private Vector2 moveJoystickVector;
+
     private bool isActionStop;
     private bool isArrowDelay;
 
@@ -61,7 +64,7 @@ public class UPlayer : UCharacter, IController
                 {
                     o.isArrowDelay =true;
                     o.StartCoroutine(o.ArrowAttackDelay());
-
+                    
                     Vector3 attackVector = new Vector3((float)valList[0],(float)valList[1], 0f);
                     attackVector.x = attackVector.x + o.transform.position.x;
                     attackVector.y = attackVector.y + o.transform.position.y;
@@ -75,7 +78,9 @@ public class UPlayer : UCharacter, IController
                     //생성(오브젝트, 방향, 회전)
                     Instantiate(o.weaPon, attackVector, attackQuaternion);
 
-                    o.myRigidbody.AddForce(o.moveVector * 2.0f, ForceMode2D.Impulse);
+                    o.moveJoystickVector.Set(0f,0f);
+                    o.StartCoroutine(o.ArrowAttackDash());
+                   
                 }                
             }
         }
@@ -150,6 +155,7 @@ public class UPlayer : UCharacter, IController
         GameManager.Instance.playerController = this;
         boxCollider2D   = GetComponent<BoxCollider2D>();
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
+
         isActionStop = false;
 
         attackJoystick.Drag += (Vector2 v2) =>
@@ -164,35 +170,28 @@ public class UPlayer : UCharacter, IController
                 isActionStop = true;
             }
         };
+
+        moveJoystick.Drag += (Vector2 v2) =>
+        {
+            moveJoystickVector = v2;
+        };
+
+        //moveJoystick.Drag += (Vector2 v2) =>
+        // {
+        //     if (v2.sqrMagnitude >= 0.98)
+        //     {
+        //         Debug.Log("범위 밖");
+        //     }
+        //     else
+        //     {
+        //         Debug.Log("터치");
+        //         isActionStop = true;
+        //     }
+        // };
     }
 
     protected override void Update()
     {
-        if(Input.GetKey(KeyCode.D))
-        {
-            OrderAction(new Order() { orderTitle = OrderTitle.Attack });
-        }
-
-        //moveVector.x = Input.GetAxis("Horizontal");
-        //moveVector.y = Input.GetAxis("Vertical");
-
-        //if (DoMove())
-        //{
-        //    // 방향에 따라 캐릭터 모델 보는 방향 변경
-        //    if (moveVector.x > 0f) spumPrefabs.transform.localScale = new Vector3(-1, 1, 1);
-        //    else if (moveVector.x < 0f) spumPrefabs.transform.localScale = new Vector3(1, 1, 1);
-
-        //    OrderAction(new Order() { orderTitle = OrderTitle.Move });
-        //    //OrderAction(new Order() { orderTitle = "move", parameters = new List<object>() { 1.0f, 1.0f } });
-        //}
-        //else
-        //{
-        //    OrderAction(new Order() { orderTitle = OrderTitle.Idle });
-        //}
-
-        ////GunAim가 캐릭터 위치에서 나오게 업데이트.
-        //gunAimPlayerFollow();
-
         if(gunAim != null)
         {
             gunAim.transform.position = transform.position;
@@ -203,5 +202,22 @@ public class UPlayer : UCharacter, IController
     {
         yield return new WaitForSeconds(2);
         isArrowDelay = false;
+    }
+
+
+    IEnumerator ArrowAttackDash()
+    {
+        float delay = 0.0f;
+
+        while (delay <2.0f)
+        {
+            if (moveJoystickVector.x != 0 || moveJoystickVector.y != 0)
+            {
+                myRigidbody.AddForce(moveJoystickVector * 2.0f, ForceMode2D.Impulse);
+            }
+            yield return new WaitForSeconds(0.1f);
+            delay += 0.1f;
+     
+        }
     }
 }
