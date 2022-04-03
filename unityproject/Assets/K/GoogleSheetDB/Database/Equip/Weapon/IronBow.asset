@@ -17,3 +17,4 @@ MonoBehaviour:
   damage: {x: 0, y: 0}
   reinforceMaxCount: 0
   unlockAttributeCounts: 
+  baseRequireReinforceCount: 0
