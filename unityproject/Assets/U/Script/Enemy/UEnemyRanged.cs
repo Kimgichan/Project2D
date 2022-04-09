@@ -15,10 +15,11 @@ public class UEnemyRanged : UCharacter, IController
     // '벽' 장애물에 좌표(x,y)에 대한 정보를 가져온다.
     public TileWallScan TileWall;
 
-    private float avoidTimer = 0.0f;
-    private bool avoidingStop = false;
-    private float avoidingSpeed = 3.0f;
-    private bool isStateaChange = true;
+    private float   avoidTimer      = 0.0f;
+    private bool    avoidingStop    = false;
+    private float   avoidingSpeed   = 3.0f;
+    private bool    isStateaChange  = true;
+    private bool    isActionAllStop = false;
     //_______________________________________________________________________________________//
 
     private static Dictionary<OrderTitle, UnityAction<UEnemyRanged, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyRanged, List<object>>>()
@@ -86,11 +87,12 @@ public class UEnemyRanged : UCharacter, IController
         // 죽은 상태에 대한 처리
         { OrderTitle.Dead, (o, valList) => 
         
-            {  
+            {
+                o.isActionAllStop = true;
                 o.GetSpumPrefabs.PlayAnimation(2);
 
                 //3초 뒤에 Destory
-                Destroy(o, 3f);
+                Destroy(o.gameObject, 2f);
             }
         }
 
@@ -118,24 +120,36 @@ public class UEnemyRanged : UCharacter, IController
 
     public void OrderAction(params Order[] orders)
     {
-
-        foreach (var order in orders)
+        if (isActionAllStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
 
     public void OrderAction(List<Order> orders)
     {
-
-        foreach (var order in orders)
+        if (isActionAllStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
@@ -204,6 +218,11 @@ public class UEnemyRanged : UCharacter, IController
         if (timer > waitingTime)
         {
             timer = 0;
+        }
+
+        if(hp <0.0f)
+        {
+            OrderAction(new Order() { orderTitle = OrderTitle.Dead });
         }
     }
 

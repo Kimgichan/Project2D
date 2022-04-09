@@ -18,7 +18,7 @@ public class UPlayer : UCharacter, IController
     public VirtualJoystick moveJoystick;
     private Vector2 moveJoystickVector;
 
-    private bool isActionStop;
+    private bool isActionAllStop;
     private bool isArrowDelay;
 
     public void messgeAttack(Vector2 _vector)
@@ -115,7 +115,7 @@ public class UPlayer : UCharacter, IController
 
     public void OrderAction(params Order[] orders)
     {
-        if (isActionStop)
+        if (isActionAllStop)
         {
             // 다른 상태에서 actionStop = true 상태이다.
         }
@@ -133,7 +133,7 @@ public class UPlayer : UCharacter, IController
 
     public void OrderAction(List<Order> orders)
     {
-        if (isActionStop)
+        if (isActionAllStop)
         {
             // 다른 상태에서 actionStop = true 상태이다.
         }
@@ -156,18 +156,18 @@ public class UPlayer : UCharacter, IController
         boxCollider2D   = GetComponent<BoxCollider2D>();
         spumPrefabs     = GetComponent<SPUM_Prefabs>();
 
-        isActionStop = false;
+        isActionAllStop = false;
 
         attackJoystick.Drag += (Vector2 v2) =>
         {
             if (v2.sqrMagnitude >= 0.98)
             {
-                isActionStop = false;
+                isActionAllStop = false;
                 OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameters = new List<object>() { v2.x, v2.y } });
             }
             else
             {
-                isActionStop = true;
+                isActionAllStop = true;
             }
         };
 
@@ -185,7 +185,7 @@ public class UPlayer : UCharacter, IController
         //     else
         //     {
         //         Debug.Log("터치");
-        //         isActionStop = true;
+        //         isActionAllStop = true;
         //     }
         // };
     }
@@ -209,11 +209,13 @@ public class UPlayer : UCharacter, IController
     {
         float delay = 0.0f;
 
-        while (delay <2.0f)
+        while (delay <1.0f)
         {
             if (moveJoystickVector.x != 0 || moveJoystickVector.y != 0)
             {
-                myRigidbody.AddForce(moveJoystickVector * 2.0f, ForceMode2D.Impulse);
+                Debug.Log("실행");
+                //myRigidbody.AddForce(moveJoystickVector * 2.0f, ForceMode2D.Impulse);
+                myRigidbody.velocity = moveJoystickVector * 3;
             }
             yield return new WaitForSeconds(0.1f);
             delay += 0.1f;
