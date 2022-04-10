@@ -8,10 +8,6 @@ using EquipAttribute = EquipAttributePresetData.AttributeNode;
 [System.Serializable]
 public class WeaponItem
 {
-    //이변수는 나중에 체계화 되어야함. 중복값이 생기지 않도록 시스템 설계.
-    private int id;
-    public int InstanceID => id;
-
     private WeaponData weaponData;
     public WeaponData Weapon => weaponData;
     private int reinforceCount;
@@ -30,7 +26,7 @@ public class WeaponItem
         get
         {
             var icount = stats.Count;
-            var result = new WeaponSetting() { id = id, weaponTitle = weaponData.name, reinforceCount = reinforceCount, attributeTitle = attributeData.name, 
+            var result = new WeaponSetting() { weaponTitle = weaponData.name, reinforceCount = reinforceCount, attributeTitle = attributeData.name, 
                 statTitles = new List<string>(icount), statSteps = new List<int>(icount) };
             for(int i = 0; i<icount; i++)
             {
@@ -41,10 +37,9 @@ public class WeaponItem
         }
         set
         {
-            id = value.id;
-            weaponData = GameManager.Instance.GameDB.WeaponTable[value.weaponTitle];
+            weaponData = GameManager.Instance.GameDB.WeaponManager.GetWeaponData(value.weaponTitle);
             reinforceCount = value.reinforceCount;
-            attributeData = GameManager.Instance.GameDB.EquipAttributePresetTable[value.attributeTitle];
+            attributeData = GameManager.Instance.GameDB.WeaponManager.GetEquipAttributePresetData(weaponData.Kind, value.attributeTitle);
 
             var icount = value.statTitles.Count;
             stats = new List<EquipAttribute>(icount);
@@ -60,7 +55,6 @@ public class WeaponItem
     [System.Serializable]
     public struct WeaponSetting
     {
-        public int id;
         public string weaponTitle;
         public int reinforceCount;
         public string attributeTitle;
