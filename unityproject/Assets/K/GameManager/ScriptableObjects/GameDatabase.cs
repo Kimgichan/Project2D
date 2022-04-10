@@ -39,25 +39,6 @@ public class GameDatabase : ScriptableObject
 
             LoadPlayerInfo();   
         }
-
-        if(weaponList != null)
-        {
-            weaponTable = new Dictionary<string, WeaponData>();
-            for(int i = 0, icount = weaponList.Count; i<icount; i++)
-            {
-                weaponTable.Add(weaponList[i].name, weaponList[i]);
-            }
-        }
-
-        if(equipAttributePresetList != null)
-        {
-            equipAttributePresetTable = new Dictionary<string, EquipAttributePresetData>();
-            for(int i = 0, icount = equipAttributePresetList.Count; i<icount; i++)
-            {
-                equipAttributePresetTable.Add(equipAttributePresetList[i].name,
-                    equipAttributePresetList[i]);
-            }
-        }
     }
 
     public Color GetClassColor(string className) => classDic[className].color;
@@ -300,13 +281,6 @@ public class GameDatabase : ScriptableObject
     }
 
 
-
-    ///////////////////
-    [SerializeField] private List<WeaponData> weaponList;
-    private Dictionary<string, WeaponData> weaponTable;
-    public Dictionary<string, WeaponData> WeaponTable => weaponTable;
-
-    [SerializeField] private List<EquipAttributePresetData> equipAttributePresetList;
-    private Dictionary<string, EquipAttributePresetData> equipAttributePresetTable;
-    public Dictionary<string, EquipAttributePresetData> EquipAttributePresetTable => equipAttributePresetTable;
+    [SerializeField] private WeaponDatabase weaponDB;
+    public WeaponDatabase WeaponManager => weaponDB;
 }
