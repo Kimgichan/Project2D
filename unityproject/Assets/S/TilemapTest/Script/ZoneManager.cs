@@ -34,15 +34,16 @@ public class ZoneManager : MonoBehaviour
     
     public ZoneSelectMapInfo zoneSelectMap;
     public ZoneInfo currentZoneInfo;
-    public List<ZoneInfo> zoneInfoList;
+    private ZoneWarpZone currentZoneWarpZone;
+    //public List<ZoneInfo> zoneInfoList;
 
-    public void WarpToNextZone(ZoneInfo zoneinfo, GameObject go)
+    public void WarpToNextZone(ZoneInfo zoneinfo, GameObject go, ZoneWarpZone zoneWarpZone)
     {
         currentZoneInfo = Instantiate(zoneinfo);
-        //Destroy(zoneSelectMap.gameObject);
         zoneSelectMap.gameObject.SetActive(false);
         //go.transform.position = currentZoneInfo.currentMap.enterance.transform.position;
         go.transform.position = new Vector3(0, 0, 0);
+        currentZoneWarpZone = zoneWarpZone;
     }
     public void ReturnToZoneSelectMap(GameObject go)
     {
@@ -50,5 +51,9 @@ public class ZoneManager : MonoBehaviour
         zoneSelectMap.gameObject.SetActive(true);
         //move player
         go.gameObject.transform.position =  zoneSelectMap.playerSpawnTr.position;
+    }
+    public void CloseCurrentZoneWarpZone()
+    {
+        currentZoneWarpZone.CanEnter = false;
     }
 }

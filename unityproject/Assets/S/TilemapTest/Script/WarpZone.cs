@@ -30,6 +30,9 @@ public class WarpZone : MonoBehaviour
     public MapInfo destinationMap;
     public void WarpPlayerToNew(GameObject go)
     {
-        GameObject.FindWithTag("ZoneInfo").GetComponent<ZoneInfo>().WarpToNextMap(go);
+        if (go.tag == "Player")
+        {
+            GameObject.FindWithTag("ZoneInfo").GetComponent<ZoneInfo>().WarpToNextMap(go);
+        }
     }
 }

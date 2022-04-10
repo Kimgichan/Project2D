@@ -10,6 +10,8 @@ public class ZoneInfo : MonoBehaviour
     public MapInfo currentMap;
     private GameObject currentMapGO;
 
+    public bool isDone;
+
     private void Start()
     {
         for(int i = 0; i < mapList.Count; i++)
@@ -23,6 +25,7 @@ public class ZoneInfo : MonoBehaviour
         }
         currentMap = mapQueue.Dequeue();
         currentMapGO = Instantiate(currentMap).gameObject;
+        isDone = false;
     }
 
     public void WarpToNextMap(GameObject go)
@@ -32,9 +35,9 @@ public class ZoneInfo : MonoBehaviour
             Debug.Log("MapManger's mapQueue is empty");
 
             //send message to ZoneManger
-            //return to ZoneSelectMap -> Destroy this zoneInfo, send to ZoneSelectMap
+            //return to ZoneSelectMap -> Destroy this zoneInfo
             Destroy(currentMapGO);
-
+            ZoneManager.Instance.CloseCurrentZoneWarpZone();
             ZoneManager.Instance.ReturnToZoneSelectMap(go);
             Destroy(this.gameObject);
         }
