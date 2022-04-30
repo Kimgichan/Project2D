@@ -12,12 +12,15 @@ public class UPlayer : UCharacter, IController
     private OrderTitle animState;
     private HashSet<OrderTitle> buffStates;
 
-    public GameObject gunAim;
-    public GameObject weaPon;
-    public VirtualJoystick attackJoystick;
-    public VirtualJoystick moveJoystick;
-    private Vector2 moveJoystickVector;
-
+    public GameObject           gunAim;
+    public UWeaponManager       weaponManager;
+    private BowModel            weapon;
+    //public IWeaponPrefab      TestWeapon;
+    public VirtualJoystick      attackJoystick;
+    public VirtualJoystick      moveJoystick;
+    private Vector2             moveJoystickVector;
+    private Vector2             JoystickVector;
+    
     private bool isActionAllStop;
     private bool isArrowDelay;
 
@@ -40,9 +43,7 @@ public class UPlayer : UCharacter, IController
         //Move의 valList 값 State/InputX/InputY 
         { OrderTitle.Move, (o, valList) =>
             {
-             /* o.ChangeState(new MoveState(me));*/
-             // 캐릭터 이동
-
+                // 캐릭터 이동
                 if((Vector2)valList[0] == Vector2.zero)
                 {
                     actionDic[OrderTitle.Idle](o, valList);
@@ -60,8 +61,13 @@ public class UPlayer : UCharacter, IController
 
         { OrderTitle.Attack,(o, valList) =>
             {
+                // 다음 공격에 걸리는 딜레이 상태확인
                 if(!o.isArrowDelay)
                 {
+                    // 공격 애니메이션
+                    o.weapon.AttackAnim(0.3f, null);
+
+                    //공격 딜레이 = true와 동시에 코루틴을 통해 몇 초뒤(ArrowAttackDelay에서 딜레이 시간) false변경
                     o.isArrowDelay =true;
                     o.StartCoroutine(o.ArrowAttackDelay());
                     
@@ -69,15 +75,18 @@ public class UPlayer : UCharacter, IController
                     attackVector.x = attackVector.x + o.transform.position.x;
                     attackVector.y = attackVector.y + o.transform.position.y;
 
-                    Quaternion attackQuaternion = Quaternion.Euler(0,0,o.gunAim.transform.rotation.z*100);
+                    Quaternion attackQuaternion = Quaternion.Euler(0,0,o.gunAim.transform.rotation.z * 100f);
                 
                     // 회전.w 값이 -인 경우 
                     if(o.gunAim.transform.rotation.w <0)
                         attackQuaternion.w = attackQuaternion.w * -1;
 
-                    //생성(오브젝트, 방향, 회전)
-                    Instantiate(o.weaPon, attackVector, attackQuaternion);
+                    //Bullet생성(오브젝트, 방향, 회전)
+                    //Instantiate(o.weaPon.bullet, attackVector, attackQuaternion);
+                    Instantiate(o.weaponManager.bullet, o.weaponManager.transform.position, o.weaponManager.transform.rotation);
 
+                    
+                    // 공격 후 대쉬
                     o.moveJoystickVector.Set(0f,0f);
                     o.StartCoroutine(o.ArrowAttackDash());
                    
@@ -158,6 +167,7 @@ public class UPlayer : UCharacter, IController
 
         isActionAllStop = false;
 
+        // 공격 조이스틱 유니티 액션
         attackJoystick.Drag += (Vector2 v2) =>
         {
             if (v2.sqrMagnitude >= 0.98)
@@ -170,56 +180,76 @@ public class UPlayer : UCharacter, IController
                 isActionAllStop = true;
             }
         };
-
+        // 움직임 조이스틱 유니티 액션
         moveJoystick.Drag += (Vector2 v2) =>
         {
             moveJoystickVector = v2;
         };
+        
 
-        //moveJoystick.Drag += (Vector2 v2) =>
-        // {
-        //     if (v2.sqrMagnitude >= 0.98)
-        //     {
-        //         Debug.Log("범위 밖");
-        //     }
-        //     else
-        //     {
-        //         Debug.Log("터치");
-        //         isActionAllStop = true;
-        //     }
-        // };
+        var data = GameManager.Instance.GameDB.WeaponManager.GetWeaponData("IronBow");
+        var weaponBowl = GameManager.Instance.GameDB.WeaponManager.ToPrefab(data);
+
+        weapon = Instantiate(weaponBowl as BowModel, weaponManager.transform);
+        (weaponBowl as BowModel).transform.localPosition    = new Vector3(0.0f, 0.5f, 0f);
+        (weaponBowl as BowModel).transform.localScale       = new Vector3(0.3f, 0.3f, 0.3f);
+        
+
     }
 
     protected override void Update()
     {
+        //Debug.Log(moveJoystickVector);
         if(gunAim != null)
         {
             gunAim.transform.position = transform.position;
         }
+        
+        //무기 애니메이션
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            weapon.AttackAnim(1f, null);
+        }
+
     }
 
     IEnumerator ArrowAttackDelay()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         isArrowDelay = false;
     }
 
 
     IEnumerator ArrowAttackDash()
     {
-        float delay = 0.0f;
+        float   speed                             = 5.0f;
+        float   delay                           = 0.5f;
+        bool    isMoveJoystickVectorOneLockdown = false;
+        Vector2 targetPostion                   = (Vector2)transform.position;;
 
-        while (delay <1.0f)
+        var time = 0f;
+        isActionAllStop = true;
+
+        while (time < delay)
         {
             if (moveJoystickVector.x != 0 || moveJoystickVector.y != 0)
             {
-                Debug.Log("실행");
-                //myRigidbody.AddForce(moveJoystickVector * 2.0f, ForceMode2D.Impulse);
-                myRigidbody.velocity = moveJoystickVector * 3;
+                if(!isMoveJoystickVectorOneLockdown)
+                {
+                    Debug.Log("이동 조이스틱" + moveJoystickVector);
+                    targetPostion = (targetPostion + moveJoystickVector)*1.0f;
+
+                    isMoveJoystickVectorOneLockdown = true;
+                    
+                }
+                time += Time.deltaTime / 0.5f;
+                transform.position = Vector3.Lerp(transform.position, targetPostion, time);
             }
-            yield return new WaitForSeconds(0.1f);
-            delay += 0.1f;
+            yield return null;
      
         }
+        isActionAllStop = false;
+        moveJoystickVector.Set(0f, 0f);
     }
+
 }

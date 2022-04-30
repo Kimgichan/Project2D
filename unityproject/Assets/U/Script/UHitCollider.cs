@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UHitCollider : MonoBehaviour
 {
-    public UEnemyRanged myEnemy;
+    public UCharacter myEnemy;
 
     void Start()
     {

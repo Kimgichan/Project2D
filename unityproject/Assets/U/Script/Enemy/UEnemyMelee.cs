@@ -19,6 +19,7 @@ public class UEnemyMelee : UCharacter, IController
     private bool avoidingStop = false;
     private float avoidingSpeed = 3.0f;
     private bool isStateaChange = true;
+    private bool isActionAllStop = false;
     //_______________________________________________________________________________________//
 
     private static Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>>()
@@ -81,8 +82,19 @@ public class UEnemyMelee : UCharacter, IController
                 // 애니메이션
                 o.GetSpumPrefabs.PlayAnimation(3);
             }
-        }
+        },
 
+         // 죽은 상태에 대한 처리
+        { OrderTitle.Dead, (o, valList) =>
+
+            {
+                o.isActionAllStop = true;
+                o.GetSpumPrefabs.PlayAnimation(2);
+
+                //3초 뒤에 Destory
+                Destroy(o.gameObject, 2f);
+            }
+        }
         //이 앞으론 예시
 
 
@@ -107,24 +119,36 @@ public class UEnemyMelee : UCharacter, IController
 
     public void OrderAction(params Order[] orders)
     {
-
-        foreach (var order in orders)
+        if (isActionAllStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
 
     public void OrderAction(List<Order> orders)
     {
-
-        foreach (var order in orders)
+        if (isActionAllStop)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+            // 다른 상태에서 actionStop = true 상태이다.
+        }
+        else
+        {
+            foreach (var order in orders)
             {
-                actionFunc(this, order.parameters);
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+                {
+                    actionFunc(this, order.parameters);
+                }
             }
         }
     }
@@ -191,6 +215,11 @@ public class UEnemyMelee : UCharacter, IController
         if (timer > waitingTime)
         {
             timer = 0;
+        }
+
+        if (hp < 0.0f)
+        {
+            OrderAction(new Order() { orderTitle = OrderTitle.Dead });
         }
     }
 

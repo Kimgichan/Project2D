@@ -27,9 +27,9 @@ public abstract class UCharacter : MonoBehaviour
         if (!hitDelay)
         {
             StartCoroutine(ArrowAttackDelay());
-            Debug.Log("¸ÂÀ½" +hp);
             hitDelay = true;
             this.hp -= _damage;
+            
         }
     }
 
