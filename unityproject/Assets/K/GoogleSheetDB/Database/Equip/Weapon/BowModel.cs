@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class BowModel : MonoBehaviour, IWeaponPrefab
+public class BowModel : MonoBehaviour,   IWeaponPrefab
 {
     [SerializeField] private Transform boneLeft;
     [SerializeField] private Transform boneRight;
@@ -22,25 +22,26 @@ public class BowModel : MonoBehaviour, IWeaponPrefab
 
 
     // 사용 예시로 참고하면 될 듯
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            AttackAnim(timer, null);
-        }
-        else if (Input.GetKey(KeyCode.Z))
-        {
-            AttackAnim(timer, null);
-        }
-        else
-        {
-            StopAnim();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Z))
+    //    {
+    //        AttackAnim(timer, null);
+    //    }
+    //    else if (Input.GetKey(KeyCode.Z))
+    //    {
+    //        AttackAnim(timer, null);
+    //    }
+    //    else
+    //    {
+    //        StopAnim();
+    //    }
+    //}
 
     public bool AttackAnim (float timer, UnityAction endEvent)
     {
         if (anim) return false;
+
         anim = true;
 
 

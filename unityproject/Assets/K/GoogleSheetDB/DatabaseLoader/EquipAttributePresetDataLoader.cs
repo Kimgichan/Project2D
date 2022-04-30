@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
+#if UNITY_EDITOR
+
 using EquipKind = Enums.EquipKind;
 using EquipAttribute = Enums.EquipAttribute;
 
@@ -42,3 +44,4 @@ public class EquipAttributePresetDataLoader : MonoBehaviour
         AssetDatabase.SaveAssets();
     }
 }
+#endif

@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     public Board board;
     public IController playerController;
 
+    //private Dictionary
+
     private void Awake()
     {
         if(instance != null)

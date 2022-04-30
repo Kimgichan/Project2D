@@ -21,10 +21,8 @@ MonoBehaviour:
     value_prefab: {fileID: 8748243129354699934, guid: 5e5994f2be856c64f868116dd22b2384, type: 3}
   - key_weapon: {fileID: 11400000, guid: 9637667601fab2e448919d51ba4ee8ab, type: 2}
     value_prefab: {fileID: 770113051859897176, guid: 8102c77798071d543a2128bb665f8279, type: 3}
-  weaponAttributeList:
-  - tab: 0
-    attributes:
-    - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
-    - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
-    - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
-    - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}
+  equipAttributeList:
+  - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
+  - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
+  - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
+  - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}

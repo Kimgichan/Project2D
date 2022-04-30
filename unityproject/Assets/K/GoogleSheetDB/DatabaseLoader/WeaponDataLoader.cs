@@ -5,6 +5,8 @@ using UnityEditor;
 using System;
 
 using EquipKind = Enums.EquipKind;
+
+#if UNITY_EDITOR
 public class WeaponDataLoader : MonoBehaviour
 {
     [SerializeField] List<WeaponData> datas;
@@ -41,3 +43,4 @@ public class WeaponDataLoader : MonoBehaviour
         AssetDatabase.SaveAssets();
     }
 }
+#endif

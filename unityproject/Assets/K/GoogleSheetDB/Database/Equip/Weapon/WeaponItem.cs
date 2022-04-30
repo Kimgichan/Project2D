@@ -16,7 +16,7 @@ public class WeaponItem
     private EquipAttributePresetData attributeData;
     public EquipAttributePresetData AttributeState => attributeData;
     private List<EquipAttribute> stats;
-    public int attributeStatCount => stats.Count;
+    public int AttributeStatCount => stats.Count;
     public EquipAttribute GetStat(int indx) => stats[indx];
 
 

@@ -17,8 +17,10 @@ public interface IController
         Idle,
         Move,
         Attack,
+        AttackStop,
         Follow,
         Avoiding,
-        Dead
+        Dead,
+        Dash
     }
 }
