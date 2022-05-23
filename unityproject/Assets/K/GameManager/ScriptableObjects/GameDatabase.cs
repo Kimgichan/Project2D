@@ -283,4 +283,11 @@ public class GameDatabase : ScriptableObject
 
     [SerializeField] private WeaponDatabase weaponDB;
     public WeaponDatabase WeaponManager => weaponDB;
+
+
+    [SerializeField] private ProjectileDatabase projectileDB;
+    public ProjectileDatabase ProjectileDB => projectileDB;
+
+    [SerializeField] private EffectDatabase effectDB;
+    public EffectDatabase EffectDB => effectDB;
 }

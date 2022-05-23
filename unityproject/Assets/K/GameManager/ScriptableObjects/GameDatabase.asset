@@ -37,14 +37,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 64e938248a6410540b6f1ffc49fb6268, type: 2}
     - {fileID: 11400000, guid: 05611233d215086449c45332a99087d4, type: 2}
     - {fileID: 11400000, guid: d969629f446cb4a4a9efde6496744825, type: 2}
-  weaponList:
-  - {fileID: 11400000, guid: ecd2ccbb26c4df740b9d99b3b11c5dc2, type: 2}
-  - {fileID: 11400000, guid: 174c4e5fb089e284183276348cfaf2dc, type: 2}
-  - {fileID: 11400000, guid: 7a10fc6a5a06e9840ba3f2947970cd17, type: 2}
-  - {fileID: 11400000, guid: 9637667601fab2e448919d51ba4ee8ab, type: 2}
-  equipAttributePresetList:
-  - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
-  - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
-  - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
-  - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}
   weaponDB: {fileID: 11400000, guid: ab6d74b3ce086d044b944048a8d977d8, type: 2}
+  projectileDB: {fileID: 11400000, guid: 7792b12e75a7100489b3ef7cb3473763, type: 2}
+  effectDB: {fileID: 11400000, guid: 01e4d3e459c374b48b902d9d6c3d67da, type: 2}

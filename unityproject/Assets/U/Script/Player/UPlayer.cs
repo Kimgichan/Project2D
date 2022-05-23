@@ -98,6 +98,7 @@ public class UPlayer : UCharacter, IController
                 if(o.weaponObject != null && o.dashCor == null)
                 {
                     if (o.weaponObject.AttackAnim(0.8f, () => {
+                        GameManager.Instance.ProjectileManager.Pop(Enums.Projectile.Arrow, o, o.transform.position, o.gunAim.transform.up * 6f, new Order[]{ });
                         o.dashCor = o.DashDuration();
                         o.StartCoroutine(o.dashCor);
                     }))

@@ -13,7 +13,11 @@ public class GameManager : MonoBehaviour
     public Board board;
     public IController playerController;
 
-    //private Dictionary
+    [SerializeField] private ProjectilePool projectilePoolManager;
+    public ProjectilePool ProjectileManager => projectilePoolManager;
+
+    [SerializeField] private EffectPool effectPoolManager;
+    public EffectPool EffectManager => effectPoolManager;
 
     private void Awake()
     {
