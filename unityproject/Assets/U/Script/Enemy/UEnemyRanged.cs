@@ -164,48 +164,48 @@ public class UEnemyRanged : UCharacter, IController
 
     }
 
-    // 충돌 범위 안에 들어온 상태
-    public void OnTriggerStay2D(Collider2D _other)
-    {
+    //// 충돌 범위 안에 들어온 상태
+    //public void OnTriggerStay2D(Collider2D _other)
+    //{
 
-        // 범위 안에 들어온 오브젝트에 태그가 Player인가?
-        if (_other.gameObject.tag == "Player")
-        {
-            // otherColliderVector = 들어온 상대의 position 값
-            otherColliderVector = _other.transform.position;
-            float dis = Vector3.Distance(otherColliderVector, transform.position);
+    //    // 범위 안에 들어온 오브젝트에 태그가 Player인가?
+    //    if (_other.gameObject.tag == "Player")
+    //    {
+    //        // otherColliderVector = 들어온 상대의 position 값
+    //        otherColliderVector = _other.transform.position;
+    //        float dis = Vector3.Distance(otherColliderVector, transform.position);
 
-            if (dis > 2.0f)
-            {
+    //        if (dis > 2.0f)
+    //        {
 
-                //OrderAction(ReturnTheStateList("Follow"));
-                OrderAction(new Order() { orderTitle = OrderTitle.Follow });
-            }
-            else if (dis > 1.0f)
-            {
+    //            //OrderAction(ReturnTheStateList("Follow"));
+    //            OrderAction(new Order() { orderTitle = OrderTitle.Follow });
+    //        }
+    //        else if (dis > 1.0f)
+    //        {
 
-                //OrderAction(ReturnTheStateList("Attack"));
-                OrderAction(new Order() { orderTitle = OrderTitle.Attack });
+    //            //OrderAction(ReturnTheStateList("Attack"));
+    //            OrderAction(new Order() { orderTitle = OrderTitle.Attack });
 
-            }
-            else if (dis < 1.0f)
-            {
-                //OrderAction(ReturnTheStateList("Avoiding"));
-                OrderAction(new Order() { orderTitle = OrderTitle.Avoiding });
-            }
+    //        }
+    //        else if (dis < 1.0f)
+    //        {
+    //            //OrderAction(ReturnTheStateList("Avoiding"));
+    //            OrderAction(new Order() { orderTitle = OrderTitle.Avoiding });
+    //        }
 
-        }
-    }
-    // 충돌 범위에서 나간 상태
-    public void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
-            Debug.Log("충돌 범위 나감");
-            //OrderAction(ReturnTheStateList("Idle"));
-            OrderAction(new Order() { orderTitle = OrderTitle.Idle });
-        }
-    }
+    //    }
+    //}
+    //// 충돌 범위에서 나간 상태
+    //public void OnTriggerExit2D(Collider2D other)
+    //{
+    //    if (other.gameObject.tag == "Player")
+    //    {
+    //        Debug.Log("충돌 범위 나감");
+    //        //OrderAction(ReturnTheStateList("Idle"));
+    //        OrderAction(new Order() { orderTitle = OrderTitle.Idle });
+    //    }
+    //}
 
     float timer = 0;
     int waitingTime = 1;

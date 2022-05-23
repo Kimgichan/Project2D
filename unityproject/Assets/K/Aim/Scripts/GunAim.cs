@@ -157,12 +157,12 @@ public class GunAim : MonoBehaviour
                 targetRangeMat.SetFloat("_degree", maxDegree * startValue * 2f);
             }).OnComplete(() =>
             {
-                gameObject.SetActive(false);
+                targetRange.SetActive(false);
                 rangeTweenCore = null;
             });
         };
 
-        gameObject.SetActive(false);
+        targetRange.SetActive(false);
     }
 
     private void Update()
