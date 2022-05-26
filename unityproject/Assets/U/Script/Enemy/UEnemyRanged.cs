@@ -22,7 +22,7 @@ public class UEnemyRanged : UCharacter, IController
     private bool    isActionAllStop = false;
     //_______________________________________________________________________________________//
 
-    private static Dictionary<OrderTitle, UnityAction<UEnemyRanged, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyRanged, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UEnemyRanged, object>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyRanged, object>>()
     {
         //IdleÀÇ valList °ª State 
         { OrderTitle.Idle, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
@@ -118,6 +118,8 @@ public class UEnemyRanged : UCharacter, IController
         return action;
     }
 
+
+    public Transform GetTransform() => transform;
     public void OrderAction(params Order[] orders)
     {
         if (isActionAllStop)
@@ -128,9 +130,9 @@ public class UEnemyRanged : UCharacter, IController
         {
             foreach (var order in orders)
             {
-                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, object> actionFunc))
                 {
-                    actionFunc(this, order.parameters);
+                    actionFunc(this, order.parameter);
                 }
             }
         }
@@ -146,13 +148,15 @@ public class UEnemyRanged : UCharacter, IController
         {
             foreach (var order in orders)
             {
-                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, List<object>> actionFunc))
+                if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyRanged, object> actionFunc))
                 {
-                    actionFunc(this, order.parameters);
+                    actionFunc(this, order.parameter);
                 }
             }
         }
     }
+
+    public GameObject GetGameObject() => gameObject;
 
     protected override void Start()
     {

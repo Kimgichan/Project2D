@@ -21,7 +21,7 @@ public class UEnemyMelee : UCharacter, IController
     private bool isStateaChange = true;
     //_______________________________________________________________________________________//
 
-    private static Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyMelee, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UEnemyMelee, object>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemyMelee, object>>()
     {
         //IdleÀÇ valList °ª State 
         { OrderTitle.Idle, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
@@ -105,26 +105,28 @@ public class UEnemyMelee : UCharacter, IController
         return action;
     }
 
+    public Transform GetTransform() => transform;
     public void OrderAction(params Order[] orders)
     {
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }
 
+    public GameObject GetGameObject() => gameObject;
     public void OrderAction(List<Order> orders)
     {
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemyMelee, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }

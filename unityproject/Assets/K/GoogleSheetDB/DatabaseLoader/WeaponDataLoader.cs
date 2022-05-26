@@ -24,22 +24,24 @@ public class WeaponDataLoader : MonoBehaviour
             AssetDatabase.ImportAsset(path);
             
 
-            datas[i].Kind = (EquipKind)Enum.Parse(typeof(EquipKind), values[1]);
-            datas[i].Damage = new Vector2(float.Parse(values[2]), float.Parse(values[3]));
-            datas[i].ReinforceMaxCount = int.Parse(values[4]);
-            
+            var kind = (EquipKind)Enum.Parse(typeof(EquipKind), values[1]);
+            //datas[i].Damage = new Vector2(float.Parse(values[2]), float.Parse(values[3]));
+            var minDamage = int.Parse(values[2]);
+            var maxDamage = int.Parse(values[3]);
+            var reinforceMaxCount = int.Parse(values[4]);
 
-            var unlockRequires = datas[i].UnlockAttributeCounts_Warning;
-            unlockRequires.Clear();
+
+            var unlockAttributeCounts = new List<int>();
             var list = values[5].Split('/');
             for(int j = 0, jcount = list.Length; j<jcount; j++)
             {
-                unlockRequires.Add(int.Parse(list[j]));
+                unlockAttributeCounts.Add(int.Parse(list[j]));
             }
+            
+            var baseRequireReinforceCount = int.Parse(values[6]);
 
-            datas[i].BaseRequireReinforceCount = int.Parse(values[6]);
+            datas[i].WriteData(kind, minDamage, maxDamage, reinforceMaxCount, unlockAttributeCounts, baseRequireReinforceCount);
         }
-
         AssetDatabase.SaveAssets();
     }
 }

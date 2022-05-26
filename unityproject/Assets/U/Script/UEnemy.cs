@@ -13,7 +13,7 @@ public class UEnemy : UCharacter, IController
     public TileWallScan TileWall;
 
 
-    private static Dictionary<OrderTitle, UnityAction<UEnemy, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemy, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UEnemy, object>> actionDic = new Dictionary<OrderTitle, UnityAction<UEnemy, object>>()
     {
         //IdleÀÇ valList °ª State 
         { OrderTitle.Idle, (o, valList) => {o.GetSpumPrefabs.PlayAnimation(0);  } },
@@ -54,15 +54,15 @@ public class UEnemy : UCharacter, IController
 
         return action;
     }
-
+    public Transform GetTransform() => transform;
     public void OrderAction(params Order[] orders)
     {
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }
@@ -72,12 +72,13 @@ public class UEnemy : UCharacter, IController
 
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UEnemy, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }
+    public GameObject GetGameObject() => gameObject;
 
     protected override void Start()
     {

@@ -26,7 +26,7 @@ public class UPlayer : UCharacter, IController
     private IEnumerator dashCor;
 
 
-    private static Dictionary<OrderTitle, UnityAction<UPlayer, List<object>>> actionDic = new Dictionary<OrderTitle, UnityAction<UPlayer, List<object>>>()
+    private static Dictionary<OrderTitle, UnityAction<UPlayer, object>> actionDic = new Dictionary<OrderTitle, UnityAction<UPlayer, object>>()
     {
         //Idle의 valList 값 State 
         { OrderTitle.Idle, (o, valList) =>       
@@ -50,18 +50,18 @@ public class UPlayer : UCharacter, IController
                 if(o.animState == OrderTitle.Attack)
                 {
                     o.myRigidbody.velocity = Vector2.zero;
-                    o.moveVector = (Vector2)valList[0];
+                    o.moveVector = (Vector2)valList;
                     return;
                 }
 
-                if((Vector2)valList[0] == Vector2.zero)
+                if((Vector2)valList == Vector2.zero)
                 {
                     actionDic[OrderTitle.Idle](o, valList);
                     return;
                 }
                 else
                 {
-                    o.moveVector = (Vector2)valList[0];
+                    o.moveVector = (Vector2)valList;
                 }
                 o.myRigidbody.velocity = o.moveVector * o.GetSpeed;
                 // 애니메이션 재생
@@ -148,13 +148,15 @@ public class UPlayer : UCharacter, IController
         return action;
     }
 
+    public GameObject GetGameObject() => gameObject;
+    public Transform GetTransform() => transform;
     public void OrderAction(params Order[] orders)
     {
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }
@@ -163,9 +165,9 @@ public class UPlayer : UCharacter, IController
     {
         foreach (var order in orders)
         {
-            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, List<object>> actionFunc))
+            if (actionDic.TryGetValue(order.orderTitle, out UnityAction<UPlayer, object> actionFunc))
             {
-                actionFunc(this, order.parameters);
+                actionFunc(this, order.parameter);
             }
         }
     }
@@ -181,16 +183,16 @@ public class UPlayer : UCharacter, IController
         {
             if (v2.sqrMagnitude >= 0.98)
             {
-                OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameters = new List<object>() { v2.x, v2.y } });
+                OrderAction(new Order() { orderTitle = OrderTitle.Attack, parameter = new List<object>() { v2.x, v2.y } });
             }
             else
             {
-                OrderAction(new Order() { orderTitle = OrderTitle.AttackStop, parameters = null });
+                OrderAction(new Order() { orderTitle = OrderTitle.AttackStop, parameter = null });
             }
         };
         attackJoystick.PointerUp += (e) =>
         {
-            OrderAction(new Order() { orderTitle = OrderTitle.AttackStop, parameters = null });
+            OrderAction(new Order() { orderTitle = OrderTitle.AttackStop, parameter = null });
         };
 
         moveJoystick.Drag += (Vector2 v2) =>

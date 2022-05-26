@@ -89,37 +89,32 @@ public class Arrow : Projectile
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag.Equals("Object") || collision.gameObject.tag.Equals("Monster") || collision.gameObject.tag.Equals("Player"))
-        {
-            if (actionTriggerEnterFunc != null)
-                actionTriggerEnterFunc(collision);
-        }
+        if (actionTriggerEnterFunc != null)
+            actionTriggerEnterFunc(collision);
     }
 
     private void ShotTriggerEnter(Collider2D collision)
     {
-        var controller = collision.gameObject.GetComponent<IController>();
-        if (controller != null && controller != attackController)
+        var controller = collision.gameObject.GetComponent<ControllerCollider>().controller;
+        if (controller == attackController) return;
+
+        if (controller != null && sendEvent != null)
+            controller.OrderAction(sendEvent);
+        sendEvent = null;
+        if (actionCor != null)
         {
-            if (sendEvent != null)
-                controller.OrderAction(sendEvent);
-            sendEvent = null;
-            if (actionCor != null)
-            {
-                StopCoroutine(actionCor);
-                actionCor = null;
-            }
-
-
-            actionTriggerEnterFunc = null;
-            //actionCor = DropCor();
-            //StartCoroutine(actionCor);
-            Drop(controller);
+            StopCoroutine(actionCor);
+            actionCor = null;
         }
+
+
+        actionTriggerEnterFunc = null;
+
+        Drop(collision.gameObject);
     }
     private void DropTriggerEnter(Collider2D collision)
     {
-        if(attackController == collision.gameObject.GetComponent<IController>())
+        if(attackController == collision.gameObject.GetComponent<ControllerCollider>().controller)
         {
             Push();
             Echo = null;
@@ -138,25 +133,33 @@ public class Arrow : Projectile
         }
     }
 
-    private void Drop(IController hitController)
+    private void Drop(GameObject hitTarget)
     {
         rigidbody.simulated = false;
         float distance = Random.Range(1.2f, 1.6f);
         Vector2 startPos = transform.position;
-        Vector2 dir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+
+        Vector2 dir;
+        if (hitTarget.CompareTag("Block"))
+        {
+            dir = ((Vector2)attackController.GetTransform().position - (Vector2)transform.position).normalized;
+        }
+        else
+        {
+            dir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+        }
 
         var hitList = Physics2D.CircleCastAll(startPos, 0.2f, dir, distance);
 
+
         for(int i = 0, icount = hitList.Length; i<icount; i++)
         {
-            var controll = hitList[i].collider.gameObject.GetComponent<IController>();
-            if (controll != attackController && controll != hitController)
+            var controll = hitList[i].collider;
+            if (hitTarget != controll.gameObject && controll.gameObject.CompareTag("Block"))
             {
-                //end = hitList[i].point;
                 var newDistanceSqr = (hitList[i].point - startPos).sqrMagnitude;
                 if (distance * distance > newDistanceSqr)
                 {
-                    //end = hitList[i].point;
                     distance = Mathf.Sqrt(newDistanceSqr);
                 }
             }

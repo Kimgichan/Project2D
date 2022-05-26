@@ -570,11 +570,11 @@ public class Board : MonoBehaviour
         //조이스틱 패드 쪽
         moveBtn.Drag += (v2) =>
         {
-            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameters = new List<object>() { v2 } });
+            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameter = new IController.OrderParameters_Move { inputXY = v2 } });
         };
         moveBtn.PointerUp += (e) =>
         {
-            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Idle, parameters = new List<object>() });
+            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Idle, parameter = null });
         };
     }
 }
