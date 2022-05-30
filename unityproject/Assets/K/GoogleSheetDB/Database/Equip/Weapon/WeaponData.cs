@@ -35,6 +35,17 @@ public class WeaponData : ScriptableObject
     [SerializeField] private int baseRequireReinforceCount;
     public int BaseRequireReinforceCount => baseRequireReinforceCount;
 
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// 인 게임(빌드) 중에는 사용하지 말 것, 쓸 때 반드시 #if UNITY_EDITOR로 감싸줄것.
+    /// </summary>
+    /// <param name="kind"></param>
+    /// <param name="minDamage"></param>
+    /// <param name="maxDamage"></param>
+    /// <param name="reinforceMaxCount"></param>
+    /// <param name="unlockAttributeCounts"></param>
+    /// <param name="baseRequireReinforceCount"></param>
     public void WriteData(EquipKind kind, int minDamage, int maxDamage,
         int reinforceMaxCount, List<int> unlockAttributeCounts, int baseRequireReinforceCount)
     {
@@ -46,4 +57,5 @@ public class WeaponData : ScriptableObject
         this.unlockAttributeCounts = unlockAttributeCounts;
         this.baseRequireReinforceCount = baseRequireReinforceCount;
     }
+#endif
 }

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-using OrderAction = IController.Order;
 
 public class ProjectilePool : MonoBehaviour
 {
@@ -20,7 +20,10 @@ public class ProjectilePool : MonoBehaviour
         lifeCycleList = new List<Enums.Projectile>();
     }
 
-    public Projectile Pop(Enums.Projectile projectileKind, IController attackController, Vector3 pos, Vector2 force, OrderAction[] sendEvent)
+    public Projectile Pop(Enums.Projectile projectileKind, 
+        CreatureController attackController, 
+        Vector3 pos, Vector2 force, 
+        List<UnityAction<CreatureController>> sendEvents)
     {
         currentLifeTime = lifeTimer;
         Projectile projectile;
@@ -30,7 +33,7 @@ public class ProjectilePool : MonoBehaviour
             projectile = q.Dequeue();
             projectile.gameObject.transform.parent = null;
             projectile.gameObject.SetActive(true);
-            projectile.Shot(attackController, pos, force, sendEvent);
+            projectile.Shot(attackController, pos, force, sendEvents);
             if(q.Count <= 0)
             {
                 projectileManager.Remove(projectileKind);
@@ -41,7 +44,7 @@ public class ProjectilePool : MonoBehaviour
         {
             //Instantiate(GameManager.Instance.GameDB.ProjectileDB[projectileKind]).Shot(attackController, pos, force, sendEvent);
             projectile = Instantiate(GameManager.Instance.GameDB.ProjectileDB[projectileKind]);
-            projectile.Shot(attackController, pos, force, sendEvent);
+            projectile.Shot(attackController, pos, force, sendEvents);
         }
 
         return projectile;

@@ -6,8 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
 
-using Order = IController.Order;
-using OrderTitle = IController.OrderTitle;
+
 
 public class Board : MonoBehaviour
 {
@@ -570,11 +569,12 @@ public class Board : MonoBehaviour
         //조이스틱 패드 쪽
         moveBtn.Drag += (v2) =>
         {
-            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameter = new IController.OrderParameters_Move { inputXY = v2 } });
+            //GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameter = new CreatureController.OrderParameters_Move { inputXY = v2 } });
+            GameManager.Instance.playerController?.OrderMove(v2);
         };
         moveBtn.PointerUp += (e) =>
         {
-            GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Idle, parameter = null });
+            GameManager.Instance.playerController?.OrderIdle(false);
         };
     }
 }

@@ -8,4 +8,14 @@ public class Enums
     public enum EquipAttribute { Dash, FireCount, Guide}
     public enum Projectile { Arrow, MagicBall}
     public enum Effect { PickUp }
+
+    
+    public enum CreatureState
+    {
+        Idle,
+        Move,
+        Attack, 
+        Dash,
+        Shock,
+    }
 }

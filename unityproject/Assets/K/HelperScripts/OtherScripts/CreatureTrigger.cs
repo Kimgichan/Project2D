@@ -4,9 +4,9 @@ using UnityEngine;
 
 using UnityEngine.Events;
 
-public class ControllerTrigger : MonoBehaviour
+public class CreatureTrigger : MonoBehaviour
 {
-    public BaseController controller;
+    public CreatureController controller;
 
     private void Start()
     {

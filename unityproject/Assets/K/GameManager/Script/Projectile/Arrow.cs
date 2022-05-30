@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using DG.Tweening;
-using OrderAction = IController.Order; 
+
 
 public class Arrow : Projectile
 {
@@ -63,21 +63,25 @@ public class Arrow : Projectile
         gameObject.SetActive(false);
     }
 
-    public override void Shot(IController attackController, Vector3 pos, Vector2 force, OrderAction[] sendEvent = null )
+    public override void Shot(CreatureController attackController, 
+        Vector3 pos, Vector2 force, 
+        List<UnityAction<CreatureController>> sendEvents = null )
     {
-        StartCoroutine(ShotCor(attackController, pos, force, sendEvent));
+        StartCoroutine(ShotCor(attackController, pos, force, sendEvents));
     }
 
-    private IEnumerator ShotCor(IController attackController, Vector3 pos, Vector2 force, OrderAction[] sendEvent)
+    private IEnumerator ShotCor(CreatureController attackController, 
+        Vector3 pos, Vector2 force, 
+        List<UnityAction<CreatureController>> sendEvents)
     {
         while (!start) yield return null;
 
         transform.position = pos;
         this.attackController = attackController;
         this.force = force;
-        if (sendEvent != null)
-            this.sendEvent = sendEvent;
-        else this.sendEvent = null;
+        if (sendEvents != null)
+            this.sendEvents = sendEvents;
+        else this.sendEvents = null;
 
         if (actionCor != null) StopCoroutine(actionCor);
 
@@ -95,12 +99,17 @@ public class Arrow : Projectile
 
     private void ShotTriggerEnter(Collider2D collision)
     {
-        var controller = collision.gameObject.GetComponent<ControllerCollider>().controller;
-        if (controller == attackController) return;
+        var hitController = collision.gameObject.GetComponent<CreatureTrigger>().controller;
+        if (attackController.Equals(hitController)) return;
 
-        if (controller != null && sendEvent != null)
-            controller.OrderAction(sendEvent);
-        sendEvent = null;
+        if (hitController != null && sendEvents != null)
+        {
+            for(int i = 0, icount = sendEvents.Count; i<icount; i++)
+            {
+                sendEvents[i](hitController);
+            }
+        }
+        sendEvents = null;
         if (actionCor != null)
         {
             StopCoroutine(actionCor);
@@ -114,7 +123,7 @@ public class Arrow : Projectile
     }
     private void DropTriggerEnter(Collider2D collision)
     {
-        if(attackController == collision.gameObject.GetComponent<ControllerCollider>().controller)
+        if(attackController.Equals(collision.gameObject.GetComponent<CreatureTrigger>().controller))
         {
             Push();
             Echo = null;
@@ -142,7 +151,7 @@ public class Arrow : Projectile
         Vector2 dir;
         if (hitTarget.CompareTag("Block"))
         {
-            dir = ((Vector2)attackController.GetTransform().position - (Vector2)transform.position).normalized;
+            dir = ((Vector2)attackController.transform.position - (Vector2)transform.position).normalized;
         }
         else
         {

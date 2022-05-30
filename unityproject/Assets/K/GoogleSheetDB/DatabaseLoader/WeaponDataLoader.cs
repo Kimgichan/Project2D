@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +8,11 @@ using System;
 
 using EquipKind = Enums.EquipKind;
 
-#if UNITY_EDITOR
+/// <summary>
+/// 인게임에서 실행되는 함수는 아님. 
+/// 게임이 실행되기 위해 필요한 데이터를 Update하는데 사용되는 함수.
+/// 구글 시트에 테이블 정보를 Text로 뽑아서 csv에 넣어줄 것
+/// </summary>
 public class WeaponDataLoader : MonoBehaviour
 {
     [SerializeField] List<WeaponData> datas;
