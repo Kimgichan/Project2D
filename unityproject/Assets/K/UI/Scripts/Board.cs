@@ -566,15 +566,36 @@ public class Board : MonoBehaviour
         }
 
 
+
+
+        PadEventInit();
+    }
+
+
+    /// <summary>
+    /// Start에서 호출됨.<br/>
+    /// 패드를 입력할 시 호출되는 이벤트 등을 등록.
+    /// </summary>
+    private void PadEventInit()
+    {
         //조이스틱 패드 쪽
-        moveBtn.Drag += (v2) =>
+        moveBtn.Drag += (Vector2 v2) =>
         {
-            //GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameter = new CreatureController.OrderParameters_Move { inputXY = v2 } });
+            //GameManager.Instance.playerController?.OrderAction(new Order() { orderTitle = OrderTitle.Move, parameter = new ObjectController.OrderParameters_Move { inputXY = v2 } });
             GameManager.Instance.playerController?.OrderMove(v2);
         };
-        moveBtn.PointerUp += (e) =>
+
+        moveBtn.PointerUp += (BaseEventData e) =>
         {
             GameManager.Instance.playerController?.OrderIdle(false);
+        };
+
+        attackBtn.Drag += (Vector2 v2) =>
+        {
+            if(v2.sqrMagnitude >= 0.98f)
+            {
+                GameManager.Instance.playerController?.OrderAttack(v2);
+            }
         };
     }
 }

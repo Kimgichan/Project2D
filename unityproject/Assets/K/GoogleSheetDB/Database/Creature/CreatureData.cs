@@ -11,19 +11,21 @@ using UnityEngine;
 public class CreatureData : ScriptableObject
 {
     [SerializeField] private int hp;
+
+    /// <summary>
+    /// 속도 배율<br/>
+    /// unitSpeed * speed
+    /// </summary>
     [SerializeField] private float speed;
     [SerializeField] private int minDamage;
     [SerializeField] private int maxDamage;
 
     /// <summary>
-    /// 밀어내는 단계 강도 0~>3
+    /// 밀어내는 정도의 배율<br/>
+    /// unitPush * push
     /// </summary>
-    [SerializeField] private int push;
+    [SerializeField] private float push;
 
-    /// <summary>
-    /// 쓰임 -> (float)push * pushEnergyUnit
-    /// </summary>
-    [SerializeField] private float pushEnergyUnit;
 
     /// <summary>
     /// 공격했을 때 상대가 스턴에 걸리는 정도 1f -> 1초(s) 
@@ -39,7 +41,7 @@ public class CreatureData : ScriptableObject
     /// <summary>
     /// Speed => 생물의 속도, 이 속도를 참고해서 '이동(EX -> Speed*1.0f)', '대쉬(EX -> Speed*1.5f)', '공격속도(EX -> Speed*0.8f)'를 잘 조절하시면 될 듯.
     /// </summary>
-    public float Speed => speed;
+    public float Speed => speed * GameManager.Instance.GameDB.UnitValueDB.UnitSpeed;
 
 
 
@@ -56,9 +58,9 @@ public class CreatureData : ScriptableObject
 
 
     /// <summary>
-    /// push에 곱해지는 계수는 요령 것 잘 조절해야할 부분. 적절하다는 느낌이 들 때까지 조절하면 될 듯
+    /// 밀쳐지는 정도
     /// </summary>
-    public float PushEnergy => (float)push * pushEnergyUnit;
+    public float PushEnergy => push * GameManager.Instance.GameDB.UnitValueDB.UnitPush;
     #endregion
 
 
@@ -72,7 +74,7 @@ public class CreatureData : ScriptableObject
     /// <param name="speed"></param>
     /// <param name="minDamage"></param>
     /// <param name="maxDamage"></param>
-    public void WriteData(int hp, float speed, int minDamage, int maxDamage, int push, float stunTimer)
+    public void WriteData(int hp, float speed, int minDamage, int maxDamage, float push, float stunTimer)
     {
         Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
         this.hp = hp;

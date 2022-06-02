@@ -63,16 +63,16 @@ public class Arrow : Projectile
         gameObject.SetActive(false);
     }
 
-    public override void Shot(CreatureController attackController, 
+    public override void Shot(ObjectController attackController, 
         Vector3 pos, Vector2 force, 
-        List<UnityAction<CreatureController>> sendEvents = null )
+        List<UnityAction<ObjectController>> sendEvents = null )
     {
         StartCoroutine(ShotCor(attackController, pos, force, sendEvents));
     }
 
-    private IEnumerator ShotCor(CreatureController attackController, 
+    private IEnumerator ShotCor(ObjectController attackController, 
         Vector3 pos, Vector2 force, 
-        List<UnityAction<CreatureController>> sendEvents)
+        List<UnityAction<ObjectController>> sendEvents)
     {
         while (!start) yield return null;
 
@@ -99,7 +99,7 @@ public class Arrow : Projectile
 
     private void ShotTriggerEnter(Collider2D collision)
     {
-        var hitController = collision.gameObject.GetComponent<CreatureTrigger>().controller;
+        var hitController = collision.gameObject.GetComponent<ControllerCollision>().controller;
         if (attackController.Equals(hitController)) return;
 
         if (hitController != null && sendEvents != null)
@@ -123,7 +123,7 @@ public class Arrow : Projectile
     }
     private void DropTriggerEnter(Collider2D collision)
     {
-        if(attackController.Equals(collision.gameObject.GetComponent<CreatureTrigger>().controller))
+        if(attackController.Equals(collision.gameObject.GetComponent<ControllerCollision>().controller))
         {
             Push();
             Echo = null;

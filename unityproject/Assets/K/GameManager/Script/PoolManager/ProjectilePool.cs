@@ -21,9 +21,9 @@ public class ProjectilePool : MonoBehaviour
     }
 
     public Projectile Pop(Enums.Projectile projectileKind, 
-        CreatureController attackController, 
+        ObjectController attackController, 
         Vector3 pos, Vector2 force, 
-        List<UnityAction<CreatureController>> sendEvents)
+        List<UnityAction<ObjectController>> sendEvents)
     {
         currentLifeTime = lifeTimer;
         Projectile projectile;

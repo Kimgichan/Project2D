@@ -2,23 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using UnityEngine.Events;
-
-public class CreatureTrigger : MonoBehaviour
+public class ControllerCollisionBox : ControllerCollision
 {
-    public CreatureController controller;
-
+    private BoxCollider2D col;
+    // Start is called before the first frame update
     private void Start()
     {
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
+        col = GetComponent<BoxCollider2D>();
     }
-
-    #region Æ®¸®°Å API
-    public UnityAction<Collider2D> triggerEnter;
-    public UnityAction<Collider2D> triggerStay;
-    public UnityAction<Collider2D> triggerExit;
-
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -33,7 +24,7 @@ public class CreatureTrigger : MonoBehaviour
         if(triggerStay != null)
         {
             triggerStay(collision);
-        }        
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -43,5 +34,14 @@ public class CreatureTrigger : MonoBehaviour
             triggerExit(collision);
         }
     }
-    #endregion
+
+    public override Collider2D[] CurrentCheckTrigger()
+    {
+        return Physics2D.OverlapBoxAll(col.offset + (Vector2)col.transform.position, col.size, 0f);
+    }
+
+    public override Collider2D GetCollider()
+    {
+        return col;
+    }
 }

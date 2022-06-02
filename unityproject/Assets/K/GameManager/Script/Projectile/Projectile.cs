@@ -8,12 +8,12 @@ public class Projectile : MonoBehaviour
     protected Enums.Projectile projectileKind;
     public Enums.Projectile Kind => projectileKind;
 
-    protected CreatureController attackController;
+    protected ObjectController attackController;
 
-    protected List<UnityAction<CreatureController>> sendEvents;
-    public virtual void Shot(CreatureController attackController, 
+    protected List<UnityAction<ObjectController>> sendEvents;
+    public virtual void Shot(ObjectController attackController, 
         Vector3 pos, Vector2 force, 
-        List<UnityAction<CreatureController>> sendEvents = null)
+        List<UnityAction<ObjectController>> sendEvents = null)
     {}
 
     //Projectile를 상속받은 오브젝트는 SetActive(false)보다는 Push를 사용할 것

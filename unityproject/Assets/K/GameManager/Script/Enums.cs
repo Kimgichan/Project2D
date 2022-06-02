@@ -18,4 +18,17 @@ public class Enums
         Dash,
         Shock,
     }
+
+    public enum ControllerKind
+    {
+        /// <summary>
+        /// None : 아직 컨트롤러가 Start 함수를 호출하지 않았다는 의미<br/>
+        /// 즉, 준비가 되지 않았다.
+        /// </summary>
+        None,
+
+        Object,
+
+        Creature,
+    }
 }

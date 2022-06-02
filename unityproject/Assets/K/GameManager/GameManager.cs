@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public GameDatabase GameDB => gameDB;
 
     public Board board;
-    public CreatureController playerController;
+    public ObjectController playerController;
 
     [SerializeField] private ProjectilePool projectilePoolManager;
     public ProjectilePool ProjectileManager => projectilePoolManager;

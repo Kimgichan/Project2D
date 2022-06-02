@@ -4,14 +4,11 @@ using UnityEngine;
 using UnityEngine.Events;
 
 
-public class CreatureController : MonoBehaviour
+public class CreatureController : ObjectController
 {
     #region 클래스 INFO
-    protected bool ready;
-
     [SerializeField] protected Rigidbody2D rigid2D;
-    [SerializeField] protected List<CreatureTrigger> hitTriggers;
-    [SerializeField] protected List<CreatureTrigger> attackTriggers;
+    [SerializeField] protected List<ControllerCollision> hitRanges;
 
     protected Enums.CreatureState animState;
     protected HashSet<Enums.CreatureState> buffStates;
@@ -22,11 +19,14 @@ public class CreatureController : MonoBehaviour
     private int currentHP;
 
     protected Vector2 inputDir;
+
     #endregion
+
 
     #region 코루틴 관리 관련 변수
     private IEnumerator attackCoolTimeCor;
     #endregion
+
 
     #region 성능 수치 집계 방식 상속(변경) 가능
     public virtual int CurrentHP => currentHP;
@@ -37,27 +37,50 @@ public class CreatureController : MonoBehaviour
     public virtual int RangeDamage => Random.Range(MinDamage, MaxDamage + 1);
     #endregion
 
+
     #region 초기화, 셋팅
-    protected virtual void Start()
+    protected override void Start()
     {
-        InitColliders();
-
-        //ready 값이 true여야 주문(order)을 수행함
-        ready = true;
-
-        CreatureReset();
+        StartCoroutine(StartCor());
     }
     
-    protected virtual void OnEnable()
+    protected override void OnEnable()
     {
-        if (ready)
+        if (kind != Enums.ControllerKind.None)
         {
             CreatureReset();
         }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator StartCor()
+    {
+        for (int i = 0, icount = hitRanges.Count; i < icount; i++) 
+        {
+            while(hitRanges[i].GetCollider() == null)
+            {
+                yield return null;
+            }
+
+            hitRanges[i].controller = this;
+            if (i > 0)
+            {
+                Physics2D.IgnoreCollision(hitRanges[0].GetCollider(), hitRanges[i].GetCollider());
+            }
+        }
+
+        CreatureReset();
+
+        kind = Enums.ControllerKind.Creature;
+    }
+
     private void CreatureReset()
     {
+        animState = Enums.CreatureState.Idle;
         currentHP = info.HP;
 
         if(attackCoolTimeCor != null)
@@ -68,34 +91,8 @@ public class CreatureController : MonoBehaviour
 
         OrderIdle(true);
     }
-
-
-    protected void InitColliders()
-    {
-        for(int i = 0, icount = hitTriggers.Count; i<icount; i++)
-        {
-            hitTriggers[i].controller = this;
-        }
-
-        for(int i = 0, icount = attackTriggers.Count; i<icount; i++)
-        {
-            attackTriggers[i].controller = this;
-            attackTriggers[i].triggerEnter = AttackTriggerEnter;
-            attackTriggers[i].gameObject.SetActive(false);
-        }   
-    }
-
-    private void AttackTriggerEnter(Collider2D collision)
-    {
-        var col = collision.gameObject.GetComponent<CreatureTrigger>();
-        if( col.Equals(this))
-        {
-            return;
-        }
-
-        //col.controller.OrderAction(new Order() { orderTitle =  });
-    }
     #endregion
+
 
     #region 크리쳐가 제공하는 액션 함수 목록
 
@@ -104,7 +101,7 @@ public class CreatureController : MonoBehaviour
     /// compulsion: true = 강제로 Idle로 변경
     /// </summary>
     /// <param name="compulsion">true = 강제로 Idle로 변경</param>
-    public virtual void OrderIdle(bool compulsion)
+    public override void OrderIdle(bool compulsion)
     {
         inputDir = Vector2.zero;
         if (!compulsion)
@@ -123,8 +120,9 @@ public class CreatureController : MonoBehaviour
     /// 이동 명령
     /// </summary>
     /// <param name="dir">어느 방향으로 이동할 지</param>
-    public virtual void OrderMove(Vector2 dir)
+    public override void OrderMove(Vector2 dir)
     {
+
         inputDir = dir;
         if(animState != Enums.CreatureState.Idle && animState != Enums.CreatureState.Move)
         {
@@ -143,7 +141,7 @@ public class CreatureController : MonoBehaviour
         }
     }
 
-    public virtual void OrderAttack()
+    public override void OrderAttack(Vector2 dir)
     {
         if(animState == Enums.CreatureState.Dash || animState == Enums.CreatureState.Shock)
         {
@@ -157,21 +155,49 @@ public class CreatureController : MonoBehaviour
         }
 
         animState = Enums.CreatureState.Attack;
-        for(int i = 0, icount = attackTriggers.Count; i<icount; i++)
+
+
+        HashSet<ObjectController> hitTarget = new HashSet<ObjectController>();
+        for(int i = 0, icount = hitRanges.Count; i<icount; i++)
         {
-            attackTriggers[i].gameObject.SetActive(true);
+            var colls = hitRanges[i].CurrentCheckTrigger();
+            for(int j = 0, jcount = colls.Length; j<jcount; j++)
+            {
+                var controllerColl = colls[j].GetComponent<ControllerCollision>();
+                if (controllerColl == null || hitTarget.Contains(controllerColl.controller) || controllerColl.controller == this)
+                {
+                    continue;
+                }
+
+                var pushEnergy = Info.PushEnergy;
+                hitTarget.Add(controllerColl.controller);
+                controllerColl.controller.OrderPushed(((Vector2)controllerColl.controller.transform.position - (Vector2)transform.position).normalized * pushEnergy);
+            }
         }
+
+        if(attackCoolTimeCor == null)
+        {
+            attackCoolTimeCor = AttackCoolTimeCor();
+        }
+        StartCoroutine(attackCoolTimeCor);
     }
 
-    public virtual void OrderAttackStop()
+    public override void OrderAttackStop()
     {
-        for (int i = 0, icount = attackTriggers.Count; i < icount; i++)
+        if(attackCoolTimeCor != null)
         {
-            attackTriggers[i].gameObject.SetActive(false);
+            StopCoroutine(attackCoolTimeCor);
+            attackCoolTimeCor = null;
+        }
+
+        if (animState == Enums.CreatureState.Attack)
+        {
+            animState = Enums.CreatureState.Idle;
+            OrderIdle(false);
         }
     }
 
-    public virtual void OrderDash()
+    public override void OrderDash()
     {
         if(animState != Enums.CreatureState.Move)
         {
@@ -181,28 +207,29 @@ public class CreatureController : MonoBehaviour
         animState = Enums.CreatureState.Dash;
     }
 
-    public virtual void OrderPushed()
+    public override void OrderPushed(Vector2 force)
+    {
+        rigid2D.AddForce(force);
+    }
+
+    public override void OrderShock()
     {
         
     }
 
-    public virtual void OrderShock()
+    public override void OrderDamage()
     {
         
     }
 
-    public virtual void OrderDamage()
-    {
-        
-    }
-
-    public virtual void OrderSuper()
+    public override void OrderSuper()
     {
 
     }
     #endregion
 
-    #region Order를 수행하는 로직 조각
+
+    #region Order를 서포트하는 로직 조각
 
     /// <summary>
     /// 공격 쿨타임
@@ -210,7 +237,7 @@ public class CreatureController : MonoBehaviour
     /// <returns></returns>
     protected IEnumerator AttackCoolTimeCor()
     {
-        var timer = 1f / Info.Speed;
+        var timer = 3f / Info.Speed;
 
         yield return null;
 
@@ -220,7 +247,6 @@ public class CreatureController : MonoBehaviour
             yield return null;
         }
 
-        animState = Enums.CreatureState.Idle;
         OrderAttackStop();
     }
     #endregion
