@@ -15,11 +15,11 @@ public class ZoneWarpZone : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("ZoneWarpZone¿« OnTriggerEnter ¿€µø : " + other.name);
-        if (canEnter)
+        if (canEnter && other.gameObject.tag == "Player")
         {
             this.WarpPlayerToNextZone(other.gameObject);
         }
-        else
+        else if(!canEnter)
         {
             Debug.Log("ZoneWarpZone's canEnter == false");
         }
