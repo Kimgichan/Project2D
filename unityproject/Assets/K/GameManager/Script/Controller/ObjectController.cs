@@ -47,5 +47,8 @@ public class ObjectController : MonoBehaviour
     public virtual void OrderDamage() {}
 
     public virtual void OrderSuper() {}
+
+    public virtual void OrderPathFind(Transform targetTr) {}
+    public virtual void OrderPathFindStop() {}
     #endregion
 }

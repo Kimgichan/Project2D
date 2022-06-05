@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+using Pathfinding;
+
 
 public class CreatureController : ObjectController
 {
@@ -11,7 +13,7 @@ public class CreatureController : ObjectController
     [SerializeField] protected List<ControllerCollision> hitRanges;
 
     protected Enums.CreatureState animState;
-    protected HashSet<Enums.CreatureState> buffStates;
+    protected HashSet<Enums.CreatureState> buffStats;
 
     [SerializeField] private CreatureData info;
     public CreatureData Info => info;
@@ -20,11 +22,28 @@ public class CreatureController : ObjectController
 
     protected Vector2 inputDir;
 
+
+    #region 패스파인딩(Pathfinding) 관련 변수
+    /// <summary>
+    /// 가야할 곳의 가장 빠른 경로를 탐색해주는 객체.<br/>
+    /// 사용되는 메소드 StartPath
+    /// </summary>
+    [SerializeField] private Seeker seeker;
+
+    private float nextWaypointDistance = 1f;
+
+    private Path path;
+    int currentWaypoint = 0;
+    bool reachedEndOfPath = false;
+
+    #endregion
     #endregion
 
 
     #region 코루틴 관리 관련 변수
     private IEnumerator attackCoolTimeCor;
+    private IEnumerator pathFinderCor;
+    private IEnumerator pathUpdateCor;
     #endregion
 
 
@@ -41,6 +60,7 @@ public class CreatureController : ObjectController
     #region 초기화, 셋팅
     protected override void Start()
     {
+        buffStats = new HashSet<Enums.CreatureState>();
         StartCoroutine(StartCor());
     }
     
@@ -82,12 +102,15 @@ public class CreatureController : ObjectController
     {
         animState = Enums.CreatureState.Idle;
         currentHP = info.HP;
+        buffStats.Clear();
 
         if(attackCoolTimeCor != null)
         {
             StopCoroutine(attackCoolTimeCor);
         }
         attackCoolTimeCor = null;
+
+        StopPathFinder();
 
         OrderIdle(true);
     }
@@ -107,10 +130,14 @@ public class CreatureController : ObjectController
         if (!compulsion)
         {
             if (animState == Enums.CreatureState.Dash ||
-                animState == Enums.CreatureState.Attack)
+                animState == Enums.CreatureState.Attack || buffStats.Contains(Enums.CreatureState.PathFind))
             {
                 return;
             }
+        }
+        else
+        {
+            StopPathFinder();
         }
         rigid2D.velocity = Vector2.zero;
         animState = Enums.CreatureState.Idle;
@@ -124,7 +151,7 @@ public class CreatureController : ObjectController
     {
 
         inputDir = dir;
-        if(animState != Enums.CreatureState.Idle && animState != Enums.CreatureState.Move)
+        if((animState != Enums.CreatureState.Idle && animState != Enums.CreatureState.Move) || buffStats.Contains(Enums.CreatureState.PathFind))
         {
             return;
         }
@@ -177,7 +204,7 @@ public class CreatureController : ObjectController
 
         if(attackCoolTimeCor == null)
         {
-            attackCoolTimeCor = AttackCoolTimeCor();
+            attackCoolTimeCor = AttackCoolTimeCor(3f / Info.Speed);
         }
         StartCoroutine(attackCoolTimeCor);
     }
@@ -226,29 +253,173 @@ public class CreatureController : ObjectController
     {
 
     }
+
+    public override void OrderPathFind(Transform targetTr)
+    {
+        if (!buffStats.Contains(Enums.CreatureState.PathFind))
+        {
+            buffStats.Add(Enums.CreatureState.PathFind);
+        }
+
+        if(pathFinderCor != null)
+        {
+            StopCoroutine(pathFinderCor);
+        }
+        pathFinderCor = PathFinderCor(targetTr);
+        StartCoroutine(pathFinderCor);
+
+        if(pathUpdateCor != null)
+        {
+            StopCoroutine(pathUpdateCor);
+        }
+        pathUpdateCor = PathUpdateCor(0.5f, targetTr);
+        StartCoroutine(pathUpdateCor);
+    }
+
+    public override void OrderPathFindStop()
+    {
+        StopPathFinder();
+    }
     #endregion
 
 
     #region Order를 서포트하는 로직 조각
 
+    #region 공격쪽
     /// <summary>
     /// 공격 쿨타임
     /// </summary>
     /// <returns></returns>
-    protected IEnumerator AttackCoolTimeCor()
+    protected IEnumerator AttackCoolTimeCor(float cooltime)
     {
-        var timer = 3f / Info.Speed;
+        //var timer = 3f / Info.Speed;
 
         yield return null;
 
-        while(animState == Enums.CreatureState.Attack && timer > 0f)
+        while(animState == Enums.CreatureState.Attack && cooltime > 0f)
         {
-            timer -= Time.deltaTime;
+            cooltime -= Time.deltaTime;
             yield return null;
         }
 
         OrderAttackStop();
     }
+    #endregion
+
+    #region 패스파인더가 사용되는 로직 조각. 추적 액션에 사용.
+    private void OnPathComplete(Path p)
+    {
+        if (!p.error)
+        {
+            path = p;
+            currentWaypoint = 0;
+        }
+    }
+
+    private IEnumerator PathFinderCor(Transform targetTr)
+    {
+        while (buffStats.Contains(Enums.CreatureState.PathFind))
+        {
+            yield return null;
+            if (animState == Enums.CreatureState.Move ||
+                animState == Enums.CreatureState.Idle)
+            {
+                if ((object)path == null)
+                {
+                    continue;
+                }
+
+                if (currentWaypoint >= path.vectorPath.Count)
+                {
+                    reachedEndOfPath = true;
+                    continue;
+                }
+                else
+                {
+                    reachedEndOfPath = false;
+                }
+
+                Vector2 force = ((Vector2)path.vectorPath[currentWaypoint] - rigid2D.position).normalized;
+                Vector2 dir = force.normalized;
+                float distance = Vector2.Distance(path.vectorPath[currentWaypoint], rigid2D.position);
+
+                rigid2D.velocity = dir * Speed * 0.5f;
+                //rigid2D.AddForce(dir * Speed * Time.deltaTime);
+
+                if(dir.x > 0.01f)
+                {
+                    transform.localScale = new Vector3(-1f, 1f, 1f);
+                }
+                else if(dir.x < -0.01f)
+                {
+                    transform.localScale = new Vector3(1f, 1f, 1f);
+                }
+
+                if (distance < nextWaypointDistance)
+                {
+                    currentWaypoint++;
+                }
+            }
+        }
+
+        StopPathFinder();
+    }
+
+    /// <summary>
+    /// 패스 파인더 코루틴을 중단시킴.<br/>
+    /// buffStats에서 패스 파인더 제거함.
+    /// </summary>
+    private void StopPathFinder()
+    {
+        // 패스 파인더 Cor 중단 시켜야함
+        if (pathFinderCor != null)
+        {
+            StopCoroutine(pathFinderCor);
+            pathFinderCor = null;
+        }
+
+        if(pathUpdateCor != null)
+        {
+            StopCoroutine(pathUpdateCor);
+            pathUpdateCor = null;
+        }
+
+        if (buffStats.Contains(Enums.CreatureState.PathFind))
+        {
+            buffStats.Remove(Enums.CreatureState.PathFind);
+        }
+    }
+
+
+    private IEnumerator PathUpdateCor(float cooltime, Transform targetTr)
+    {
+        var wait = new WaitForSeconds(cooltime);
+        UpdatePath(targetTr);
+        while (buffStats.Contains(Enums.CreatureState.PathFind))
+        {
+            yield return wait;
+            UpdatePath(targetTr);
+        }
+
+        StopPathFinder();
+    }
+
+
+    /// <summary>
+    /// 최적의 경로 탐색<br/>
+    /// targetTr : 쫒는 타겟
+    /// </summary>
+    /// <param name="targetTr">쫒는 타겟</param>
+    private void UpdatePath(Transform targetTr)
+    {
+        if (seeker.IsDone())
+        {
+            seeker.StartPath(rigid2D.position, targetTr.position, OnPathComplete);
+        }
+    }
+
+    #endregion
+
     #endregion
 }
 

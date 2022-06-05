@@ -10,7 +10,7 @@
 //public class UPlayer : UCharacter, IController
 //{
 //    private OrderTitle animState;
-//    private HashSet<OrderTitle> buffStates;
+//    private HashSet<OrderTitle> buffStats;
 
 //    public GameObject gunAim;
 //    public GameObject weaPon;

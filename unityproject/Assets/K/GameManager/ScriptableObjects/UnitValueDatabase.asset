@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29550b3e5b2801b4ba52b60cb5842068, type: 3}
   m_Name: UnitValueDatabase
   m_EditorClassIdentifier: 
-  unitSpeed: 2
+  unitSpeed: 4
   unitPush: 300

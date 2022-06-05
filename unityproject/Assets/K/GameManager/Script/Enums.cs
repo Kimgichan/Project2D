@@ -17,6 +17,7 @@ public class Enums
         Attack, 
         Dash,
         Shock,
+        PathFind,
     }
 
     public enum ControllerKind
