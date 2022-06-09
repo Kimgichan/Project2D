@@ -48,7 +48,37 @@ public class ObjectController : MonoBehaviour
 
     public virtual void OrderSuper() {}
 
+
+    /// <summary>
+    /// CreatureController.OrderPathFind를 확인해 볼 것
+    /// </summary>
+    /// <param name="targetTr"></param>
     public virtual void OrderPathFind(Transform targetTr) {}
     public virtual void OrderPathFindStop() {}
+
+
+    /// <summary>
+    /// CreatureController.OrderSetAI_Style을 확인해 볼 것
+    /// </summary>
+    /// <param name="attackDist">상대에게 공격을 개시하는 최대 거리(Scale 값임)</param>
+    /// <param name="targetDist">상대와 어느정도의 거리를 유지하려 하는 지(Scale 값임)</param>
+    /// <param name="bellicosity">공격적인지 수비적인지를 결정함.<br/>
+    /// 값 범위 0~1<br/>
+    /// 높을수록 공격적.</param>
+    public virtual void OrderSetAI_Style(float attackDist, float targetDist, float bellicosity) {}
+
+    /// <summary>
+    /// OrderPathFind와 OrderSetAI_Style의 기능이 합쳐짐
+    /// </summary>
+    /// <param name="targetTr"></param>
+    /// <param name="attackDist"></param>
+    /// <param name="targetDist"></param>
+    /// <param name="bellicosity"></param>
+    public virtual void OrderPlayAI(Transform targetTr, float attackDist, float targetDist, float bellicosity) {}
+
+    /// <summary>
+    /// 이름은 다르지만 OrderPathFindStop과 같은 기능 수행
+    /// </summary>
+    public virtual void OrderStopAI() {}
     #endregion
 }

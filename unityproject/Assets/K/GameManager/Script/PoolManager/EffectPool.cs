@@ -18,23 +18,39 @@ public class EffectPool : MonoBehaviour
         effectManager = new Dictionary<Enums.Effect, Queue<Effect>>();
         lifeCycleList = new List<Enums.Effect>();
     }
-    #region 각 Effect마다 매개변수 유형 지정해 줄 것
-    public Effect Pop(Enums.Effect effectKind, in PickUpEcho.ParametersNode parameters)
+
+    /// <summary>
+    /// 공격 판정이 없는 이펙트 호출용
+    /// </summary>
+    /// <param name="effectKind"></param>
+    /// <param name="pos"></param>
+    /// <param name="sendEvents"></param>
+    /// <returns></returns>
+    public Effect Pop(Enums.Effect effectKind, in Vector3 pos, List<UnityAction<ObjectController>> sendEvents = null)
     {
-        return MainPop(effectKind, parameters);
+        return Pop(effectKind, null, pos, Vector2.zero, sendEvents);
     }
-    #endregion
-    private Effect MainPop(Enums.Effect effectKind, object parameters)
+
+    /// <summary>
+    /// 투사체, 혹은 공격(타격) 판정이 있는 이펙트 호출용
+    /// </summary>
+    /// <param name="effectKind"></param>
+    /// <param name="requireController"></param>
+    /// <param name="pos"></param>
+    /// <param name="dir"></param>
+    /// <param name="sendEvents"></param>
+    /// <returns></returns>
+    public Effect Pop(Enums.Effect effectKind, ObjectController requireController, in Vector3 pos, in Vector2 dir, List<UnityAction<ObjectController>> sendEvents = null)
     {
         Effect effect;
         currentLifeTime = lifeTimer;
-        if(effectManager.TryGetValue(effectKind, out Queue<Effect> q))
+        if (effectManager.TryGetValue(effectKind, out Queue<Effect> q))
         {
             effect = q.Dequeue();
             effect.gameObject.transform.parent = null;
             effect.gameObject.SetActive(true);
-            effect.Show(parameters);
-            if(q.Count <= 0)
+            effect.Show(requireController, pos, dir, sendEvents);
+            if (q.Count <= 0)
             {
                 effectManager.Remove(effectKind);
                 lifeCycleList.Remove(effectKind);
@@ -43,10 +59,11 @@ public class EffectPool : MonoBehaviour
         else
         {
             effect = Instantiate(GameManager.Instance.GameDB.EffectDB[effectKind]);
-            effect.Show(parameters);
+            effect.Show(requireController, pos, dir, sendEvents);
         }
         return effect;
     }
+
     public void Push(Effect effect)
     {
         effect.transform.SetParent(transform);

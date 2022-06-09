@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 using DG.Tweening;
 
 public class PickUpEcho : Effect
 {
-    [SerializeField] private float cycletimer;
-    [SerializeField] private float downDistance;
+    [SerializeField] protected float cycletimer;
+    [SerializeField] protected float downDistance;
 
-    private bool start = false;
+    protected bool start = false;
 
-    void Start()
+    protected void Start()
     {
         effectKind = Enums.Effect.PickUp;
         start = true;
@@ -28,18 +29,12 @@ public class PickUpEcho : Effect
         gameObject.SetActive(false);
     }
 
-    // parameters ¸ñ·Ï
-    // 0 => Vector3 pos
-    public struct ParametersNode
+    public override void Show(ObjectController requireController, in Vector3 pos, in Vector2 force, List<UnityAction<ObjectController>> sendEvents)
     {
-        public Vector3 pos;
-    }
-    public override void Show(object parametersNode)
-    {
-        StartCoroutine(ShowCor(((ParametersNode)parametersNode).pos));
+        StartCoroutine(ShowCor(pos));
     }
 
-    private IEnumerator ShowCor(Vector3 pos)
+    protected IEnumerator ShowCor(Vector3 pos)
     {
         while (!start) yield return null;
 

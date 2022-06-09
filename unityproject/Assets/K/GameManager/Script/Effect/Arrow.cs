@@ -6,78 +6,95 @@ using UnityEngine.Rendering;
 using DG.Tweening;
 
 
-public class Arrow : Projectile
+public class Arrow : Effect
 {
-    private Vector2 force;
-    private IEnumerator actionCor;
-    private UnityAction<Collider2D> actionTriggerEnterFunc;
-    [SerializeField] private Rigidbody2D rigidbody;
-    [SerializeField] private float dropRotationSpeed;
-    [SerializeField] private Vector2 echoOffset;
+    #region 변수 목록
+    protected ObjectController attackController;
+    protected List<UnityAction<ObjectController>> sendEvents;
 
-    private bool start = false;
-    private Effect echo;
-    private Effect Echo
+    protected Vector2 force;
+    protected IEnumerator actionCor;
+    protected UnityAction<Collider2D> actionTriggerEnterFunc;
+    [SerializeField] protected Rigidbody2D rigidbody;
+    [SerializeField] protected float dropRotationSpeed;
+    [SerializeField] protected Vector2 echoOffset;
+
+    protected bool start = false;
+
+    /// <summary>
+    /// echo 변수 말고 프로퍼티 목록에 있는 Echo를 사용할 것
+    /// </summary>
+    protected Effect echo;
+
+    [SerializeField] protected TrailRenderer trail;
+
+    #endregion
+
+    #region 프로퍼티 목록
+    protected Effect Echo
     {
         get => echo;
         set
         {
-            if(echo != null)
+            if((object)echo != null)
             {
                 echo.Push();
             }
 
-            if (value == null)
-            {
-                echo = null;
-            }
-            else echo = value;
+            echo = value;
         }
     }
 
-    [SerializeField] private TrailRenderer trail;
-    private void Start()
+
+    #endregion
+
+
+    #region 모노비헤이비어 API
+
+    protected void Start()
     {
-        projectileKind = Enums.Projectile.Arrow;
+        effectKind = Enums.Effect.Arrow;
         start = true;
         trail.enabled = false;
     }
 
-    //private void OnD
-    //{
-    //    if (start)
-    //    {
-    //        Debug.Log("????");
-    //        GameManager.Instance.projectileManager.Push(this);
-    //    }
-    //}
 
+    protected void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (actionTriggerEnterFunc != null)
+            actionTriggerEnterFunc(collision);
+    }
+
+    #endregion
+
+    #region 함수 목록
     public override void Push()
     {
         if (start)
         {
-            GameManager.Instance.ProjectileManager.Push(this);
+            //GameManager.Instance.ProjectileManager.Push(this);
+            GameManager.Instance.EffectManager.Push(this);
         }
 
         Echo = null;
         gameObject.SetActive(false);
     }
 
-    public override void Shot(ObjectController attackController, 
-        Vector3 pos, Vector2 force, 
+    public override void Show(ObjectController requireController, 
+        in Vector3 pos, in Vector2 force, 
         List<UnityAction<ObjectController>> sendEvents = null )
     {
-        StartCoroutine(ShotCor(attackController, pos, force, sendEvents));
+        StartCoroutine(ShotCor(requireController, pos, force, sendEvents));
     }
 
-    private IEnumerator ShotCor(ObjectController attackController, 
+    protected IEnumerator ShotCor(ObjectController requireController, 
         Vector3 pos, Vector2 force, 
         List<UnityAction<ObjectController>> sendEvents)
     {
         while (!start) yield return null;
 
         transform.position = pos;
-        this.attackController = attackController;
+        this.attackController = requireController;
         this.force = force;
         if (sendEvents != null)
             this.sendEvents = sendEvents;
@@ -91,13 +108,7 @@ public class Arrow : Projectile
         StartCoroutine(actionCor);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (actionTriggerEnterFunc != null)
-            actionTriggerEnterFunc(collision);
-    }
-
-    private void ShotTriggerEnter(Collider2D collision)
+    protected void ShotTriggerEnter(Collider2D collision)
     {
         var hitController = collision.gameObject.GetComponent<ControllerCollision>().controller;
         if (attackController.Equals(hitController)) return;
@@ -121,7 +132,7 @@ public class Arrow : Projectile
 
         Drop(collision.gameObject);
     }
-    private void DropTriggerEnter(Collider2D collision)
+    protected void DropTriggerEnter(Collider2D collision)
     {
         if(attackController.Equals(collision.gameObject.GetComponent<ControllerCollision>().controller))
         {
@@ -129,7 +140,7 @@ public class Arrow : Projectile
             Echo = null;
         }
     }
-    private IEnumerator MoveCor()
+    protected IEnumerator MoveCor()
     {
         yield return null;
         trail.enabled = true;
@@ -142,7 +153,7 @@ public class Arrow : Projectile
         }
     }
 
-    private void Drop(GameObject hitTarget)
+    protected void Drop(GameObject hitTarget)
     {
         rigidbody.simulated = false;
         float distance = Random.Range(1.2f, 1.6f);
@@ -178,7 +189,7 @@ public class Arrow : Projectile
         var rotateDir = (Random.Range(0, 2) == 0 ? -dropRotationSpeed : dropRotationSpeed);
 
         var end = startPos + dir * distance;
-        Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp, new PickUpEcho.ParametersNode() { pos = new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y) });
+        Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp, new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y));
         
         DOTween.To(() => x, (val) => x = val, distance, 0.65f).OnUpdate(() =>
         {
@@ -195,12 +206,5 @@ public class Arrow : Projectile
         });
     }
 
-    //private IEnumerator DropCor()
-    //{
-    //    //yield return null;
-
-
-    //    state = EquipState.Drop;
-    //    actionTriggerEnterFunc = DropTriggerEnter;
-    //}
+    #endregion
 }
