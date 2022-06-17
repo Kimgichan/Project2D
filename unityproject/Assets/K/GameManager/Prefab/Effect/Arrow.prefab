@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cc87553e9f32b44797d4251578f35bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectKind: 1
   rigidbody: {fileID: 6585967616905501316}
   dropRotationSpeed: 1000
   echoOffset: {x: 0, y: 0.5}

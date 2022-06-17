@@ -10,7 +10,7 @@ public class Arrow : Effect
 {
     #region 변수 목록
     protected ObjectController attackController;
-    protected List<UnityAction<ObjectController>> sendEvents;
+    protected UnityAction<ObjectController> sendEvent;
 
     protected Vector2 force;
     protected IEnumerator actionCor;
@@ -24,14 +24,14 @@ public class Arrow : Effect
     /// <summary>
     /// echo 변수 말고 프로퍼티 목록에 있는 Echo를 사용할 것
     /// </summary>
-    protected Effect echo;
+    protected PickUpEcho echo;
 
     [SerializeField] protected TrailRenderer trail;
 
     #endregion
 
     #region 프로퍼티 목록
-    protected Effect Echo
+    protected PickUpEcho Echo
     {
         get => echo;
         set
@@ -53,7 +53,6 @@ public class Arrow : Effect
 
     protected void Start()
     {
-        effectKind = Enums.Effect.Arrow;
         start = true;
         trail.enabled = false;
     }
@@ -80,25 +79,25 @@ public class Arrow : Effect
         gameObject.SetActive(false);
     }
 
-    public override void Show(ObjectController requireController, 
-        in Vector3 pos, in Vector2 force, 
-        List<UnityAction<ObjectController>> sendEvents = null )
+    public virtual void Play(ObjectController requireController, 
+        in Vector3 pos, in Vector2 force,
+        UnityAction<ObjectController> sendEvent = null )
     {
-        StartCoroutine(ShotCor(requireController, pos, force, sendEvents));
+        StartCoroutine(ShotCor(requireController, pos, force, sendEvent));
     }
 
     protected IEnumerator ShotCor(ObjectController requireController, 
         Vector3 pos, Vector2 force, 
-        List<UnityAction<ObjectController>> sendEvents)
+        UnityAction<ObjectController> sendEvent)
     {
         while (!start) yield return null;
 
         transform.position = pos;
         this.attackController = requireController;
         this.force = force;
-        if (sendEvents != null)
-            this.sendEvents = sendEvents;
-        else this.sendEvents = null;
+        if (sendEvent != null)
+            this.sendEvent = sendEvent;
+        else this.sendEvent = null;
 
         if (actionCor != null) StopCoroutine(actionCor);
 
@@ -113,14 +112,11 @@ public class Arrow : Effect
         var hitController = collision.gameObject.GetComponent<ControllerCollision>().controller;
         if (attackController.Equals(hitController)) return;
 
-        if (hitController != null && sendEvents != null)
+        if (hitController != null && sendEvent != null)
         {
-            for(int i = 0, icount = sendEvents.Count; i<icount; i++)
-            {
-                sendEvents[i](hitController);
-            }
+            sendEvent(hitController);
         }
-        sendEvents = null;
+        sendEvent = null;
         if (actionCor != null)
         {
             StopCoroutine(actionCor);
@@ -189,7 +185,11 @@ public class Arrow : Effect
         var rotateDir = (Random.Range(0, 2) == 0 ? -dropRotationSpeed : dropRotationSpeed);
 
         var end = startPos + dir * distance;
-        Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp, new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y));
+        //Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp_Base, new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y));
+        Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp_Base) as PickUpEcho;
+
+        Echo?.gameObject.SetActive(true);
+        Echo?.Play(new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y));
         
         DOTween.To(() => x, (val) => x = val, distance, 0.65f).OnUpdate(() =>
         {

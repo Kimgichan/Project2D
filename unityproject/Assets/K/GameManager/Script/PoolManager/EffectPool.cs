@@ -19,28 +19,8 @@ public class EffectPool : MonoBehaviour
         lifeCycleList = new List<Enums.Effect>();
     }
 
-    /// <summary>
-    /// 공격 판정이 없는 이펙트 호출용
-    /// </summary>
-    /// <param name="effectKind"></param>
-    /// <param name="pos"></param>
-    /// <param name="sendEvents"></param>
-    /// <returns></returns>
-    public Effect Pop(Enums.Effect effectKind, in Vector3 pos, List<UnityAction<ObjectController>> sendEvents = null)
-    {
-        return Pop(effectKind, null, pos, Vector2.zero, sendEvents);
-    }
 
-    /// <summary>
-    /// 투사체, 혹은 공격(타격) 판정이 있는 이펙트 호출용
-    /// </summary>
-    /// <param name="effectKind"></param>
-    /// <param name="requireController"></param>
-    /// <param name="pos"></param>
-    /// <param name="dir"></param>
-    /// <param name="sendEvents"></param>
-    /// <returns></returns>
-    public Effect Pop(Enums.Effect effectKind, ObjectController requireController, in Vector3 pos, in Vector2 dir, List<UnityAction<ObjectController>> sendEvents = null)
+    public Effect Pop(Enums.Effect effectKind)
     {
         Effect effect;
         currentLifeTime = lifeTimer;
@@ -48,8 +28,6 @@ public class EffectPool : MonoBehaviour
         {
             effect = q.Dequeue();
             effect.gameObject.transform.parent = null;
-            effect.gameObject.SetActive(true);
-            effect.Show(requireController, pos, dir, sendEvents);
             if (q.Count <= 0)
             {
                 effectManager.Remove(effectKind);
@@ -59,7 +37,6 @@ public class EffectPool : MonoBehaviour
         else
         {
             effect = Instantiate(GameManager.Instance.GameDB.EffectDB[effectKind]);
-            effect.Show(requireController, pos, dir, sendEvents);
         }
         return effect;
     }

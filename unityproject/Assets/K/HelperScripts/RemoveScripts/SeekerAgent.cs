@@ -16,6 +16,7 @@ public class SeekerAgent : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         var controller = GetComponent<ObjectController>();
-        controller.OrderPathFind(target);
+        //controller.OrderPathFind(target);
+        controller.OrderPlayAI(target, 1f, 1f, 0.7f);
     }
 }

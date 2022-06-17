@@ -163,6 +163,11 @@ public class CreatureController : ObjectController
             {
                 return;
             }
+
+            if (animState == Enums.CreatureState.Push)
+            {
+                return;
+            }
         }
         else
         {
@@ -185,12 +190,17 @@ public class CreatureController : ObjectController
             return;
         }
 
+        if(animState == Enums.CreatureState.Push)
+        {
+            return;
+        }
+
         Move(dir);
     }
 
     public override void OrderAttack(Vector2 dir)
     {
-        if(animState == Enums.CreatureState.Dash || animState == Enums.CreatureState.Shock)
+        if(animState == Enums.CreatureState.Dash || animState == Enums.CreatureState.Shock || animState == Enums.CreatureState.Push)
         {
             OrderAttackStop();
             return;
@@ -231,6 +241,8 @@ public class CreatureController : ObjectController
 
     public override void OrderPushed(Vector2 force)
     {
+        animState = Enums.CreatureState.Push;
+        StartCoroutine(PushCor(1f));
         rigid2D.AddForce(force);
     }
 
@@ -294,8 +306,6 @@ public class CreatureController : ObjectController
     #endregion
 
 
-
-
     #region Order를 서포트하는 로직 조각
 
     #region 공격 로직 조각
@@ -304,28 +314,34 @@ public class CreatureController : ObjectController
     {
         animState = Enums.CreatureState.Attack;
 
-
-        HashSet<ObjectController> hitTarget = new HashSet<ObjectController>();
-        for (int i = 0, icount = hitRanges.Count; i < icount; i++)
+        var shock = GameManager.Instance.EffectManager.Pop(Enums.Effect.Shock_Base) as Shock;
+        shock.gameObject.SetActive(true);
+        shock.Play(this, new Vector3(rigid2D.position.x, rigid2D.position.y, -10f), 1.2f, 1f, (hitTarget) =>
         {
-            var colls = hitRanges[i].CurrentCheckTrigger();
-            for (int j = 0, jcount = colls.Length; j < jcount; j++)
-            {
-                var controllerColl = colls[j].GetComponent<ControllerCollision>();
-                if (controllerColl == null || hitTarget.Contains(controllerColl.controller) || controllerColl.controller == this)
-                {
-                    continue;
-                }
+            hitTarget.OrderPushed(dir.normalized * Info.PushEnergy);
+        });
 
-                var pushEnergy = Info.PushEnergy;
-                hitTarget.Add(controllerColl.controller);
-                controllerColl.controller.OrderPushed(((Vector2)controllerColl.controller.transform.position - (Vector2)transform.position).normalized * pushEnergy);
-            }
-        }
+        //HashSet<ObjectController> hitTarget = new HashSet<ObjectController>();
+        //for (int i = 0, icount = hitRanges.Count; i < icount; i++)
+        //{
+        //    var colls = hitRanges[i].CurrentCheckTrigger();
+        //    for (int j = 0, jcount = colls.Length; j < jcount; j++)
+        //    {
+        //        var controllerColl = colls[j].GetComponent<ControllerCollision>();
+        //        if (controllerColl == null || hitTarget.Contains(controllerColl.controller) || controllerColl.controller == this)
+        //        {
+        //            continue;
+        //        }
+
+        //        var pushEnergy = Info.PushEnergy;
+        //        hitTarget.Add(controllerColl.controller);
+        //        controllerColl.controller.OrderPushed(((Vector2)controllerColl.controller.transform.position - (Vector2)transform.position).normalized * pushEnergy);
+        //    }
+        //}
 
         if (attackCoolTimeCor == null)
         {
-            attackCoolTimeCor = AttackCoolTimeCor(3f / Info.Speed);
+            attackCoolTimeCor = AttackCoolTimeCor(1f);
         }
         StartCoroutine(attackCoolTimeCor);
     }
@@ -424,11 +440,16 @@ public class CreatureController : ObjectController
         {
             yield return null;
 
+            if (animState == Enums.CreatureState.Push)
+            {
+                continue;
+            }
+
             var dist = Vector2.Distance(rigid2D.position, targetTr.position);
 
 
             // 상대가 공격 범위에 닿음
-            if (attackDist >= 0f && attackDist * GameManager.Instance.GameDB.UnitValueDB.UnitDist < dist)
+            if (attackDist >= 0f && attackDist * GameManager.Instance.GameDB.UnitValueDB.UnitDist > dist)
             {
                 
                 var attackPossbility = Random.Range(0f, 1f);
@@ -436,7 +457,19 @@ public class CreatureController : ObjectController
                 //공격
                 if(bellicosity >= attackPossbility) 
                 {
-                    OrderAttack(((Vector2)targetTr.position - rigid2D.position) / dist);
+                    if (animState == Enums.CreatureState.Dash || animState == Enums.CreatureState.Shock)
+                    {
+                        OrderAttackStop();
+                        continue;
+                    }
+
+                    if (animState == Enums.CreatureState.Attack)
+                    {
+                        continue;
+                    }
+
+
+                    Attack(((Vector2)targetTr.position - rigid2D.position) / dist);
                 }
                 else // 이동
                 {
@@ -454,13 +487,17 @@ public class CreatureController : ObjectController
 
 
     /// <summary>
+    /// 메인 상태(animState)가 Idle, Move가 아닐 경우 중단<br/>
     /// AICor 코루틴 함수에서 사용됌
     /// </summary>
     /// <param name="targetTr"></param>
     /// <param name="dist"></param>
     protected void ChoiceMoveStyle(Transform targetTr, float dist)
     {
-        if (targetDist >= 0f && targetDist * GameManager.Instance.GameDB.UnitValueDB.UnitDist < dist)
+        if (animState != Enums.CreatureState.Idle && animState != Enums.CreatureState.Move) return;
+
+
+        if (targetDist >= 0f && targetDist * GameManager.Instance.GameDB.UnitValueDB.UnitDist > dist)
         {
             //타겟과 반대 방향으로 이동
             //벡터 크기를 1로 만들고 Move 호출
@@ -513,34 +550,30 @@ public class CreatureController : ObjectController
     protected void PathFinderMove()
     {
         // AI 이동 관련 로직
-        if (animState == Enums.CreatureState.Move ||
-            animState == Enums.CreatureState.Idle)
+        if ((object)path == null)
         {
-            if ((object)path == null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (currentWaypoint >= path.vectorPath.Count)
-            {
-                reachedEndOfPath = true;
-                return;
-            }
-            else
-            {
-                reachedEndOfPath = false;
-            }
+        if (currentWaypoint >= path.vectorPath.Count)
+        {
+            reachedEndOfPath = true;
+            return;
+        }
+        else
+        {
+            reachedEndOfPath = false;
+        }
 
-            Vector2 force = ((Vector2)path.vectorPath[currentWaypoint] - rigid2D.position).normalized;
-            Vector2 dir = force.normalized;
-            float distance = Vector2.Distance(path.vectorPath[currentWaypoint], rigid2D.position);
+        Vector2 force = ((Vector2)path.vectorPath[currentWaypoint] - rigid2D.position).normalized;
+        Vector2 dir = force.normalized;
+        float distance = Vector2.Distance(path.vectorPath[currentWaypoint], rigid2D.position);
 
-            Move(dir);
+        Move(dir);
 
-            if (distance < nextWaypointDistance)
-            {
-                currentWaypoint++;
-            }
+        if (distance < nextWaypointDistance)
+        {
+            currentWaypoint++;
         }
     }
 
@@ -550,6 +583,17 @@ public class CreatureController : ObjectController
 
 
 
+
+    #endregion
+
+
+    #region 푸쉬 로직 조각(밀쳐짐을 당하는 경우)
+
+    protected IEnumerator PushCor(float timer)
+    {
+        yield return new WaitForSeconds(timer);
+        animState = Enums.CreatureState.Idle;
+    }
 
     #endregion
 

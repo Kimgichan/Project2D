@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitSpeed: 4
   unitPush: 300
+  unitDist: 1

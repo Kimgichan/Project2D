@@ -6,17 +6,25 @@ public class Enums
 {
     public enum EquipKind { Bow, Sword, Wand, WeaponAll, EquipAll}
     public enum EquipAttribute { Dash, FireCount, Guide}
-    public enum Effect { PickUp, Arrow }
+
+
+    /// <summary>
+    /// PickUp : 줍기 관련 이펙트<br/>
+    /// Arrow : 투사체 관련 이펙트<br/>
+    /// Shock : 범위 공격 관련 이펙트 && 근접 공격용으로도 사용<br/>
+    /// </summary>
+    public enum Effect { PickUp_Base, Arrow_Base, Shock_Base }
 
     
     public enum CreatureState
     {
         Idle,
         Move,
-        Attack, 
-        Dash,
+        Attack,
+        Dash, 
         Shock,
         PathFind,
+        Push,
     }
 
     public enum ControllerKind

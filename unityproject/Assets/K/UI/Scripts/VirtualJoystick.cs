@@ -50,6 +50,7 @@ public class VirtualJoystick : MonoBehaviour
     {
         if (!enabled) return;
 
+        currentDragForce = Vector2.zero;
         handle.position = joystick.position;
         joystick.gameObject.SetActive(true);
         joystick.position = (e as PointerEventData).position;

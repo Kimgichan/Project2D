@@ -14,7 +14,6 @@ public class PickUpEcho : Effect
 
     protected void Start()
     {
-        effectKind = Enums.Effect.PickUp;
         start = true;
     }
 
@@ -29,7 +28,7 @@ public class PickUpEcho : Effect
         gameObject.SetActive(false);
     }
 
-    public override void Show(ObjectController requireController, in Vector3 pos, in Vector2 force, List<UnityAction<ObjectController>> sendEvents)
+    public virtual void Play(Vector3 pos)
     {
         StartCoroutine(ShowCor(pos));
     }
