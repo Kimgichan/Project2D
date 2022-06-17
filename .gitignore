@@ -60,3 +60,6 @@ crashlytics-build.properties
 
 unityproject/Library/*
 unityproject/Temp/*
+unityproject/Assets/Plugins/Demigiant/*
+unityproject/Assets/Resources/SPUM/*
+unityproject/Assets/SPUM/*
