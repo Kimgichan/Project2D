@@ -40,3 +40,4 @@ MonoBehaviour:
   weaponDB: {fileID: 11400000, guid: ab6d74b3ce086d044b944048a8d977d8, type: 2}
   projectileDB: {fileID: 11400000, guid: 7792b12e75a7100489b3ef7cb3473763, type: 2}
   effectDB: {fileID: 11400000, guid: 01e4d3e459c374b48b902d9d6c3d67da, type: 2}
+  unitValueDB: {fileID: 11400000, guid: 88d26ba9eefb05e4f8621788ba1a299f, type: 2}

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using DG.Tweening;
-using OrderAction = IController.Order; 
+
 
 public class Arrow : Projectile
 {
@@ -63,21 +63,25 @@ public class Arrow : Projectile
         gameObject.SetActive(false);
     }
 
-    public override void Shot(IController attackController, Vector3 pos, Vector2 force, OrderAction[] sendEvent = null )
+    public override void Shot(ObjectController attackController, 
+        Vector3 pos, Vector2 force, 
+        List<UnityAction<ObjectController>> sendEvents = null )
     {
-        StartCoroutine(ShotCor(attackController, pos, force, sendEvent));
+        StartCoroutine(ShotCor(attackController, pos, force, sendEvents));
     }
 
-    private IEnumerator ShotCor(IController attackController, Vector3 pos, Vector2 force, OrderAction[] sendEvent)
+    private IEnumerator ShotCor(ObjectController attackController, 
+        Vector3 pos, Vector2 force, 
+        List<UnityAction<ObjectController>> sendEvents)
     {
         while (!start) yield return null;
 
         transform.position = pos;
         this.attackController = attackController;
         this.force = force;
-        if (sendEvent != null)
-            this.sendEvent = sendEvent;
-        else this.sendEvent = null;
+        if (sendEvents != null)
+            this.sendEvents = sendEvents;
+        else this.sendEvents = null;
 
         if (actionCor != null) StopCoroutine(actionCor);
 
@@ -89,37 +93,37 @@ public class Arrow : Projectile
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag.Equals("Object") || collision.gameObject.tag.Equals("Monster") || collision.gameObject.tag.Equals("Player"))
-        {
-            if (actionTriggerEnterFunc != null)
-                actionTriggerEnterFunc(collision);
-        }
+        if (actionTriggerEnterFunc != null)
+            actionTriggerEnterFunc(collision);
     }
 
     private void ShotTriggerEnter(Collider2D collision)
     {
-        var controller = collision.gameObject.GetComponent<IController>();
-        if (controller != null && controller != attackController)
+        var hitController = collision.gameObject.GetComponent<ControllerCollision>().controller;
+        if (attackController.Equals(hitController)) return;
+
+        if (hitController != null && sendEvents != null)
         {
-            if (sendEvent != null)
-                controller.OrderAction(sendEvent);
-            sendEvent = null;
-            if (actionCor != null)
+            for(int i = 0, icount = sendEvents.Count; i<icount; i++)
             {
-                StopCoroutine(actionCor);
-                actionCor = null;
+                sendEvents[i](hitController);
             }
-
-
-            actionTriggerEnterFunc = null;
-            //actionCor = DropCor();
-            //StartCoroutine(actionCor);
-            Drop(controller);
         }
+        sendEvents = null;
+        if (actionCor != null)
+        {
+            StopCoroutine(actionCor);
+            actionCor = null;
+        }
+
+
+        actionTriggerEnterFunc = null;
+
+        Drop(collision.gameObject);
     }
     private void DropTriggerEnter(Collider2D collision)
     {
-        if(attackController == collision.gameObject.GetComponent<IController>())
+        if(attackController.Equals(collision.gameObject.GetComponent<ControllerCollision>().controller))
         {
             Push();
             Echo = null;
@@ -138,25 +142,33 @@ public class Arrow : Projectile
         }
     }
 
-    private void Drop(IController hitController)
+    private void Drop(GameObject hitTarget)
     {
         rigidbody.simulated = false;
         float distance = Random.Range(1.2f, 1.6f);
         Vector2 startPos = transform.position;
-        Vector2 dir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+
+        Vector2 dir;
+        if (hitTarget.CompareTag("Block"))
+        {
+            dir = ((Vector2)attackController.transform.position - (Vector2)transform.position).normalized;
+        }
+        else
+        {
+            dir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+        }
 
         var hitList = Physics2D.CircleCastAll(startPos, 0.2f, dir, distance);
 
+
         for(int i = 0, icount = hitList.Length; i<icount; i++)
         {
-            var controll = hitList[i].collider.gameObject.GetComponent<IController>();
-            if (controll != attackController && controll != hitController)
+            var controll = hitList[i].collider;
+            if (hitTarget != controll.gameObject && controll.gameObject.CompareTag("Block"))
             {
-                //end = hitList[i].point;
                 var newDistanceSqr = (hitList[i].point - startPos).sqrMagnitude;
                 if (distance * distance > newDistanceSqr)
                 {
-                    //end = hitList[i].point;
                     distance = Mathf.Sqrt(newDistanceSqr);
                 }
             }

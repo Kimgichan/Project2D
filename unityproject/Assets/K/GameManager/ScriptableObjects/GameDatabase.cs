@@ -290,4 +290,7 @@ public class GameDatabase : ScriptableObject
 
     [SerializeField] private EffectDatabase effectDB;
     public EffectDatabase EffectDB => effectDB;
+
+    [SerializeField] private UnitValueDatabase unitValueDB;
+    public UnitValueDatabase UnitValueDB => unitValueDB;
 }
