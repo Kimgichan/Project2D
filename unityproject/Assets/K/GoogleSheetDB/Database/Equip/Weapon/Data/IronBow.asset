@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   kind: 0
-  damage: {x: 0, y: 0}
-  reinforceMaxCount: 0
-  unlockAttributeCounts: 
-  baseRequireReinforceCount: 0
+  attackEffect: 1
+  minDamage: 40
+  maxDamage: 65
+  reinforceMaxCount: 20
+  unlockAttributeCounts: 0a00000014000000
+  baseRequireReinforceCount: 100
