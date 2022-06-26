@@ -38,7 +38,7 @@ public class BowModel : MonoBehaviour,   IWeaponPrefab
     //    }
     //}
 
-    public bool AttackAnim (float timer, UnityAction endEvent)
+    public bool AttackAnim (float timer, UnityAction attackEvent)
     {
         if (anim) return false;
 
@@ -70,7 +70,7 @@ public class BowModel : MonoBehaviour,   IWeaponPrefab
                 anim = false;
 
 
-                if (endEvent != null) endEvent();
+                if (attackEvent != null) attackEvent();
             });
         });
         return true;
@@ -84,5 +84,10 @@ public class BowModel : MonoBehaviour,   IWeaponPrefab
 
         boneRight.DOLocalRotate(Vector3.zero, 0.25f, RotateMode.Fast).SetEase(Ease.Linear);
         boneLeft.DOLocalRotate(Vector3.zero, 0.25f, RotateMode.Fast).SetEase(Ease.Linear);
+    }
+
+    public Transform GetTr()
+    {
+        return transform;
     }
 }

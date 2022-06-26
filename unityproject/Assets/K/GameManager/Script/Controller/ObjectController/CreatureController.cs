@@ -251,7 +251,7 @@ public class CreatureController : ObjectController
         
     }
 
-    public override void OrderDamage()
+    public override void OrderDamage(int damage)
     {
         
     }
@@ -314,30 +314,27 @@ public class CreatureController : ObjectController
     {
         animState = Enums.CreatureState.Attack;
 
-        var shock = GameManager.Instance.EffectManager.Pop(Enums.Effect.Shock_Base) as Shock;
-        shock.gameObject.SetActive(true);
-        shock.Play(this, new Vector3(rigid2D.position.x, rigid2D.position.y, -10f), 1.2f, 1f, (hitTarget) =>
+
+        // 도구를 이용한 공격을 진행할 수 있는지
+        bool equipAttack = false;
+        if(TryGetDecorator(Enums.Decorator.Equipment, out Component value))
         {
-            hitTarget.OrderPushed(dir.normalized * Info.PushEnergy);
-        });
+            var equipDecorator = value as EquipmentDecorator;
+            equipAttack = equipDecorator.Attack(this, dir);
+        }
 
-        //HashSet<ObjectController> hitTarget = new HashSet<ObjectController>();
-        //for (int i = 0, icount = hitRanges.Count; i < icount; i++)
+        if (!equipAttack)
+        {
+            // 베이스 공격도 확장성을 위해 외부로 분리
+        }
+
+        //var shock = GameManager.Instance.EffectManager.Pop(Enums.Effect.Shock_Base) as Shock;
+        //shock.gameObject.SetActive(true);
+        //shock.Play(this, new Vector3(rigid2D.position.x, rigid2D.position.y, -10f), 1.2f, 1f, (hitTarget) =>
         //{
-        //    var colls = hitRanges[i].CurrentCheckTrigger();
-        //    for (int j = 0, jcount = colls.Length; j < jcount; j++)
-        //    {
-        //        var controllerColl = colls[j].GetComponent<ControllerCollision>();
-        //        if (controllerColl == null || hitTarget.Contains(controllerColl.controller) || controllerColl.controller == this)
-        //        {
-        //            continue;
-        //        }
+        //    hitTarget.OrderPushed(dir.normalized * Info.PushEnergy);
+        //});
 
-        //        var pushEnergy = Info.PushEnergy;
-        //        hitTarget.Add(controllerColl.controller);
-        //        controllerColl.controller.OrderPushed(((Vector2)controllerColl.controller.transform.position - (Vector2)transform.position).normalized * pushEnergy);
-        //    }
-        //}
 
         if (attackCoolTimeCor == null)
         {

@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private EffectPool effectPoolManager;
     public EffectPool EffectManager => effectPoolManager;
 
+    [SerializeField] private ControllerManager controllerManager;
+    public ControllerManager ControllerManager => controllerManager;
     private void Awake()
     {
         if(instance != null)

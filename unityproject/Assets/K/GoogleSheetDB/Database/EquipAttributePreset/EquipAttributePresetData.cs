@@ -8,15 +8,8 @@ using EquipAttribute = Enums.EquipAttribute;
 public class EquipAttributePresetData : ScriptableObject
 {
     [SerializeField] private EquipKind kind;
-    public EquipKind Kind
-    {
-        get => kind;
-        set
-        {
-            Debug.LogError("경고: 인게임에서는 수치를 변경하면 안 되는 값(EquipAttributePresetData.Kind)입니다.");
-            kind = value;
-        }
-    }
+    public EquipKind Kind => kind;
+
 
     [SerializeField] private List<Node> attributeList;
     public EquipAttribute RandomAttribut
@@ -44,14 +37,6 @@ public class EquipAttributePresetData : ScriptableObject
             return attributeList[icount - 1].kind;
         }
     } 
-    public List<Node> AttributeList
-    {
-        get
-        {
-            Debug.LogError("경고: 인게임에서는 수치를 변경하면 안 되는 값(EquipAttributePresetData.AttributeList)입니다.");
-            return attributeList;
-        }
-    }
 
     public int AttributeCount => attributeList.Count;
     public Node GetNode(int indx) => attributeList[indx];  
@@ -69,4 +54,15 @@ public class EquipAttributePresetData : ScriptableObject
         public EquipAttribute kind;
         public int count;
     }
+
+
+#if UNITY_EDITOR
+    public void WriteData(EquipKind kind, List<Node> attributeList)
+    {
+        Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
+
+        this.kind = kind;
+        this.attributeList = attributeList;
+    }
+#endif
 }

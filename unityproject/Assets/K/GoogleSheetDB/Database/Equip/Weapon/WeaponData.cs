@@ -16,8 +16,12 @@ public class WeaponData : ScriptableObject
     [SerializeField] private EquipKind kind;
     public EquipKind Kind => kind;
 
+    [SerializeField] private Enums.Effect attackEffect;
     [SerializeField] private int minDamage;
     [SerializeField] private int maxDamage;
+
+
+    public Enums.Effect AttackEffect => attackEffect;
     public int MinDamage => minDamage;
     public int MaxDamage => maxDamage;
     public int RandomDamage => Random.Range(minDamage, maxDamage);
@@ -29,6 +33,7 @@ public class WeaponData : ScriptableObject
     [SerializeField] private List<int> unlockAttributeCounts;
     public int AttributeCount => unlockAttributeCounts.Count;
     public int UnlockRequireReinforceCount(int indx) => unlockAttributeCounts[indx];
+
 
 
     // 이거 이름바꿀 필요 있어보임
@@ -46,11 +51,12 @@ public class WeaponData : ScriptableObject
     /// <param name="reinforceMaxCount"></param>
     /// <param name="unlockAttributeCounts"></param>
     /// <param name="baseRequireReinforceCount"></param>
-    public void WriteData(EquipKind kind, int minDamage, int maxDamage,
+    public void WriteData(EquipKind kind, Enums.Effect attackEffect, int minDamage, int maxDamage,
         int reinforceMaxCount, List<int> unlockAttributeCounts, int baseRequireReinforceCount)
     {
         Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
         this.kind = kind;
+        this.attackEffect = attackEffect;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.reinforceMaxCount = reinforceMaxCount;

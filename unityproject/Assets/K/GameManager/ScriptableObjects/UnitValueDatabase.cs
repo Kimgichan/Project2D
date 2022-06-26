@@ -20,4 +20,7 @@ public class UnitValueDatabase : ScriptableObject
 
     [SerializeField] private float unitDist;
     public float UnitDist => unitDist;
+
+    [SerializeField] private float unitRange;
+    public float UnitRange => unitRange;
 }

@@ -7,17 +7,19 @@ public class ObjectController : MonoBehaviour
     protected Enums.ControllerKind kind = Enums.ControllerKind.None;
     public Enums.ControllerKind Kind => kind;
 
+    #region 함수 목록
 
     /// <summary>
     /// ObjectController 클래스를 상속받는 자식 클래스는<br/>
     /// Start 함수를 protected override 형태로 정의하고<br/> 
     /// kind값을 정의해줄것.
     /// </summary>
-    protected virtual void Start() 
+    protected virtual void Start()
     {
         kind = Enums.ControllerKind.Object;
     }
     protected virtual void OnEnable() { }
+
 
     #region 컨트롤러가 제공하는 액션 함수 목록
 
@@ -44,7 +46,7 @@ public class ObjectController : MonoBehaviour
 
     public virtual void OrderShock() {}
 
-    public virtual void OrderDamage() {}
+    public virtual void OrderDamage(int damage) {}
 
     public virtual void OrderSuper() {}
 
@@ -80,5 +82,25 @@ public class ObjectController : MonoBehaviour
     /// 이름은 다르지만 OrderPathFindStop과 같은 기능 수행
     /// </summary>
     public virtual void OrderStopAI() {}
+    #endregion
+
+
+    public Component GetDecorator(Enums.Decorator decorator)
+    {
+        return GetComponent(Enums.GetDecoratorType(decorator));
+    }
+
+    public bool TryGetDecorator(Enums.Decorator decorator, out Component value)
+    {
+        value = GetDecorator(decorator);
+        if((object)value != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     #endregion
 }

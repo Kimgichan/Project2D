@@ -26,3 +26,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
   - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
   - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}
+  updateWeaponDatas:
+  - {fileID: 11400000, guid: 9637667601fab2e448919d51ba4ee8ab, type: 2}
+  - {fileID: 11400000, guid: 7a10fc6a5a06e9840ba3f2947970cd17, type: 2}
+  - {fileID: 11400000, guid: ecd2ccbb26c4df740b9d99b3b11c5dc2, type: 2}
+  - {fileID: 11400000, guid: 174c4e5fb089e284183276348cfaf2dc, type: 2}
+  weaponDocID: 1abP1gnO8hCgUxAQgC2dinAMCfEk7F229VFsO7nhQzyA
+  weaponGID: 0
+  updateEAPresetDatas:
+  - {fileID: 11400000, guid: 87e0ffd13c0643a4db96f0341b10e7d6, type: 2}
+  - {fileID: 11400000, guid: 7e53a7a9c1bc09140ba37913bea3590e, type: 2}
+  - {fileID: 11400000, guid: 2df8f21a8cbd1df42b4ec1d80f835d81, type: 2}
+  - {fileID: 11400000, guid: fd24974c9fe2b0f448b62b62a514478c, type: 2}
+  eAPresetDocID: 1abP1gnO8hCgUxAQgC2dinAMCfEk7F229VFsO7nhQzyA
+  eAPresetGID: 2073176316
