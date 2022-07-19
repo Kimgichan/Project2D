@@ -15,7 +15,7 @@ using EquipKind = Enums.EquipKind;
 using EquipAttribute = Enums.EquipAttribute;
 
 [CreateAssetMenu(fileName = "WeaponDatabase", menuName = "Scriptable Object/Equip/WeaponDatabase", order = int.MaxValue)]
-public class WeaponDatabase : ScriptableObject
+public class WeaponDatabase : DatabaseLoader
 {
     [SerializeField] private List<WeaponDataPrefabNode> weaponDataPrefabList;
     private Dictionary<WeaponData, GameObject> toPrefabDic;
@@ -34,9 +34,9 @@ public class WeaponDatabase : ScriptableObject
 
 
     [SerializeField] private List<EquipAttributePresetData> equipAttributeList;
-    private Dictionary<Enums.EquipKind, Dictionary<string, EquipAttributePresetData>> equipAttributeTable;
-    public int EquipAttributePresetCount(Enums.EquipKind kind) => equipAttributeTable[kind].Count;
-    public EquipAttributePresetData GetEquipAttributePresetData(Enums.EquipKind kind, string title) => equipAttributeTable[kind][title];
+    private Dictionary<EquipKind, Dictionary<string, EquipAttributePresetData>> equipAttributeTable;
+    public int EquipAttributePresetCount(EquipKind kind) => equipAttributeTable[kind].Count;
+    public EquipAttributePresetData GetEquipAttributePresetData(EquipKind kind, string title) => equipAttributeTable[kind][title];
 
 
     private void OnEnable()
@@ -77,11 +77,11 @@ public class WeaponDatabase : ScriptableObject
 
         weaponItem.Data = new Nodes.WeaponSetting()
         {
-            weaponTitle = weaponData.name,
+            weaponData = weaponData.name,
             reinforceCount = 0,
-            attributeTitle = attributePresetList[Random.Range(0, attributePresetList.Count)].name,
-            statTitles = new List<string>(),
-            statSteps = new List<int>()
+            attributePreset = attributePresetList[Random.Range(0, attributePresetList.Count)].name,
+            statNames = new List<string>(),
+            statLevels = new List<int>()
         };
 
         return weaponItem;
@@ -135,7 +135,11 @@ public class WeaponDatabase : ScriptableObject
 
             var attackEffect = (Enums.Effect)Enum.Parse(typeof(Enums.Effect), values[7]);
 
-            updateWeaponDatas[i].WriteData(kind, attackEffect, minDamage, maxDamage, reinforceMaxCount, unlockAttributeCounts, baseRequireReinforceCount);
+            var attackSpeed = float.Parse(values[8]);
+            var addDamage = float.Parse(values[9]);
+
+            updateWeaponDatas[i].WriteData(kind, attackEffect, minDamage, maxDamage, reinforceMaxCount, unlockAttributeCounts, baseRequireReinforceCount,
+                attackSpeed, addDamage);
         }
 
 
@@ -171,13 +175,13 @@ public class WeaponDatabase : ScriptableObject
             var kind = (EquipKind)Enum.Parse(typeof(EquipKind), values[1]);
 
 
-            var attributeList = new List<EquipAttributePresetData.Node>();
+            var attributeList = new List<Nodes.EquipAttributePercent>();
             var list = values[2].Split('/');
             for(int j = 0, jcount = list.Length; j<jcount; j++)
             {
                 list[j] = list[j].Replace("\r", "");
                 var pair = list[j].Split('(');
-                attributeList.Add(new EquipAttributePresetData.Node()
+                attributeList.Add(new Nodes.EquipAttributePercent()
                 {
                     kind = (EquipAttribute)Enum.Parse(typeof(EquipAttribute), pair[0]),
                     percent = float.Parse(pair[1].Substring(0, pair[1].Length - 1)) / 100f
@@ -193,25 +197,6 @@ public class WeaponDatabase : ScriptableObject
 
     #endregion
 
-    private IEnumerator DataUpdateCor(string docID, string gid, UnityAction<string> updateMethod)
-    {
-        if ((object)updateMethod == null)
-        {
-            yield break;
-        }
-
-        UnityWebRequest www = UnityWebRequest.Get($"https://docs.google.com/spreadsheets/d/{docID}/export?format=csv&gid={gid}");
-
-        yield return www.SendWebRequest();
-
-        if (www.result.Equals(UnityWebRequest.Result.ConnectionError) ||
-            www.result.Equals(UnityWebRequest.Result.ProtocolError))
-        {
-            yield break;
-        }
-
-        updateMethod(www.downloadHandler.text);
-    }
     #endregion
 #endif
 }

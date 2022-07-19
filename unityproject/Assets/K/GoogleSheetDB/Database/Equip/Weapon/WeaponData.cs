@@ -34,11 +34,19 @@ public class WeaponData : ScriptableObject
     public int AttributeCount => unlockAttributeCounts.Count;
     public int UnlockRequireReinforceCount(int indx) => unlockAttributeCounts[indx];
 
-
-
-    // 이거 이름바꿀 필요 있어보임
+    // 소요 강화석
     [SerializeField] private int baseRequireReinforceCount;
     public int BaseRequireReinforceCount => baseRequireReinforceCount;
+
+    [SerializeField] private float attackSpeed;
+    public float AttackSpeed;
+
+
+    /// <summary>
+    /// 무기 강화 계수에 따른 추가 데미지
+    /// </summary>
+    [SerializeField] private float addDamage;
+    public float AddDamage;
 
 
 #if UNITY_EDITOR
@@ -51,8 +59,10 @@ public class WeaponData : ScriptableObject
     /// <param name="reinforceMaxCount"></param>
     /// <param name="unlockAttributeCounts"></param>
     /// <param name="baseRequireReinforceCount"></param>
+    /// <param name="attackEffect"></param>
+    /// <param name="attackSpeed"></param>
     public void WriteData(EquipKind kind, Enums.Effect attackEffect, int minDamage, int maxDamage,
-        int reinforceMaxCount, List<int> unlockAttributeCounts, int baseRequireReinforceCount)
+        int reinforceMaxCount, List<int> unlockAttributeCounts, int baseRequireReinforceCount, float attackSpeed, float addDamage)
     {
         Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
         this.kind = kind;
@@ -62,6 +72,8 @@ public class WeaponData : ScriptableObject
         this.reinforceMaxCount = reinforceMaxCount;
         this.unlockAttributeCounts = unlockAttributeCounts;
         this.baseRequireReinforceCount = baseRequireReinforceCount;
+        this.attackSpeed = attackSpeed;
+        this.addDamage = addDamage;
     }
 #endif
 }

@@ -38,7 +38,7 @@ public class BowModel : MonoBehaviour,   IWeaponPrefab
     //    }
     //}
 
-    public bool AttackAnim (float timer, UnityAction attackEvent)
+    public bool AttackAnim (float speed, UnityAction attackEvent)
     {
         if (anim) return false;
 
@@ -48,9 +48,10 @@ public class BowModel : MonoBehaviour,   IWeaponPrefab
         boneLeft.DOKill();
         boneRight.DOKill();
 
+        float timer = this.timer / speed;
 
         boneLeft.localRotation = Quaternion.identity;
-        boneLeft.DOLocalRotate(new Vector3(0f, 0f, 45f), timer * 0.8f, RotateMode.Fast).SetEase(Ease.OutCubic);
+        boneLeft.DOLocalRotate(new Vector3(0f, 0f, 45f), timer / 0.8f, RotateMode.Fast).SetEase(Ease.OutCubic);
 
 
         boneRight.localRotation = Quaternion.identity;

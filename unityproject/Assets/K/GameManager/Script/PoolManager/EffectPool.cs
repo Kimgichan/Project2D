@@ -27,7 +27,7 @@ public class EffectPool : MonoBehaviour
         if (effectManager.TryGetValue(effectKind, out Queue<Effect> q))
         {
             effect = q.Dequeue();
-            effect.gameObject.transform.parent = null;
+            effect.gameObject.transform.SetParent(null);
             if (q.Count <= 0)
             {
                 effectManager.Remove(effectKind);
@@ -64,7 +64,6 @@ public class EffectPool : MonoBehaviour
             StartCoroutine(lifeCycleCor);
         }
     }
-
     private void OnEnable()
     {
         if (lifeCycleCor != null)

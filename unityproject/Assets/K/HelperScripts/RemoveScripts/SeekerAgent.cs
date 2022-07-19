@@ -17,6 +17,6 @@ public class SeekerAgent : MonoBehaviour
 
         var controller = GetComponent<ObjectController>();
         //controller.OrderPathFind(target);
-        controller.OrderPlayAI(target, 1f, 6f, 0.7f);
+        controller.OrderPlayAI(target, 6f, 5f, 0.7f);
     }
 }

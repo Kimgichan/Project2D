@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7765929960824195996}
   - component: {fileID: 7765929960824196003}
   - component: {fileID: 7765929960824196002}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PickUpEcho
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,5 +95,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47ffe5535df564241873229eb0616744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectKind: 0
   cycletimer: 1
   downDistance: 0.25

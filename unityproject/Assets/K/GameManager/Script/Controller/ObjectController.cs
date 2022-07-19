@@ -50,6 +50,8 @@ public class ObjectController : MonoBehaviour
 
     public virtual void OrderSuper() {}
 
+    public virtual void OrderDestroy() {}
+
 
     /// <summary>
     /// CreatureController.OrderPathFind를 확인해 볼 것
@@ -58,6 +60,7 @@ public class ObjectController : MonoBehaviour
     public virtual void OrderPathFind(Transform targetTr) {}
     public virtual void OrderPathFindStop() {}
 
+    public virtual void OrderXFlip(bool flip) {}
 
     /// <summary>
     /// CreatureController.OrderSetAI_Style을 확인해 볼 것

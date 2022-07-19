@@ -6,8 +6,19 @@ using UnityEngine;
 
 public class Enums
 {
-    public enum EquipKind { Bow, Sword, Wand, WeaponAll, EquipAll}
-    public enum EquipAttribute { Dash, FireCount, Guide}
+    public enum EquipKind 
+    { 
+        Bow, 
+        Sword, 
+        Wand, 
+        Armor,
+    }
+    public enum EquipAttribute 
+    { 
+        Dash, 
+        FireCount, 
+        Guide,
+    }
 
 
     /// <summary>
@@ -18,8 +29,13 @@ public class Enums
     public enum Effect 
     { 
         PickUp_Base, 
-        Arrow_Base, 
-        Shock_Base 
+        
+        Arrow_Base,
+        Arrow_Target,
+
+        Shock_Base,
+        HP_Bar_Base,
+        DamageText,
     }
 
     
@@ -55,6 +71,7 @@ public class Enums
         /// 컨트롤러가 아이템을 착용 혹은 사용할 수 있게 해주는 데코레이터 
         /// </summary>
         Equipment,
+        HUD,
     }
 
     /// <summary>
@@ -63,6 +80,7 @@ public class Enums
     private static List<Type> decorators = new List<Type>()
     {
         typeof(EquipmentDecorator),
+        typeof(HUDDecorator),
     };
 
     public static Type GetDecoratorType(Decorator decorator)
@@ -70,4 +88,13 @@ public class Enums
         return decorators[(int)decorator];
     }
     #endregion
+
+
+    public enum WeaponKind
+    {
+        WoodBow,
+        StonBow,
+        IronBow,
+        StealBow,
+    }
 }

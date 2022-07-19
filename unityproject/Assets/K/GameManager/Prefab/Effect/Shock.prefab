@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5252056995628553159}
   - component: {fileID: 4057711839853204308}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eea74b597c7814646ac57429978c6e6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectKind: 2
+  effectKind: 3
+  attackTime: 1
   sprite: {fileID: 2631784357807958091}
 --- !u!1 &4583349008262425148
 GameObject:
@@ -56,7 +57,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7497666612349549609}
   - component: {fileID: 2631784357807958091}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

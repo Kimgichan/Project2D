@@ -10,6 +10,8 @@ public class DecoratorManager : MonoBehaviour
 
     #region EquipmentDecorator 목록
 
+    #region 이펙트 목록
+
     private Dictionary<Enums.Effect,
             UnityAction<CreatureController,
             EquipmentDecorator,
@@ -34,13 +36,47 @@ public class DecoratorManager : MonoBehaviour
 
     private void EquipmentArrowBasePlay(CreatureController controller, EquipmentDecorator equip, Vector2 dir)
     {
+        //equip.WeaponItem.
+        //발사 타임
+        equip.WeaponItem.AttackAnim(controller.AttackSpeed, () =>
+        {
+            var arrow = GameManager.Instance.EffectManager.Pop(Enums.Effect.Arrow_Base) as Arrow;
 
+            arrow.gameObject.SetActive(true);
+
+            arrow.Play(controller, controller.transform.position, dir, (hitTarget) =>
+            {
+                equip.SendAttackEvent(hitTarget);
+                hitTarget.OrderDamage(controller.RandomDamage);
+                hitTarget.OrderPushed(dir.normalized * controller.Info.PushEnergy);
+
+                controller.OrderAttackStop();
+            });
+        });
     }
 
     private void EquipmentShockBasePlay(CreatureController controller, EquipmentDecorator equip, Vector2 dir)
     {
+        equip.WeaponItem.AttackAnim(controller.AttackSpeed, () =>
+        {
+            var shock = GameManager.Instance.EffectManager
+                .Pop(Enums.Effect.Shock_Base) as Shock;
 
+            shock.gameObject.SetActive(true);
+
+            shock.Play(controller, controller.transform.position, controller.AttackRange * 0.5f, controller.AttackSpeed,
+              (hitTarget) =>
+              {
+                  equip.SendAttackEvent(hitTarget);
+                  hitTarget.OrderDamage(controller.RandomDamage);
+                  hitTarget.OrderPushed(dir.normalized * controller.Info.PushEnergy);
+
+                  controller.OrderAttackStop();
+              });
+        });
     }
+
+    #endregion 
 
     #endregion
 
@@ -49,10 +85,6 @@ public class DecoratorManager : MonoBehaviour
 
     #region 모노비헤이비어 API
 
-    private void Start()
-    {
-        
-    }
 
     #endregion
 }

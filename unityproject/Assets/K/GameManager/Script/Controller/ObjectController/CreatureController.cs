@@ -22,8 +22,6 @@ public class CreatureController : ObjectController
 
     protected Vector2 inputDir;
 
-
-
     #region AI 관련 변수
 
     /// <summary>
@@ -75,14 +73,149 @@ public class CreatureController : ObjectController
     protected IEnumerator pathUpdateCor;
     #endregion
 
+    [SerializeField] protected Transform showTr;
+
 
     #region 성능 수치 집계 방식 상속(변경) 가능
-    public virtual int CurrentHP => currentHP;
-    public virtual float Speed => info.Speed;
+    public virtual int OriginalHP
+    {
+        get
+        {
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                return Info.HP + (decorator as EquipmentDecorator).AddOriginalHP;
+            }
+            return Info.HP;
+        }
+    }
+    public virtual int CurrentHP 
+    {
+        get
+        {
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                return currentHP + (decorator as EquipmentDecorator).AddCurrentHP;
+            }
+            return currentHP;
+        }
+        set
+        {
+            if(value > OriginalHP)
+            {
+                currentHP = OriginalHP;
+            }
+            else if(value < 0)
+            {
+                currentHP = 0;
+            }
+            else
+            {
+                currentHP = value;
+            }
+        }
+    }
+    public virtual float MoveSpeed => info.MoveSpeed;
+    public virtual float AttackSpeed
+    {
+        get
+        {
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                return info.AttackSpeed * (decorator as EquipmentDecorator).AttackSpeed;
+            }
 
-    public virtual int MinDamage => info.MinDamage;
-    public virtual int MaxDamage => info.MaxDamage;
-    public virtual int RangeDamage => Random.Range(MinDamage, MaxDamage + 1);
+            return info.AttackSpeed;
+        }
+    }
+    //public virtual int MinDamage => info.MinDamage;
+    //public virtual int MaxDamage => info.MaxDamage;
+    //public virtual int RandomDamage => Random.Range(MinDamage, MaxDamage + 1);
+
+    public virtual int MinDamage
+    {
+        get
+        {
+            var val = 0;
+
+            if (TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                var equip = decorator as EquipmentDecorator;
+                val = equip.MinDamage;
+            }
+            else
+            {
+                val = Info.MinDamage;
+            }
+
+            return val;
+        }
+    }
+
+    public virtual int MaxDamage
+    {
+        get
+        {
+            var val = 0;
+
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                var equip = decorator as EquipmentDecorator;
+                val = equip.MaxDamage;
+            }
+            else
+            {
+                val = Info.MaxDamage;
+            }
+
+            return val;
+        }
+    }
+
+    public virtual int RandomDamage
+    {
+        get
+        {
+            var val = 0;
+
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                var equip = decorator as EquipmentDecorator;
+                val = equip.RandomDamage;
+            }
+            else
+            {
+                val = Info.RandomDamage;
+            }
+
+            return val;
+        }
+    }
+
+    public virtual float PushEnergy
+    {
+        get
+        {
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                return info.PushEnergy * (decorator as EquipmentDecorator).PushEnergy;
+            }
+
+            return info.PushEnergy;
+        }
+    }
+
+    public virtual float AttackRange
+    {
+        get
+        {
+            if(TryGetDecorator(Enums.Decorator.Equipment, out Component decorator))
+            {
+                return info.AttackRange * (decorator as EquipmentDecorator).AttackRange;
+            }
+
+            return info.AttackRange;
+        }
+    }
     #endregion
 
 
@@ -90,6 +223,7 @@ public class CreatureController : ObjectController
     protected override void Start()
     {
         buffStats = new HashSet<Enums.CreatureState>();
+        CurrentHP = OriginalHP;
         StartCoroutine(StartCor());
     }
     
@@ -253,7 +387,7 @@ public class CreatureController : ObjectController
 
     public override void OrderDamage(int damage)
     {
-        
+        DamageUpdate(damage);
     }
 
     public override void OrderSuper()
@@ -261,6 +395,22 @@ public class CreatureController : ObjectController
 
     }
 
+    public override void OrderDestroy()
+    {
+
+    }
+
+    public override void OrderXFlip(bool flip)
+    {
+        if (flip)
+        {
+            showTr.localScale = new Vector3(1f, 1f, 1f);
+        }
+        else
+        {
+            showTr.localScale = new Vector3(-1f, 1f, 1f);
+        }
+    }
 
     /// <summary>
     /// AI가 작동한다.(길찾기만)<br/>
@@ -326,6 +476,13 @@ public class CreatureController : ObjectController
         if (!equipAttack)
         {
             // 베이스 공격도 확장성을 위해 외부로 분리
+            GameManager.Instance.ControllerManager.CreatureEffectPlay(this, dir);
+
+            if (attackCoolTimeCor == null)
+            {
+                attackCoolTimeCor = AttackCoolTimeCor(1f / AttackSpeed);
+            }
+            StartCoroutine(attackCoolTimeCor);
         }
 
         //var shock = GameManager.Instance.EffectManager.Pop(Enums.Effect.Shock_Base) as Shock;
@@ -334,13 +491,6 @@ public class CreatureController : ObjectController
         //{
         //    hitTarget.OrderPushed(dir.normalized * Info.PushEnergy);
         //});
-
-
-        if (attackCoolTimeCor == null)
-        {
-            attackCoolTimeCor = AttackCoolTimeCor(1f);
-        }
-        StartCoroutine(attackCoolTimeCor);
     }
 
     /// <summary>
@@ -368,14 +518,16 @@ public class CreatureController : ObjectController
     protected void Move(Vector2 inputDir)
     {
         animState = Enums.CreatureState.Move;
-        rigid2D.velocity = inputDir * Speed;
+        rigid2D.velocity = inputDir * MoveSpeed;
         if (inputDir.x > 0.01f)
         {
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            //transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            OrderXFlip(false);
         }
         else if (inputDir.x < -0.01f)
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            //transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            OrderXFlip(true);
         }
     }
     #endregion
@@ -592,6 +744,37 @@ public class CreatureController : ObjectController
         animState = Enums.CreatureState.Idle;
     }
 
+    #endregion
+
+    #region 데미지 로직
+    protected void DamageUpdate(int damage)
+    {
+        if (damage <= 0) return;
+
+        if(TryGetDecorator(Enums.Decorator.Equipment, out Component decoratorEquip))
+        {
+            var equipment = decoratorEquip as EquipmentDecorator;
+
+            var addHP = equipment.AddCurrentHP;
+            equipment.AddCurrentHP -= damage;
+            damage -= addHP;
+        }
+
+        if (damage > 0)
+        {
+            CurrentHP -= damage;
+        }
+
+        if(TryGetDecorator(Enums.Decorator.HUD, out Component decoratorHUD))
+        {
+            var hud = decoratorHUD as HUDDecorator;
+            hud.ShowHP(this);
+        }
+
+        var damageText = GameManager.Instance.EffectManager.Pop(Enums.Effect.DamageText) as DamageText;
+        damageText.gameObject.SetActive(true);
+        damageText.Play(transform.position, damage);
+    }
     #endregion
 
     #endregion

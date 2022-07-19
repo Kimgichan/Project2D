@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 /// <summary>
@@ -49,5 +50,14 @@ public class CoroutineHelper : MonoBehaviour
     public new static void StopCoroutine(Coroutine coroutine)
     {
         monoInstance.StopCoroutine(coroutine);
+    }
+
+    public static IEnumerator DelayCor(float timer, UnityAction func)
+    {
+        var wait = new WaitForSeconds(timer);
+
+        yield return wait;
+
+        func();
     }
 }

@@ -10,10 +10,54 @@ public class Nodes
     [System.Serializable]
     public struct WeaponSetting
     {
-        public string weaponTitle;
+        public string weaponData;
         public int reinforceCount;
-        public string attributeTitle;
-        public List<string> statTitles;
-        public List<int> statSteps;
+        public string attributePreset;
+        public List<string> statNames;
+        public List<int> statLevels;
+    }
+
+    [System.Serializable]
+    public struct EquipAttributePercent
+    {
+        public Enums.EquipAttribute kind;
+        public float percent;
+    }
+
+    [System.Serializable]
+    public struct EquipAttributeLevel
+    {
+        [SerializeField] private EquipAttributeData equipAttributeData;
+        [SerializeField] private int level;
+
+        public EquipAttributeData EquipAttributeData
+        {
+            get
+            {
+                return equipAttributeData;
+            }
+        }
+
+        public int Level
+        {
+            get => level;
+            set
+            {
+                if(value < 0)
+                {
+                    level = 0;
+                }
+
+                level = value;
+            }
+        }
+
+        public EquipAttributeLevel(Enums.EquipAttribute kind, int level)
+        {
+            //this.kind = kind;
+            equipAttributeData = GameManager.Instance.EquipAttributeManager.EquipAttributeDB
+                .GetData(kind);
+            this.level = level;
+        }
     }
 }

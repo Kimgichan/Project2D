@@ -5,18 +5,24 @@ using UnityEngine.Events;
 
 public class ControllerManager : MonoBehaviour
 {
-    #region 컨트롤러 이펙트 목록
-
-    private Dictionary<Enums.Effect, UnityAction<ObjectController, Vector2>> objectControllerEffectPlayTable;
-
-    private Dictionary<Enums.Effect, UnityAction<CreatureController, Vector2>> creatureControllerEffectPlayTable;
+    #region 크리쳐 DB
+    [SerializeField] private CreatureDatabase creatureDatabase;
+    public CreatureDatabase CreatureDatabase => creatureDatabase;
+    #endregion
 
 
     private void Start()
     {
         ObjectEffectInit();
         CreatureEffectInit();
+        ControllerSearchInit();
     }
+
+    #region 컨트롤러 이펙트 목록
+
+    private Dictionary<Enums.Effect, UnityAction<ObjectController, Vector2>> objectControllerEffectPlayTable;
+
+    private Dictionary<Enums.Effect, UnityAction<CreatureController, Vector2>> creatureControllerEffectPlayTable;
 
     #region Object 컨트롤러 이펙트 함수 목록
     private void ObjectEffectInit()
@@ -66,6 +72,7 @@ public class ControllerManager : MonoBehaviour
 
         creatureControllerEffectPlayTable.Add(Enums.Effect.Arrow_Base, CreatureArrowBasePlay);
         creatureControllerEffectPlayTable.Add(Enums.Effect.Shock_Base, CreatureShockBasePlay);
+        creatureControllerEffectPlayTable.Add(Enums.Effect.Arrow_Target, CreatureArrowTargetPlay);
     }
 
 
@@ -81,6 +88,10 @@ public class ControllerManager : MonoBehaviour
         {
             effectFunc(controller, dir);
         }
+        else
+        {
+            Debug.LogError("존재하지 않는 이펙트를 호출했습니다.");
+        }
     }
 
     private void CreatureArrowBasePlay(CreatureController controller, Vector2 dir)
@@ -89,12 +100,11 @@ public class ControllerManager : MonoBehaviour
 
         arrow.gameObject.SetActive(true);
 
-        Vector2 force = dir * controller.Info.Speed;
-        arrow.Play(controller, controller.transform.position, force,
+        arrow.Play(controller, controller.transform.position, dir,
             (hitTarget) =>
             {
-                hitTarget.OrderDamage(controller.Info.RandomDamage);
-                hitTarget.OrderPushed(dir.normalized * controller.Info.PushEnergy);
+                hitTarget.OrderDamage(controller.RandomDamage);
+                hitTarget.OrderPushed(dir.normalized * controller.PushEnergy);
             });
     }
 
@@ -104,12 +114,26 @@ public class ControllerManager : MonoBehaviour
             .Pop(Enums.Effect.Shock_Base) as Shock;
 
         shock.gameObject.SetActive(true);
-        shock.Play(controller, controller.transform.position, controller.Info.AttackRange * 0.5f, controller.Info.Speed,
+        shock.Play(controller, controller.transform.position, controller.AttackRange * 0.5f, controller.AttackSpeed,
           (hitTarget) =>
           {
-              hitTarget.OrderDamage(controller.Info.RandomDamage);
-              hitTarget.OrderPushed(dir.normalized * controller.Info.PushEnergy);
+              hitTarget.OrderDamage(controller.RandomDamage);
+              hitTarget.OrderPushed(dir.normalized * controller.PushEnergy);
           });
+    }
+
+    private void CreatureArrowTargetPlay(CreatureController controller, Vector2 dir)
+    {
+        var arrow = GameManager.Instance.EffectManager.Pop(Enums.Effect.Arrow_Target) as Arrow_Target;
+
+        arrow.gameObject.SetActive(true);
+
+        arrow.Play(controller, controller.transform.position, dir,
+            (hitTarget) =>
+            {
+                hitTarget.OrderDamage(controller.RandomDamage);
+                hitTarget.OrderPushed(dir.normalized * controller.PushEnergy);
+            });
     }
 
     #endregion
@@ -121,6 +145,57 @@ public class ControllerManager : MonoBehaviour
 
     [SerializeField] private DecoratorManager decoratorManager;
     public DecoratorManager DecoratorManager => decoratorManager;
+
+    #endregion
+
+    #region 컨트롤러 객체 탐색
+
+    #region 변수 목록
+    [SerializeField] private List<ObjectController> allObjectController;
+    [SerializeField] private List<CreatureController> allCreatureController;
+    #endregion
+
+
+    #region 함수 목록
+    private void ControllerSearchInit()
+    {
+        allObjectController = new List<ObjectController>();
+        allCreatureController = new List<CreatureController>();
+    }
+
+    public int GetObjectControllerCount() => allObjectController.Count;
+    public ObjectController GetObjectController(int indx) => allObjectController[indx];
+    public void AddObjectController(ObjectController addController)
+    {
+        if (allObjectController.Contains(addController))
+        {
+            Debug.LogError("컨트롤러가 이미 존재함");
+            return;
+        }
+
+        allObjectController.Add(addController);
+
+        if(addController is CreatureController)
+        {
+            allCreatureController.Add(addController as CreatureController);
+        }
+    }
+
+    public void RemoveObjectController(ObjectController removeController)
+    {
+        allObjectController.Remove(removeController);
+
+        if(removeController is CreatureController)
+        {
+            allCreatureController.Remove(removeController as CreatureController);
+        }
+    }
+
+    public int GetCreatureControllerCount() => allCreatureController.Count;
+    public CreatureController GetCreatureController(int indx) => allCreatureController[indx];
+
+
+    #endregion
 
     #endregion
 }

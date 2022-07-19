@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6585967616905501316}
   - component: {fileID: 631408909073070100}
   - component: {fileID: 7940585255832857884}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,10 +99,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectKind: 1
+  speed: 5
   rigidbody: {fileID: 6585967616905501316}
   dropRotationSpeed: 1000
   echoOffset: {x: 0, y: 0.5}
   trail: {fileID: 7940585255832857884}
+  timer: 1
 --- !u!50 &6585967616905501316
 Rigidbody2D:
   serializedVersion: 4

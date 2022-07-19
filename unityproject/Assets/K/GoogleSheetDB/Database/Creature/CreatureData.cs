@@ -8,19 +8,18 @@ using NaughtyAttributes;
 /// 
 /// 좋은 참고 클래스가 구성되면 제시할 예정.
 /// </summary>
-[CreateAssetMenu(fileName = "CreatureData", menuName = "Scriptable Object/Creature", order = int.MaxValue)]
+[CreateAssetMenu(fileName = "CreatureData", menuName = "Scriptable Object/Controller/Creature", order = int.MaxValue)]
 public class CreatureData : ScriptableObject
 {
-    [ReadOnly] [SerializeField] private int hp;
+    [SerializeField] private int hp;
 
-    [ReadOnly] [SerializeField] private Enums.Effect baseAttack;
-    /// <summary>
-    /// 속도 배율<br/>
-    /// unitSpeed * speed
-    /// </summary>
-    [ReadOnly] [SerializeField] private float speed;
-    [ReadOnly] [SerializeField] private int minDamage;
-    [ReadOnly] [SerializeField] private int maxDamage;
+    [SerializeField] private float moveSpeed;
+
+    [SerializeField] private Enums.Effect baseAttack;
+
+    [SerializeField] private float attackSpeed;
+    [SerializeField] private int minDamage;
+    [SerializeField] private int maxDamage;
 
     /// <summary>
     /// 공격 범위<br/>
@@ -28,23 +27,23 @@ public class CreatureData : ScriptableObject
     /// 어느정도로 할 것인지를 정의하는 변수<br/>
     /// unitRange * range
     /// </summary>
-    [ReadOnly] [SerializeField] private float attackRange;
+    [SerializeField] private float attackRange;
 
     /// <summary>
     /// 밀어내는 정도의 배율<br/>
     /// unitPush * push
     /// </summary>
-    [ReadOnly] [SerializeField] private float push;
+    [SerializeField] private float push;
 
 
     /// <summary>
     /// 공격했을 때 상대가 스턴에 걸리는 정도 1f -> 1초(s) 
     /// </summary>
-    [ReadOnly] [SerializeField] private float stunTimer;
+    [SerializeField] private float stunTimer;
 
     #region 크리쳐(생물) 정보 API
 
-    public Enums.Effect BaseAttack;
+    public Enums.Effect BaseAttack => baseAttack;
 
     /// <summary>
     /// HP => 생물(Creature)의 MAX 체력.
@@ -54,9 +53,11 @@ public class CreatureData : ScriptableObject
     /// <summary>
     /// Speed => 생물의 속도, 이 속도를 참고해서 '이동(EX -> Speed*1.0f)', '대쉬(EX -> Speed*1.5f)', '공격속도(EX -> Speed*0.8f)'를 잘 조절하시면 될 듯.
     /// </summary>
-    public float Speed => speed * GameManager.Instance.GameDB.UnitValueDB.UnitSpeed;
+    public float MoveSpeed => moveSpeed * GameManager.Instance.GameDB.UnitValueDB.UnitSpeed;
 
 
+
+    public float AttackSpeed => attackSpeed;
 
     /// <summary>
     /// MinDamage => 생물의 기본 최소 공격 기대치.
@@ -95,16 +96,18 @@ public class CreatureData : ScriptableObject
     /// <param name="speed"></param>
     /// <param name="minDamage"></param>
     /// <param name="maxDamage"></param>
-    public void WriteData(Enums.Effect baseAttack, int hp, float speed, int minDamage, int maxDamage, float push, float stunTimer)
+    public void WriteData(Enums.Effect baseAttack, int hp, float moveSpeed, int minDamage, int maxDamage, float push, float stunTimer, float attackSpeed, float attackRange)
     {
         Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
         this.baseAttack = baseAttack;
         this.hp = hp;
-        this.speed = speed;
+        this.moveSpeed = moveSpeed;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.push = push;
         this.stunTimer = stunTimer;
+        this.attackSpeed = attackSpeed;
+        this.attackRange = attackRange;
     }
 #endif
 }

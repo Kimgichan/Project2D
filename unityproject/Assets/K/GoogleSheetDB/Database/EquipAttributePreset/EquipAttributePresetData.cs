@@ -7,11 +7,17 @@ using EquipAttribute = Enums.EquipAttribute;
 [CreateAssetMenu(fileName = "EquipAttributePresetData", menuName = "Scriptable Object/Equip/AttributePreset", order = int.MaxValue)]
 public class EquipAttributePresetData : ScriptableObject
 {
+    #region 변수 목록
+
     [SerializeField] private EquipKind kind;
+    [SerializeField] private List<Nodes.EquipAttributePercent> attributeList;
+
+    #endregion
+
+
+    #region 프로퍼티 목록
+
     public EquipKind Kind => kind;
-
-
-    [SerializeField] private List<Node> attributeList;
     public EquipAttribute RandomAttribut
     {
         get
@@ -39,25 +45,18 @@ public class EquipAttributePresetData : ScriptableObject
     } 
 
     public int AttributeCount => attributeList.Count;
-    public Node GetNode(int indx) => attributeList[indx];  
 
-    [System.Serializable]
-    public struct Node
-    {
-        public EquipAttribute kind;
-        public float percent;
-    }    
+    #endregion
 
-    [System.Serializable]
-    public struct AttributeNode
-    {
-        public EquipAttribute kind;
-        public int count;
-    }
 
+    #region 함수 목록
+    public Nodes.EquipAttributePercent GetEquipAttributePercent(int indx) => attributeList[indx];
+
+
+    #region 에디터 전용 함수 목록
 
 #if UNITY_EDITOR
-    public void WriteData(EquipKind kind, List<Node> attributeList)
+    public void WriteData(EquipKind kind, List<Nodes.EquipAttributePercent> attributeList)
     {
         Debug.LogError("경고: 인게임에서 수치를 변경하면 안 되는 값들입니다.");
 
@@ -65,4 +64,7 @@ public class EquipAttributePresetData : ScriptableObject
         this.attributeList = attributeList;
     }
 #endif
+    #endregion
+
+    #endregion
 }

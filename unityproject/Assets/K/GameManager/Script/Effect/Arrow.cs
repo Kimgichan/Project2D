@@ -12,7 +12,8 @@ public class Arrow : Effect
     protected ObjectController attackController;
     protected UnityAction<ObjectController> sendEvent;
 
-    protected Vector2 force;
+    [SerializeField] protected float speed;
+    protected Vector2 dir;
     protected IEnumerator actionCor;
     protected UnityAction<Collider2D> actionTriggerEnterFunc;
     [SerializeField] protected Rigidbody2D rigidbody;
@@ -27,6 +28,11 @@ public class Arrow : Effect
     protected PickUpEcho echo;
 
     [SerializeField] protected TrailRenderer trail;
+
+    /// <summary>
+    /// Drop 상태에서 이 시간(초)이 지나면 자동 Push된다.
+    /// </summary>
+    [SerializeField] protected float timer;
 
     #endregion
 
@@ -69,32 +75,27 @@ public class Arrow : Effect
     #region 함수 목록
     public override void Push()
     {
-        if (start)
-        {
-            //GameManager.Instance.ProjectileManager.Push(this);
-            GameManager.Instance.EffectManager.Push(this);
-        }
-
+        GameManager.Instance.EffectManager.Push(this);
         Echo = null;
         gameObject.SetActive(false);
     }
 
     public virtual void Play(ObjectController requireController, 
-        in Vector3 pos, in Vector2 force,
+        in Vector3 pos, in Vector2 dir,
         UnityAction<ObjectController> sendEvent = null )
     {
-        StartCoroutine(ShotCor(requireController, pos, force, sendEvent));
+        StartCoroutine(ShotCor(requireController, pos, dir, sendEvent));
     }
 
     protected IEnumerator ShotCor(ObjectController requireController, 
-        Vector3 pos, Vector2 force, 
+        Vector3 pos, Vector2 dir, 
         UnityAction<ObjectController> sendEvent)
     {
         while (!start) yield return null;
 
         transform.position = pos;
         this.attackController = requireController;
-        this.force = force;
+        this.dir = dir.normalized;
         if (sendEvent != null)
             this.sendEvent = sendEvent;
         else this.sendEvent = null;
@@ -109,14 +110,24 @@ public class Arrow : Effect
 
     protected void ShotTriggerEnter(Collider2D collision)
     {
-        var hitController = collision.gameObject.GetComponent<ControllerCollision>().controller;
-        if (attackController.Equals(hitController)) return;
+        var collider = collision.gameObject.GetComponent<ControllerCollision>();
 
-        if (hitController != null && sendEvent != null)
+
+        if (collider != null)
         {
-            sendEvent(hitController);
+            var hitController = collider.controller;
+
+            if (hitController != null)
+            {
+                if (attackController.Equals(hitController)) return;
+
+                if (sendEvent != null)
+                {
+                    sendEvent(hitController);
+                    sendEvent = null;
+                }
+            }
         }
-        sendEvent = null;
         if (actionCor != null)
         {
             StopCoroutine(actionCor);
@@ -130,22 +141,26 @@ public class Arrow : Effect
     }
     protected void DropTriggerEnter(Collider2D collision)
     {
-        if(attackController.Equals(collision.gameObject.GetComponent<ControllerCollision>().controller))
+        var collider = collision.gameObject.GetComponent<ControllerCollision>();
+
+        if (collider == null) return;
+
+        if (attackController.Equals(collider.controller))
         {
             Push();
             Echo = null;
         }
     }
-    protected IEnumerator MoveCor()
+    protected virtual IEnumerator MoveCor()
     {
         yield return null;
         trail.enabled = true;
         rigidbody.simulated = true;
-        transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(force.y, force.x)*Mathf.Rad2Deg-90f, Vector3.forward);
+        transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg-90f, Vector3.forward);
         while (true)
         {
             yield return null;
-            rigidbody.velocity = force;
+            rigidbody.velocity = dir * speed;
         }
     }
 
@@ -189,13 +204,13 @@ public class Arrow : Effect
         Echo = GameManager.Instance.EffectManager.Pop(Enums.Effect.PickUp_Base) as PickUpEcho;
 
         Echo?.gameObject.SetActive(true);
-        Echo?.Play(new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, end.y));
+        Echo?.Play(new Vector3(end.x + echoOffset.x, end.y + echoOffset.y, -12f));
         
         DOTween.To(() => x, (val) => x = val, distance, 0.65f).OnUpdate(() =>
         {
             var newPos = startPos + dir * x;
             newPos.y += -4 * Mathf.Pow(x / distance - 0.5f, 2f) + 1f;
-            transform.position = new Vector3(newPos.x, newPos.y, newPos.y);
+            transform.position = new Vector3(newPos.x, newPos.y, -10f);
             transform.eulerAngles += new Vector3(0f, 0f, rotateDir * Time.deltaTime);
         }).OnComplete(() =>
         {
@@ -203,6 +218,12 @@ public class Arrow : Effect
             rigidbody.simulated = true;
             rigidbody.velocity = Vector2.zero;
             actionTriggerEnterFunc = DropTriggerEnter;
+
+            StartCoroutine(CoroutineHelper.DelayCor(timer, () =>
+            {
+                Push();
+                Echo = null;
+            }));
         });
     }
 

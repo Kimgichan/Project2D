@@ -18,6 +18,14 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private ControllerManager controllerManager;
     public ControllerManager ControllerManager => controllerManager;
+
+    [SerializeField] private EquipAttributeManager equipAttributeManager;
+    public EquipAttributeManager EquipAttributeManager => equipAttributeManager;
+
+    [SerializeField] private GameObject hudPanel;
+    public GameObject HudPanel => hudPanel;
+
+
     private void Awake()
     {
         if(instance != null)
