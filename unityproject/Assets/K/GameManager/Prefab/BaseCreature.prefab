@@ -294,7 +294,9 @@ GameObject:
   - component: {fileID: 5209625370002762761}
   - component: {fileID: 2933504616739584069}
   - component: {fileID: 5342313635878232932}
+  - component: {fileID: 6382788426084486282}
   - component: {fileID: 2933504616739584091}
+  - component: {fileID: 5968966076344221030}
   m_Layer: 6
   m_Name: BaseCreature
   m_TagString: Player
@@ -476,6 +478,20 @@ MonoBehaviour:
   controllerHUD: {fileID: 4378597717033001175}
   showHP: 1
   hpBar: {fileID: 0}
+--- !u!114 &6382788426084486282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933504616739584088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaca7d0fb7cd00547ba956cb86874289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drop: 0
+  items: []
 --- !u!114 &2933504616739584091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,6 +506,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testController: {fileID: 5209625370002762760}
   createWeapon: {fileID: 11400000, guid: ecd2ccbb26c4df740b9d99b3b11c5dc2, type: 2}
+--- !u!114 &5968966076344221030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933504616739584088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1f3e95716b2b4478d61ac8c3194dd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterController: {fileID: 5209625370002762760}
 --- !u!1 &2933504616744929596
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class BowModel : MonoBehaviour,   IWeaponPrefab
+public class BowModel : MonoBehaviour,   InterfaceList.WeaponPrefab
 {
     [SerializeField] private Transform boneLeft;
     [SerializeField] private Transform boneRight;

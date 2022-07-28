@@ -60,4 +60,57 @@ public class Nodes
             this.level = level;
         }
     }
+
+
+    [System.Serializable]
+    public struct ItemInfo
+    {
+        public string itemName;
+        public Enums.ItemKind kind;
+        public int count;
+        public string content;
+
+        public ItemInfo(string itemName, 
+            Enums.ItemKind kind, 
+            int count, string content)
+        {
+            this.itemName = itemName;
+            this.kind = kind;
+            this.count = count;
+            this.content = content;
+        }
+
+        public void From(InterfaceList.Item item)
+        {
+            if(item == null)
+            {
+                content = "";
+                count = -1;
+                kind = Enums.ItemKind.Empty;
+                itemName = "Null";
+                return;
+            }
+
+            content = item.Content;
+            count = item.CurrentCount;
+            itemName = item.Name;
+            kind = item.Kind;
+        }
+
+        public static ItemInfo Empty => new ItemInfo() { itemName = "Null", content = "", count = -1, kind = Enums.ItemKind.Empty };
+
+        public static ItemInfo Cast(InterfaceList.Item item)
+        {
+            if (item == null)
+                return Empty;
+            else
+                return new ItemInfo()
+                {
+                    content = item.Content,
+                    count = item.CurrentCount,
+                    itemName = item.Name,
+                    kind = item.Kind
+                };
+        } 
+    }
 }

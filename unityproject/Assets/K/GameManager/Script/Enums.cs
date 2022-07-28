@@ -13,6 +13,7 @@ public class Enums
         Wand, 
         Armor,
     }
+
     public enum EquipAttribute 
     { 
         Dash, 
@@ -72,6 +73,7 @@ public class Enums
         /// </summary>
         Equipment,
         HUD,
+        Inventory,
     }
 
     /// <summary>
@@ -81,6 +83,7 @@ public class Enums
     {
         typeof(EquipmentDecorator),
         typeof(HUDDecorator),
+        typeof(InventoryDecorator),
     };
 
     public static Type GetDecoratorType(Decorator decorator)
@@ -90,11 +93,26 @@ public class Enums
     #endregion
 
 
-    public enum WeaponKind
+    #region 아이템
+    public enum ItemKind
     {
-        WoodBow,
-        StonBow,
-        IronBow,
-        StealBow,
+        Empty,
+        Weapon,
+        Armor,
+        Portion,
     }
+
+    /// <summary>
+    /// ItemKind enum(int) 값이랑 인덱스 순서가 대응되게 배치할 것
+    /// </summary>
+    private static List<Type> items = new List<Type>()
+    {
+        typeof(WeaponItem),
+    };
+
+    public static Type GetItemType(ItemKind item)
+    {
+        return items[(int)item];
+    }
+    #endregion
 }

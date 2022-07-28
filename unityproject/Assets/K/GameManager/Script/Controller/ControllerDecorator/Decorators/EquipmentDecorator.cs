@@ -16,7 +16,6 @@ public class EquipmentDecorator : MonoBehaviour
     /// <summary>
     /// 프로퍼티 목록에 있는 'WeaponItem'을 참고할 것
     /// </summary>
-    [ReadOnly] 
     [SerializeField] private WeaponItem weaponItem;
 
 

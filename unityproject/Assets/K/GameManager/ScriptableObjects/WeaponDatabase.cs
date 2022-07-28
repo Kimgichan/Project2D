@@ -23,7 +23,7 @@ public class WeaponDatabase : DatabaseLoader
     public int WeaponTableCount => weaponTable.Count;
     public WeaponData GetWeaponData(string title) => weaponTable[title];
 
-    public IWeaponPrefab GetWeaponPrefab(WeaponData data) => toPrefabDic [data].GetComponent<IWeaponPrefab>();
+    public InterfaceList.WeaponPrefab GetWeaponPrefab(WeaponData data) => toPrefabDic [data].GetComponent<InterfaceList.WeaponPrefab>();
 
     [System.Serializable]
     public class WeaponDataPrefabNode

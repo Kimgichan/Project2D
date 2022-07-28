@@ -5,11 +5,12 @@ using UnityEngine.Events;
 using System;
 using NaughtyAttributes;
 
+
 using EquipAttributeLevel = Nodes.EquipAttributeLevel;
 using WeaponSetting = Nodes.WeaponSetting;
 
 [System.Serializable]
-public class WeaponItem
+public class WeaponItem : InterfaceList.Item
 {
     #region 변수 목록
 
@@ -21,7 +22,7 @@ public class WeaponItem
     /// <summary>
     /// 실제 인게임에서 노출되는(보여지는) 객체
     /// </summary>
-    private IWeaponPrefab weaponObject;
+    private InterfaceList.WeaponPrefab weaponObject;
 
     #endregion
 
@@ -110,7 +111,6 @@ public class WeaponItem
             }
         }
     }
-
     #endregion
 
 
@@ -167,7 +167,7 @@ public class WeaponItem
         EraseWeaponObject();
 
         weaponObject = GameObject.Instantiate(GameManager.Instance.GameDB.WeaponManager.GetWeaponPrefab(Weapon).GetTr().gameObject, rigging)
-            .GetComponent<IWeaponPrefab>();
+            .GetComponent<InterfaceList.WeaponPrefab>();
     }
 
     /// <summary>
@@ -199,6 +199,35 @@ public class WeaponItem
 
         weaponObject.AttackAnim(speed, attackEvent);
     }
-    
+
+    #endregion
+
+
+    #region 아이템 인터페이스
+    [SerializeField] private bool use;
+
+    public string Name => Weapon.name;
+
+    public Enums.ItemKind Kind => Enums.ItemKind.Weapon;
+
+    public bool Use
+    {
+        get => use;
+        set => use = value;
+    }
+
+    public int CurrentCount
+    {
+        get => 1;
+        set { }
+    }
+
+    public int MaxCount => 1;
+
+    public Sprite Icon => Weapon.Icon;
+
+    public string Content => "";
+
+    public void Destroy() {}
     #endregion
 }
