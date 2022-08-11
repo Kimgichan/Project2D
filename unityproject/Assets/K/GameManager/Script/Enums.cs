@@ -96,10 +96,8 @@ public class Enums
     #region æ∆¿Ã≈€
     public enum ItemKind
     {
-        Empty,
         Weapon,
-        Armor,
-        Portion,
+        Portion
     }
 
     /// <summary>
@@ -108,11 +106,19 @@ public class Enums
     private static List<Type> items = new List<Type>()
     {
         typeof(WeaponItem),
+        typeof(Portion),
     };
 
     public static Type GetItemType(ItemKind item)
     {
         return items[(int)item];
+    }
+
+
+    public enum PortionKind
+    {
+        HP,
+        MP,
     }
     #endregion
 }

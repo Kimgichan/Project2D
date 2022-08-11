@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InterfaceList
+namespace InterfaceList
 {
     public interface WeaponPrefab
     {
@@ -72,7 +72,17 @@ public class InterfaceList
 
         #region 함수 목록
 
+        /// <summary>
+        /// 아이템이 파괴될 때
+        /// </summary>
         public void Destroy();
+
+        /// <summary>
+        /// 아이템이 인벤토리에서 밖으로 떨어질 때
+        /// </summary>
+        public void Drop();
+
+        public Item Copy();
         #endregion
     }
 }

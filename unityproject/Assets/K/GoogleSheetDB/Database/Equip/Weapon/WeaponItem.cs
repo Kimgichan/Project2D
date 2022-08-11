@@ -229,5 +229,9 @@ public class WeaponItem : InterfaceList.Item
     public string Content => "";
 
     public void Destroy() {}
+
+    public void Drop() { }
+
+    public InterfaceList.Item Copy() => null;
     #endregion
 }
