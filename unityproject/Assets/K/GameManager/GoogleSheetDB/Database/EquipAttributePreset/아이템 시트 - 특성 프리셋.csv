@@ -1,0 +1,5 @@
+프리셋 이름,부위,특성 이름(확률)
+Fierce,Bow,Dash(20)/FireCount(60)/Guide(20)
+Sharpshooter's,Bow,Dash(10)/FireCount(10)/Guide(80)
+Sharp,Bow,Dash(80)/FireCount(10)/Guide(10)
+Balanced,Bow,Dash(40)/FireCount(30)/Guide(30)
