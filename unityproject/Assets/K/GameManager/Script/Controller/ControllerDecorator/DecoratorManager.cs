@@ -18,6 +18,11 @@ public class DecoratorManager : MonoBehaviour
             Vector2>>
         equipmentEffectPlayTable;
 
+    private void Start()
+    {
+        EquipmentEffectInit();
+    }
+
     public void EquipmentEffectInit()
     {
         equipmentEffectPlayTable = new Dictionary<Enums.Effect, UnityAction<CreatureController, EquipmentDecorator, Vector2>>();
@@ -43,14 +48,17 @@ public class DecoratorManager : MonoBehaviour
             var arrow = GameManager.Instance.EffectManager.Pop(Enums.Effect.Arrow_Base) as Arrow;
 
             arrow.gameObject.SetActive(true);
+            controller.OrderAttackStop();
+            controller.OrderDash();
 
-            arrow.Play(controller, controller.transform.position, dir, (hitTarget) =>
+            dir = equip.WeaponPivot.parent.up;
+
+
+            arrow.Play(controller, equip.WeaponPivot.parent.position, dir, (hitTarget) =>
             {
                 equip.SendAttackEvent(hitTarget);
                 hitTarget.OrderDamage(controller.RandomDamage);
                 hitTarget.OrderPushed(dir.normalized * controller.Info.PushEnergy);
-
-                controller.OrderAttackStop();
             });
         });
     }

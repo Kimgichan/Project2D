@@ -1,3 +1,4 @@
+using InterfaceList;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,8 @@ using UnityEngine;
 public class Portion : InterfaceList.Item
 {
     #region 변수 목록
-
+    private PortionData portionData;
+    private int currentCount;
     #endregion
 
 
@@ -14,7 +16,7 @@ public class Portion : InterfaceList.Item
 
     #region Item 인터페이스
 
-    public string Name => "";
+    public string Name => portionData.name;
 
     public Enums.ItemKind Kind => Enums.ItemKind.Portion;
 
@@ -35,23 +37,29 @@ public class Portion : InterfaceList.Item
     {
         get
         {
-            return 0;
+            return currentCount;
         }
         set
         {
+            if (value > portionData.MaxSlotCount)
+            {
+                value = portionData.MaxSlotCount;
+            }
+            else if (value < 0) value = 0;
 
+            currentCount = value;
         }
     }
 
-    public int MaxCount => 1;
+    public int MaxCount => portionData.MaxSlotCount;
 
-    public Sprite Icon => null;
+    public Sprite Icon => portionData.ItemIcon;
 
     public string Content
     {
         get
         {
-            return "";
+            return portionData.Content;
         }
     }
 
@@ -62,6 +70,12 @@ public class Portion : InterfaceList.Item
 
 
     #region 함수 목록
+
+    public Portion(PortionData portionData)
+    {
+        this.portionData = portionData;
+        CurrentCount = 0;
+    }
 
     #region Item 인터페이스
 
@@ -77,8 +91,16 @@ public class Portion : InterfaceList.Item
 
     public InterfaceList.Item Copy()
     {
-        var newItem = new Portion();
+        var newItem = new Portion(portionData);
         return newItem;
+    }
+
+    public bool Equal(Item item)
+    {
+        var portion = item as Portion;
+        if (portion == null) return false;
+
+        return portionData.Equals(portion.portionData);
     }
 
     #endregion

@@ -98,6 +98,7 @@ MonoBehaviour:
   controllerManager: {fileID: 6261584226658825335}
   equipAttributeManager: {fileID: 8650677730099381781}
   hudPanel: {fileID: 7752712407329232912}
+  itemDatabase: {fileID: 11400000, guid: 7469fbbe0b50a544c85f019449ea8c1e, type: 2}
 --- !u!1 &6261584226584719952
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,6 +189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureDatabase: {fileID: 11400000, guid: 02037529582ac144ba98bfc52e6320f8, type: 2}
   decoratorManager: {fileID: 7936310329328073070}
+  allObjectController: []
+  allCreatureController: []
 --- !u!1 &6525827456828245218
 GameObject:
   m_ObjectHideFlags: 0

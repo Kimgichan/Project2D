@@ -15,6 +15,6 @@ public class TestWeaponCreator : MonoBehaviour
         if ((object)equipDecorator == null) return;
 
 
-        equipDecorator.CreateWeapon(createWeapon, testController.transform);
+        equipDecorator.CreateWeapon(createWeapon);
     }
 }

@@ -33,7 +33,7 @@ public class InventoryDecorator : MonoBehaviour
     /// itemInfos로 로직적으로 표시 <br/>
     /// UNITY_EDITOR 블록에서만 사용될 것
     /// </summary>
-    [ReadOnly] [SerializeField] 
+    [SerializeField] 
     private List<Nodes.ItemInfo> itemInfos;
 #endif
 
@@ -86,7 +86,7 @@ public class InventoryDecorator : MonoBehaviour
 
             var currentItem = items[i];
 
-            if(currentItem.Kind == item.Kind)
+            if(currentItem.Equal(item))
             {
                 // 만약 같은 종류의 아이템을 담은 슬롯이 존재한다면
                 // 그 슬롯의 아이탬 개수를 MAX까지 채움.
@@ -96,7 +96,7 @@ public class InventoryDecorator : MonoBehaviour
                 item.CurrentCount = AddCount(currentItem, item.CurrentCount);
 
 #if UNITY_EDITOR
-                itemInfos[i].From(currentItem);
+                itemInfos[i] = new Nodes.ItemInfo(currentItem);
 #endif
 
                 if(item.CurrentCount <= 0)
@@ -114,7 +114,7 @@ public class InventoryDecorator : MonoBehaviour
             items[firstSlotIndx] = item;
 
 #if UNITY_EDITOR
-            itemInfos[firstSlotIndx].From(item);
+            itemInfos[firstSlotIndx] = new Nodes.ItemInfo(item);
 #endif
 
             return true;
@@ -125,6 +125,7 @@ public class InventoryDecorator : MonoBehaviour
             return false;
         }
     }
+
 
     /// <summary>
     /// 인벤토리 정리할 때 쓰일 변수
@@ -137,7 +138,7 @@ public class InventoryDecorator : MonoBehaviour
     {
         if (moveCount <= 0) return;
         if (currentItemIndx == destItemIndx) return;
-        if (items[currentItemIndx].Equals(null)) return;
+        if (items[currentItemIndx] == null) return;
 
         if(moveCount > items[currentItemIndx].MaxCount)
         {
@@ -147,7 +148,8 @@ public class InventoryDecorator : MonoBehaviour
 
         if(items[destItemIndx] == null)
         {
-            items[destItemIndx] = items[currentItemIndx];
+            items[destItemIndx] = items[currentItemIndx].Copy();
+            items[destItemIndx].CurrentCount = moveCount;
             items[currentItemIndx].CurrentCount -= moveCount;
 
             if (items[currentItemIndx].CurrentCount <= 0)
@@ -155,7 +157,8 @@ public class InventoryDecorator : MonoBehaviour
                 items[currentItemIndx] = null;
             }
         }
-        else if(items[currentItemIndx].Kind != items[destItemIndx].Kind)
+        else if(!items[currentItemIndx].Equal(items[destItemIndx]) || 
+            items[destItemIndx].CurrentCount >= items[destItemIndx].MaxCount)
         {
             var swap = items[currentItemIndx];
             items[currentItemIndx] = items[destItemIndx];
@@ -180,8 +183,8 @@ public class InventoryDecorator : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        itemInfos[currentItemIndx].From(items[currentItemIndx]);
-        itemInfos[destItemIndx].From(items[destItemIndx]);
+        itemInfos[currentItemIndx] = new Nodes.ItemInfo(items[currentItemIndx]);
+        itemInfos[destItemIndx] = new Nodes.ItemInfo(items[destItemIndx]);
 #endif
     }
 
@@ -197,7 +200,7 @@ public class InventoryDecorator : MonoBehaviour
             other.SetItem(items[myItemIndx], otherItemIndx);
             items[myItemIndx] = null;
         }
-        else if(items[myItemIndx].Kind != otherItem.Kind)
+        else if(!items[myItemIndx].Equal(otherItem))
         {
             other.SetItem(items[myItemIndx], otherItemIndx);
             items[myItemIndx] = otherItem;
@@ -219,7 +222,7 @@ public class InventoryDecorator : MonoBehaviour
 
 
 #if UNITY_EDITOR
-        itemInfos[myItemIndx].From(items[myItemIndx]);
+        itemInfos[myItemIndx] = new Nodes.ItemInfo(items[myItemIndx]);
 #endif
     }
 
@@ -241,7 +244,7 @@ public class InventoryDecorator : MonoBehaviour
         items[indx] = item;
 
 #if UNITY_EDITOR
-        itemInfos[indx].From(items[indx]);
+        itemInfos[indx] = new Nodes.ItemInfo(items[indx]);
 #endif
     }
 
@@ -260,7 +263,7 @@ public class InventoryDecorator : MonoBehaviour
         InventoryDecorator other, int otherItemIndx)
     {
         if (sendItemCount <= 0) return;
-        if (items[myItemIndx].Equals(null)) return;
+        if (items[myItemIndx] == null) return;
 
         if(other == null)
         {
@@ -276,6 +279,8 @@ public class InventoryDecorator : MonoBehaviour
         }
     }
 
+
+
     public void RemoveItem(int indx, int count)
     {
         if (items[indx] == null) return;
@@ -289,7 +294,7 @@ public class InventoryDecorator : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        itemInfos[indx].From(items[indx]);
+        itemInfos[indx] = new Nodes.ItemInfo(items[indx]);
 #endif
     }
 
@@ -301,7 +306,7 @@ public class InventoryDecorator : MonoBehaviour
     /// <returns></returns>
     private int AddCount(InterfaceList.Item item, int addCount)
     {
-        if (addCount < 0) return 0;
+        if (addCount <= 0) return 0;
 
         if (item.CurrentCount >= item.MaxCount)
         {
@@ -369,14 +374,13 @@ public class InventoryDecorator : MonoBehaviour
 
 
 #if UNITY_EDITOR
-        itemInfos[indx].From(items[indx]);
+        itemInfos[indx] = new Nodes.ItemInfo(items[indx]);
 #endif
     }
 
     public int GetItemCount() => items.Count;
 
     public InterfaceList.Item GetItem(int i) => items[i];
-
 
     /// <summary>
     /// 지금은 슬롯 확장만 가능<br/>

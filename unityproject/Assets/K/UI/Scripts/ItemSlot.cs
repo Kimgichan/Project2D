@@ -9,6 +9,7 @@ using NaughtyAttributes;
 public class ItemSlot : Effect
 {
     #region 변수 목록
+    public int indx;
     [SerializeField] private Image icon;
     [SerializeField] private Text countState;
     private InterfaceList.Item item;
@@ -24,14 +25,22 @@ public class ItemSlot : Effect
             if (value == null)
             {
                 item = null;
-
+                icon.gameObject.SetActive(false);
+                if (countState != null)
+                    countState.gameObject.SetActive(false);
                 return;
             }
 
             item = value;
 
+            icon.gameObject.SetActive(true);
             icon.sprite = item.Icon;
-            countState.text = $"{item.CurrentCount}/{item.MaxCount}";
+
+            if (countState != null)
+            {
+                countState.gameObject.SetActive(true);
+                countState.text = $"{item.CurrentCount}/{item.MaxCount}";
+            }
         }
     }
     #endregion

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using Pathfinding;
-
+using DG.Tweening;
 
 public class CreatureController : ObjectController
 {
@@ -71,6 +71,7 @@ public class CreatureController : ObjectController
     protected IEnumerator attackCoolTimeCor;
     protected IEnumerator aiCor;
     protected IEnumerator pathUpdateCor;
+    protected IEnumerator dashCor;
     #endregion
 
     [SerializeField] protected Transform showTr;
@@ -216,6 +217,11 @@ public class CreatureController : ObjectController
             return info.AttackRange;
         }
     }
+
+    public virtual float Dash
+    {
+        get => 4.5f;
+    }
     #endregion
 
 
@@ -324,7 +330,7 @@ public class CreatureController : ObjectController
             return;
         }
 
-        if(animState == Enums.CreatureState.Push)
+        if(animState == Enums.CreatureState.Push || animState == Enums.CreatureState.Dash)
         {
             return;
         }
@@ -365,16 +371,34 @@ public class CreatureController : ObjectController
 
     public override void OrderDash()
     {
-        if(animState != Enums.CreatureState.Move)
+        if(animState == Enums.CreatureState.Push || animState == Enums.CreatureState.Dash || animState == Enums.CreatureState.Attack)
         {
             return;
         }
 
+
+        if (inputDir == Vector2.zero) return;
+
         animState = Enums.CreatureState.Dash;
+
+        if(dashCor != null)
+        {
+            StopCoroutine(dashCor);
+        }
+        dashCor = DashCor(GameManager.Instance.GameDB.UnitValueDB.UnitDashTime, inputDir);
+        StartCoroutine(dashCor);
     }
 
     public override void OrderPushed(Vector2 force)
     {
+        if(dashCor != null)
+        {
+            StopCoroutine(dashCor);
+            dashCor = null;
+        }
+
+        rigid2D.velocity = Vector2.zero;
+
         animState = Enums.CreatureState.Push;
         StartCoroutine(PushCor(1f));
         rigid2D.AddForce(force);
@@ -472,7 +496,6 @@ public class CreatureController : ObjectController
             var equipDecorator = value as EquipmentDecorator;
             equipAttack = equipDecorator.Attack(this, dir);
         }
-
         if (!equipAttack)
         {
             // 베이스 공격도 확장성을 위해 외부로 분리
@@ -742,6 +765,26 @@ public class CreatureController : ObjectController
     {
         yield return new WaitForSeconds(timer);
         animState = Enums.CreatureState.Idle;
+    }
+
+    #endregion
+
+    #region 대쉬 로직 조각(대쉬와 푸쉬의 차이. 푸쉬는 당하는 것)
+
+    protected IEnumerator DashCor(float timer, Vector2 inputDir)
+    {
+        yield return null;
+
+        var dir = inputDir.normalized;
+
+        while(timer > 0f)
+        {
+            timer -= Time.deltaTime;
+            rigid2D.velocity = dir * MoveSpeed * Dash;
+        }
+
+        animState = Enums.CreatureState.Idle;
+        dashCor = null;
     }
 
     #endregion

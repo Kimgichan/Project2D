@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class SeekerAgent : MonoBehaviour
 {
-    [SerializeField] private Transform target;  
+    [SerializeField] private Transform target;
+    [SerializeField] private float attackDist;
+    [SerializeField] private float targetDist;
+    [SerializeField] private float bellicosity;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +20,6 @@ public class SeekerAgent : MonoBehaviour
 
         var controller = GetComponent<ObjectController>();
         //controller.OrderPathFind(target);
-        controller.OrderPlayAI(target, 6f, 5f, 0.7f);
+        controller.OrderPlayAI(target, attackDist, targetDist, bellicosity);
     }
 }

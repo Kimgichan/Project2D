@@ -83,6 +83,8 @@ namespace InterfaceList
         public void Drop();
 
         public Item Copy();
+
+        public bool Equal(InterfaceList.Item item);
         #endregion
     }
 }

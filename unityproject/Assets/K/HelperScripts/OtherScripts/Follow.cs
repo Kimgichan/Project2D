@@ -9,7 +9,7 @@ public class Follow : MonoBehaviour
 
     void Update()
     {
-        Vector3 newPos = Vector2.Lerp(transform.position, target.position + offset, Time.deltaTime);
+        Vector3 newPos = Vector2.Lerp(transform.position, target.position + offset, Time.deltaTime*0.75f);
         newPos.z = transform.position.z;
         transform.position = newPos;
     }

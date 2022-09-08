@@ -25,6 +25,7 @@ public class UnitValueDatabase : DatabaseLoader
     [SerializeField] private float unitDist;
     [SerializeField] private float unitRange;
     [SerializeField] private float unitGuide;
+    [SerializeField] private float unitDashTime;
 
     #region 에디터 전용 변수 목록
 #if UNITY_EDITOR
@@ -42,6 +43,7 @@ public class UnitValueDatabase : DatabaseLoader
     public float UnitDist => unitDist;
     public float UnitRange => unitRange;
     public float UnitGuide => unitGuide;
+    public float UnitDashTime => unitDashTime;
     #endregion
 
 
@@ -67,6 +69,7 @@ public class UnitValueDatabase : DatabaseLoader
         unitDist = float.Parse(values[2]);
         unitRange = float.Parse(values[3]);
         unitGuide = float.Parse(values[4]);
+        unitDashTime = float.Parse(values[5]);
     }
 #endif
     #endregion

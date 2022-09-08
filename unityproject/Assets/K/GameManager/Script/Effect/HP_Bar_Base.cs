@@ -54,7 +54,7 @@ public class HP_Bar_Base : Effect
         gameObject.SetActive(false);
     }
 
-    public virtual void Play(CreatureController controller, UnityAction endEvent = null)
+    public void Play(CreatureController controller, UnityAction endEvent)
     {
         if(this.controller != controller)
         {
@@ -76,11 +76,30 @@ public class HP_Bar_Base : Effect
         currentTimer = activeTimer;
         StartCoroutine(updateCor);
     }
+    public void Play(CreatureController controller)
+    {
+        if (this.controller != controller)
+        {
+            this.controller = controller;
+            if (updateCor != null)
+            {
+                StopCoroutine(updateCor);
+            }
+            updateCor = UpdateCor();
+        }
+        else if (updateCor == null)
+        {
+            updateCor = UpdateCor();
+        }
+
+        currentTimer = activeTimer;
+        StartCoroutine(updateCor);
+    }
 
     protected IEnumerator UpdateCor()
     {
+        yield return null;
         while (!start) yield return null;
-
         var rectTr = this.transform as RectTransform;
         rectTr.localScale = Vector3.one;
         rectTr.anchorMax = new Vector2(1f, 0f);

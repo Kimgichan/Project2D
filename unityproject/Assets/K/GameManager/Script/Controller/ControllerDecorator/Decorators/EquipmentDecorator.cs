@@ -12,6 +12,7 @@ public class EquipmentDecorator : MonoBehaviour
 {
     #region 변수 목록
 
+    [SerializeField] private Transform weaponPivot;
 
     /// <summary>
     /// 프로퍼티 목록에 있는 'WeaponItem'을 참고할 것
@@ -26,6 +27,8 @@ public class EquipmentDecorator : MonoBehaviour
 
 
     #region 프로퍼티 목록
+
+    public Transform WeaponPivot => weaponPivot;
 
     public WeaponItem WeaponItem
     {
@@ -90,7 +93,7 @@ public class EquipmentDecorator : MonoBehaviour
     {
         get
         {
-            return 0f;
+            return 1f;
         }
     }
     public float AttackRange
@@ -206,11 +209,14 @@ public class EquipmentDecorator : MonoBehaviour
 
     }
 
-    public void CreateWeapon(WeaponData weaponData, Transform parent)
+    public void CreateWeapon(WeaponData weaponData)
     {
         var weaponItem = GameManager.Instance.GameDB.WeaponManager.CreateWeaponItem(weaponData);
-        weaponItem.DrawWeaponObject(parent);
+        weaponItem.DrawWeaponObject(weaponPivot);
         WeaponItem = weaponItem;
+
+
+        weaponItem.WeaponObject.GetTr().localScale = new Vector3(0.25f, 0.45f, 0.25f);
     }
 
     #endregion

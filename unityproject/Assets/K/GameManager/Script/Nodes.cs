@@ -80,22 +80,23 @@ public class Nodes
             this.content = content;
         }
 
-        public void From(InterfaceList.Item item)
+        public ItemInfo(InterfaceList.Item item)
         {
-            if(item == null)
+            if (item == null)
             {
-                content = "";
-                count = -1;
-                kind = Enums.ItemKind.Empty;
-                itemName = "Null";
+                this.content = "";
+                this.count = -1;
+                this.kind = Enums.ItemKind.Empty;
+                this.itemName = "Null";
                 return;
             }
 
-            content = item.Content;
-            count = item.CurrentCount;
-            itemName = item.Name;
-            kind = item.Kind;
+            this.content = item.Content;
+            this.count = item.CurrentCount;
+            this.itemName = item.Name;
+            this.kind = item.Kind;
         }
+
 
         public static ItemInfo Empty => new ItemInfo() { itemName = "Null", content = "", count = -1, kind = Enums.ItemKind.Empty };
 

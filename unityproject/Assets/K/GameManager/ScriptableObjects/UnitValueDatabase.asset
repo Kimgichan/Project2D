@@ -17,5 +17,6 @@ MonoBehaviour:
   unitDist: 1
   unitRange: 2.68
   unitGuide: 0
+  unitDashTime: 0.5
   unitValueDocID: 1abP1gnO8hCgUxAQgC2dinAMCfEk7F229VFsO7nhQzyA
   unitValueGID: 209606030

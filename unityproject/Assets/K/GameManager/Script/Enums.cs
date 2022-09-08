@@ -37,6 +37,8 @@ public class Enums
         Shock_Base,
         HP_Bar_Base,
         DamageText,
+
+        Aim_Base,
     }
 
     
@@ -97,7 +99,9 @@ public class Enums
     public enum ItemKind
     {
         Weapon,
-        Portion
+        Portion,
+        Projectile,
+        Empty
     }
 
     /// <summary>
@@ -107,6 +111,7 @@ public class Enums
     {
         typeof(WeaponItem),
         typeof(Portion),
+        typeof(Projectile),
     };
 
     public static Type GetItemType(ItemKind item)

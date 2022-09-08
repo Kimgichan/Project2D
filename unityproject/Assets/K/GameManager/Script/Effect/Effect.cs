@@ -11,5 +11,9 @@ public class Effect : MonoBehaviour
     public Enums.Effect Kind => effectKind;
 
     //Effect를 상속받은 오브젝트는 SetActive(false)보다는 Push를 사용할 것
-    public virtual void Push() {}
+    public virtual void Push() 
+    {
+        GameManager.Instance.EffectManager.Push(this);
+        gameObject.SetActive(false);
+    }
 }

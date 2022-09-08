@@ -26,6 +26,10 @@ public class GameManager : MonoBehaviour
     public GameObject HudPanel => hudPanel;
 
 
+    [SerializeField] private ItemDatabase itemDatabase;
+    public ItemDatabase ItemDatabase => itemDatabase;
+
+
     private void Awake()
     {
         if(instance != null)

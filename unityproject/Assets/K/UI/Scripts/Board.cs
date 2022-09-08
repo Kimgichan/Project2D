@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using System;
 
+using NaughtyAttributes;
 
 
 public class Board : MonoBehaviour
@@ -29,10 +31,15 @@ public class Board : MonoBehaviour
     [SerializeField] private VirtualJoystick attackBtn;
     [SerializeField] private Image rightJoystick;
     [SerializeField] private Image rightJoystickHandle;
+
+    [Header("인벤토리 패널")]
+    [SerializeField] private InventoryUI inventoryPanel;
     
 
-    private UnityAction backEvent;
-    #endregion
+    private Stack<UnityAction> backEvents;
+
+    [ReadOnly] protected Aim_Base aim;
+    #endregion 
 
 
     #region 프로퍼티 목록
@@ -42,11 +49,14 @@ public class Board : MonoBehaviour
     #region 함수 목록
     private void Start()
     {
-        
-
+        backEvents = new Stack<UnityAction>();
+        backBtn.onClick.AddListener(BackBtnClick);
+        menuOpenBtn.onClick.AddListener(MenuOpenBtnClick);
+        inventoryBtn.onClick.AddListener(InventoryBtnClick);
 
 
         PadEventInit();
+        inputBoard.SetActive(true);
     }
 
 
@@ -70,11 +80,103 @@ public class Board : MonoBehaviour
 
         attackBtn.Drag += (Vector2 v2) =>
         {
-            if(v2.sqrMagnitude >= 0.98f)
+            var handler = GameManager.Instance.playerController;
+
+            if (handler == null) return;
+
+            if (v2.sqrMagnitude >= 0.98f)
             {
-                GameManager.Instance.playerController?.OrderAttack(v2);
+                handler.OrderAttack(v2);
+            }
+
+
+            var equipment = handler.GetDecorator(Enums.Decorator.Equipment) as EquipmentDecorator;
+            if (equipment != null && equipment.WeaponItem != null)
+            {
+                var rotateTr = equipment.WeaponPivot.parent;
+
+                var v2Nor = v2.normalized;
+                rotateTr.rotation = Quaternion.AngleAxis(Mathf.Atan2(v2Nor.y, v2Nor.x) * Mathf.Rad2Deg - 90f, Vector3.forward);
             }
         };
+
+
+        attackBtn.Drag += (Vector2 v2) =>
+        {
+            var handler = GameManager.Instance.playerController;
+
+            if (handler == null) return;
+
+            if (aim == null)
+            {
+                aim = GameManager.Instance.EffectManager.Pop(Enums.Effect.Aim_Base) as Aim_Base;
+
+                if (aim == null) return;
+
+                aim.gameObject.SetActive(true);
+
+                var equip = handler.GetDecorator(Enums.Decorator.Equipment) as EquipmentDecorator;
+
+                if (equip == null)
+                {
+                    aim.gameObject.transform.parent = handler.gameObject.transform;
+                }
+                else
+                {
+                    aim.gameObject.transform.parent = equip.WeaponPivot.parent;
+                }
+                aim.transform.localPosition = Vector3.zero;
+            }
+            else
+                aim.OnDrag(v2);
+        };
+
+        attackBtn.PointerUp += (BaseEventData e) =>
+        {
+            if(aim != null)
+            {
+                aim.Push();
+                aim = null;
+            }
+        };
+    }
+
+    private void MenuOpenBtnClick()
+    {
+        inputBoard.SetActive(false);
+        menuOpenBtn.gameObject.SetActive(false);
+        menuBoard.SetActive(true);
+        backBtn.gameObject.SetActive(true);
+        backEvents.Push(MenuOpenBtnBack);
+    }
+
+    private void MenuOpenBtnBack()
+    {
+        inputBoard.SetActive(true);
+        backBtn.gameObject.SetActive(false);
+        menuOpenBtn.gameObject.SetActive(true);
+        menuBoard.SetActive(false);
+    }
+
+    private void InventoryBtnClick()
+    {
+        menuBoard.SetActive(false);
+        inventoryPanel.Open();
+        backEvents.Push(InventoryBtnBack);
+    }
+
+    private void InventoryBtnBack()
+    {
+        menuBoard.SetActive(true);
+        inventoryPanel.Close();
+    }
+
+    private void BackBtnClick()
+    {
+        if(backEvents.Count > 0)
+        {
+            backEvents.Pop()();
+        }
     }
     #endregion
 }

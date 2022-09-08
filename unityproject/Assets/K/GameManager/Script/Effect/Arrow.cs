@@ -147,13 +147,26 @@ public class Arrow : Effect
 
         if (attackController.Equals(collider.controller))
         {
-            Push();
-            Echo = null;
+            var inventory = attackController.GetDecorator(Enums.Decorator.Inventory) as InventoryDecorator;
+            if (inventory != null)
+            {
+                var addItem = new Projectile(GameManager.Instance.ItemDatabase.GetItemData("Arrow") as ProjectileData);
+                addItem.CurrentCount = 1;
+                if (addItem != null)
+                {
+                    inventory.AddItem(addItem);
+                }
+
+                Push();
+                Echo = null;
+                actionTriggerEnterFunc = null;
+            }
         }
     }
     protected virtual IEnumerator MoveCor()
     {
         yield return null;
+        trail.Clear();
         trail.enabled = true;
         rigidbody.simulated = true;
         transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg-90f, Vector3.forward);
