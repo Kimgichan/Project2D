@@ -19,12 +19,9 @@ public class PickUpEcho : Effect
 
     public override void Push()
     {
-        if (start)
-        {
-            StopAllCoroutines();
-            GameManager.Instance.EffectManager.Push(this);
-            transform.DOKill();
-        }
+        StopAllCoroutines();
+        GameManager.Instance.EffectManager.Push(this);
+        transform.DOKill();
         gameObject.SetActive(false);
     }
 

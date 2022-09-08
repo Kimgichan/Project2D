@@ -13,7 +13,7 @@ public class Shock : Effect
     /// <summary>
     /// 공격하는데까지 걸리는 시간
     /// </summary>
-    protected float attackTime;
+    [SerializeField] protected float attackTime;
     protected UnityAction<ObjectController> sendEvent;
     protected bool start = false;
 
@@ -34,14 +34,9 @@ public class Shock : Effect
     #region Effect API
     public override void Push()
     {
-        if (start)
-        {
-            StopAllCoroutines();
-            attackTime = 0f;
-            sendEvent = null;
-            GameManager.Instance.EffectManager.Push(this);
-        }
-
+        StopAllCoroutines();
+        sendEvent = null;
+        GameManager.Instance.EffectManager.Push(this);
         gameObject.SetActive(false);
     }
 
@@ -53,16 +48,16 @@ public class Shock : Effect
     /// <param name="pos"></param>
     /// <param name="attackTime"></param>
     /// <param name="sendEvents"></param>
-    public virtual void Play(ObjectController requireController, Vector3 pos, float radius, float attackTime, UnityAction<ObjectController> sendEvent)
+    public virtual void Play(ObjectController requireController, Vector3 pos, float radius, float attackSpeed, UnityAction<ObjectController> sendEvent)
     {
         StopAllCoroutines();
-        StartCoroutine(PlayCor(requireController, pos, radius, attackTime, sendEvent));
+        StartCoroutine(PlayCor(requireController, pos, radius, attackSpeed, sendEvent));
     }
     #endregion
 
 
     #region 내부 로직
-    protected IEnumerator PlayCor(ObjectController requireController, Vector3 pos, float radius, float attackTime, UnityAction<ObjectController> sendEvent)
+    protected IEnumerator PlayCor(ObjectController requireController, Vector3 pos, float radius, float attackSpeed, UnityAction<ObjectController> sendEvent)
     {
         sprite.DOKill();
         transform.DOKill();
@@ -72,10 +67,11 @@ public class Shock : Effect
 
         attackController = requireController;
         this.sendEvent = sendEvent;
-        this.attackTime = attackTime;
 
         sprite.color = Color.clear;
         transform.localScale = Vector3.zero;
+
+        var attackTime = this.attackTime / attackSpeed;
 
         sprite.DOColor(Color.red, attackTime);
         transform.DOScale(Vector3.one * radius, attackTime).OnComplete(() =>

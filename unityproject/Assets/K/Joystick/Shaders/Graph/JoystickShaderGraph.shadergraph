@@ -622,7 +622,7 @@
     ],
     "synonyms": [],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
@@ -2364,7 +2364,7 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -1177.0,
-            "y": -296.0000305175781,
+            "y": -297.0,
             "width": 208.0,
             "height": 302.0
         }

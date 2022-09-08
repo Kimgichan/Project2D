@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29550b3e5b2801b4ba52b60cb5842068, type: 3}
   m_Name: UnitValueDatabase
   m_EditorClassIdentifier: 
-  unitSpeed: 4
+  unitSpeed: 2
   unitPush: 300
   unitDist: 1
+  unitRange: 2.68
+  unitGuide: 0
+  unitDashTime: 0.5
+  unitValueDocID: 1abP1gnO8hCgUxAQgC2dinAMCfEk7F229VFsO7nhQzyA
+  unitValueGID: 209606030
